@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 <template>
   <!-- <div class="checkout"> -->
   <div class="taskhalls">
@@ -167,181 +166,6 @@
       </ul>
     </div>
     <y-footer></y-footer>
-
-    <!-- 弹窗 14 调用13的弹窗及内容-->
-    <div class="fourteen">
-      <el-dialog
-        title="外层 Dialog 国外指南文献的上传 14"
-        :visible.sync="outerVisible_fourteen"
-      >
-        <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-          <el-tab-pane label="任务信息" name="first">
-            <div class="">
-              任务名称：
-              <el-input suffix-icon="el-icon-date" v-model="input_three">
-              </el-input>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="任务编辑" name="second">
-            <div class="Testfourteen">
-              <div class="insertbutton">
-                <el-button @click="addLine_thirteen" class="addrow"
-                  >添加行数</el-button
-                >
-              </div>
-              <el-table :data="tableData_thirteen" style="width: 100%">
-                <el-table-column prop="xuhao" label="序号" width="100px">
-                  <template slot-scope="scope">
-                    <label v-text="scope.$index + 1"></label>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="pmid" label="PMID">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.pmid"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="name" label="文献名称">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.name"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column label="文献内容提取">
-                  <template slot-scope="scope">
-                    <el-button
-                      type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji"
-                      >编辑</el-button
-                    >
-                  </template>
-                </el-table-column>
-                <el-table-column prop="accessoryId" label="文献上传">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="caozuo" label="操作">
-                  <template slot-scope="scope">
-                    <div class="insertbutton">
-                      <i
-                        class="el-icon-delete delete"
-                        size="mini"
-                        v-if="!scope.row.editing"
-                        icon="el-icon-delete"
-                        @click="handleDelete_thirteen(scope.$index, scope.row)"
-                      ></i>
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="文献上传" name="three">
-            <div class="">
-              <el-upload
-                style="display:inline-block"
-                :limit="2"
-                class="upload-demo"
-                ref="upload"
-                action="/hqx/knowledge/importKnowledge"
-                :file-list="fileList"
-                :http-request="uploadSectionFile"
-                :auto-upload="false"
-              >
-                <el-button slot="trigger" size="small" type="primary" plain
-                  >选取文件</el-button
-                >
-                <el-button
-                  style="margin-left: 10px;"
-                  size="small"
-                  icon="el-icon-upload2"
-                  type="success"
-                  @click="submitUpload"
-                  >导入</el-button
-                >
-              </el-upload>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
-        <div slot="footer" class="dialog-footer">
-          <el-button
-            @click="outerVisible_fourteen = false"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >取 消</el-button
-          >
-          <el-button
-            type="primary"
-            @click="save"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >确 定</el-button
-          >
-          <el-button
-            @click="outerVisible_fourteen = false"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >放弃任务</el-button
-          >
-        </div>
-      </el-dialog>
-    </div>
-    <!-- 内层弹窗 开始-->
-    <el-dialog
-      width="30%"
-      title="内层 Dialog13"
-      :visible.sync="innerVisible"
-      :append-to-body="true"
-    >
-      <li
-        class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
-        style="margin-bottom:10px;"
-      >
-        <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
-          style="width:83%"
-          v-if="item.type.indexOf('_input') >= 0"
-        ></el-input>
-        <el-input
-          style="width:83%"
-          type="textarea"
-          :rows="2"
-          v-model="textarea"
-          v-if="item.type.indexOf('_textarea') >= 0"
-        >
-          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
-        </el-input>
-        <el-select
-          v-model="form.region"
-          style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
-        >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-      </li>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          @click="innerVisible = false"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="innerVisible = false"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
-    <!-- 内层弹窗 结束-->
-    <!-- 弹窗 14 -->
   </div>
 </template>
 
@@ -354,7 +178,7 @@ import YFooter from '/common/footer'
 import 'jquery'
 import 'element-ui'
 import axios from 'axios'
-// import Editor from 'wangeditor'
+import Editor from 'wangeditor'
 export default {
   // 生命周期函数
   created() {
@@ -577,6 +401,7 @@ export default {
       outerVisible_nineteen: false, // 说明书原文上传、、说明书包装图片
       outerVisible_twenty: false, // 3GBio基因位点频率地理分布【中国 】
       outerVisible_twentyOne: false, // 3GBio基因位点频率地理分布【世界 】
+      outerVisible_twentyTwo: false, // 3GBio住院病案首页数据统计
 
       form: {
         name: '',
@@ -711,21 +536,21 @@ export default {
     },
     // 上传图片
     handleRemove(file) {
-      console.log(file)
+      // console.log(file)
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible_imgshow = true
     },
     handleDownload(file) {
-      console.log(file)
+      // console.log(file)
     },
     yulan() {
       this.innerVisible_img = true
     },
     // 富文本编辑器(meiyou)
     handleClick(tab, event) {
-      console.log(tab, event)
+      // console.log(tab, event)
     },
     addLine_two() {
       // 添加行数
@@ -1116,7 +941,7 @@ export default {
     save() {
       this.outerVisible_five = false
       // 这部分应该是保存提交你添加的内容
-      console.log(JSON.stringify(this.tableData_five))
+      // console.log(JSON.stringify(this.tableData_five))
     },
     // 给任务大厅数据列表动态添加id
     forId: function(index) {
@@ -1174,7 +999,7 @@ export default {
         source_textarea: 'SOURCE',
         summary_textarea: 'Summary',
         publications_textarea: 'Publications',
-        history_ckeditor2: 'History',
+        // history_ckeditor2: 'History',
         annotation_ckeditor1: 'Annotation'
       }
       for (var key3 in data2) {
@@ -1188,12 +1013,18 @@ export default {
         }
         this.tasklist.push(s)
       }
-      // for (let k in this.tasklist) {
-      //   if (k.type.indexOf('_ckeditor') >= 0) {
-      //     var editor1 = new Editor('#' + k.value)
-      //     editor1.create()
-      //   }
-      // }
+
+      setTimeout(function() {
+        // for (let k of this.tasklist) {
+        // debugger
+        // if (k.type.indexOf('_ckeditor') >= 0) {
+        // var editor1 = new Editor('#' + k.value)
+
+        var editor1 = new Editor('#history')
+        editor1.create()
+        // }
+        // }
+      }, 1000)
     },
     lingqu(id) {
       this.disabled = true
@@ -1923,12 +1754,20 @@ ul.box {
 .seven .el-dialog--small,
 .nine .el-dialog--small,
 .thirteen .el-dialog--small,
-.fourteen .el-dialog--small {
+.fourteen .el-dialog--small,
+.fiveteen .el-dialog--small,
+.sixteen .el-dialog--small,
+.seventeen .el-dialog--small,
+.eighteen .el-dialog--small {
   width: 86% !important;
 }
 .eight .el-dialog--small,
 .ten .el-dialog--small,
-.eleven .el-dialog--small {
+.eleven .el-dialog--small,
+.nineteen .el-dialog--small,
+.twenty .el-dialog--small,
+.twentyOne .el-dialog--small,
+.twentyTwo .el-dialog--small {
   width: 100% !important;
 }
 .el-dialog__header {

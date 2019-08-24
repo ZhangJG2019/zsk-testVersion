@@ -166,12 +166,11 @@
       </ul>
     </div>
     <y-footer></y-footer>
-
-    <!-- 弹窗 16 国内外药物标签文献的上传，含评论内容-->
-    <div class="sixteen">
+        <!-- 弹窗 22 3GBio住院病案首页数据统计 -->
+    <div class="twentyTwo">
       <el-dialog
-        title="外层 Dialog 国内外药物标签文献的上传，含评论内容"
-        :visible.sync="outerVisible_sixteen"
+        title="外层 Dialog 3GBio住院病案首页数据统计，含评论内容"
+        :visible.sync="outerVisible_twentyTwo"
       >
         <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
           <el-tab-pane label="任务信息" name="first">
@@ -183,7 +182,7 @@
               <el-input
                 type="textarea"
                 suffix-icon="el-icon-date"
-                v-model="tableData_sixteen[0].currentTaskComment"
+                v-model="tableData_twentyTwo[0].currentTaskComment"
               >
               </el-input>
             </div>
@@ -191,209 +190,73 @@
           <el-tab-pane label="任务编辑" name="second">
             <div class="TestFiveteen">
               <div class="insertbutton">
-                <el-button @click="addLine_sixteen" class="addrow"
+                <el-button @click="addLine_twentyTwo" class="addrow"
                   >添加行数</el-button
                 >
               </div>
-              <el-table :data="tableData_sixteen" style="width: 100%">
+              <el-table :data="tableData_twentyTwo" style="width: 100%">
                 <el-table-column prop="xuhao" label="序号" width="100px">
                   <template slot-scope="scope">
                     <label v-text="scope.$index + 1"></label>
                   </template>
                 </el-table-column>
-                <el-table-column prop="name" label="文献名称">
+                <el-table-column prop="dataSource" label="数据来源">
                   <template slot-scope="scope">
                     <el-input
                       type="textarea"
-                      v-model="scope.row.name"
+                      v-model="scope.row.dataSource"
                     ></el-input>
                   </template>
                 </el-table-column>
-                <el-table-column label="文献内容提取">
-                  <template slot-scope="scope">
-                    <el-button
-                      type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji"
-                      >编辑</el-button
-                    >
-                  </template>
-                </el-table-column>
-                <el-table-column prop="accessoryId" label="文献上传">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="caozuo" label="操作">
-                  <template slot-scope="scope">
-                    <div class="insertbutton">
-                      <i
-                        class="el-icon-delete delete"
-                        size="mini"
-                        v-if="!scope.row.editing"
-                        icon="el-icon-delete"
-                        @click="handleDelete_sixteen(scope.$index, scope.row)"
-                      ></i>
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="文献上传" name="three">
-            <div class="">
-              <el-upload
-                style="display:inline-block"
-                :limit="2"
-                class="upload-demo"
-                ref="upload"
-                action="/hqx/knowledge/importKnowledge"
-                :file-list="fileList"
-                :http-request="uploadSectionFile"
-                :auto-upload="false"
-              >
-                <el-button slot="trigger" size="small" type="primary" plain
-                  >选取文件</el-button
-                >
-                <el-button
-                  style="margin-left: 10px;"
-                  size="small"
-                  icon="el-icon-upload2"
-                  type="success"
-                  @click="submitUpload"
-                  >导入</el-button
-                >
-              </el-upload>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
-        <div slot="footer" class="dialog-footer">
-          <el-button
-            @click="outerVisible_sixteen = false"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >取 消</el-button
-          >
-          <el-button
-            type="primary"
-            @click="save"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >确 定</el-button
-          >
-          <el-button
-            @click="outerVisible_sixteen = false"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >放弃任务</el-button
-          >
-        </div>
-      </el-dialog>
-    </div>
-    <!-- 内层弹窗 开始-->
-    <el-dialog
-      width="30%"
-      title="内层 Dialog13"
-      :visible.sync="innerVisible"
-      :append-to-body="true"
-    >
-      <li
-        class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
-        style="margin-bottom:10px;"
-      >
-        <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
-          style="width:83%"
-          v-if="item.type.indexOf('_input') >= 0"
-        ></el-input>
-        <el-input
-          style="width:83%"
-          type="textarea"
-          :rows="2"
-          v-model="textarea"
-          v-if="item.type.indexOf('_textarea') >= 0"
-        >
-          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
-        </el-input>
-        <el-select
-          v-model="form.region"
-          style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
-        >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-        <div
-          id="history"
-          v-if="item.type.indexOf('_ckeditor') >= 0"
-          style="width:100%"
-        ></div>
-      </li>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          @click="innerVisible = false"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="innerVisible = false"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
-    <!-- 内层弹窗 结束-->
-    <!-- 弹窗 16 -->
 
-    <!-- 弹窗 17 国内外药物标签文献的上传，不含评论内容-->
-    <div class="seventeen">
-      <el-dialog
-        title="外层 Dialog 国内外药物标签文献的上传，17，不含评论内容"
-        :visible.sync="outerVisible_seventeen"
-      >
-        <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-          <el-tab-pane label="任务信息" name="first">
-            <div class="">
-              任务名称：
-              <el-input suffix-icon="el-icon-date" v-model="input_three">
-              </el-input>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="任务编辑" name="second">
-            <div class="TestFiveteen">
-              <div class="insertbutton">
-                <el-button @click="addLine_seventeen" class="addrow"
-                  >添加行数</el-button
-                >
-              </div>
-              <el-table :data="tableData_seventeen" style="width: 100%">
-                <el-table-column prop="xuhao" label="序号" width="100px">
-                  <template slot-scope="scope">
-                    <label v-text="scope.$index + 1"></label>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="name" label="文献名称">
+                <el-table-column prop="project" label="项目">
                   <template slot-scope="scope">
                     <el-input
                       type="textarea"
-                      v-model="scope.row.name"
+                      v-model="scope.row.project"
                     ></el-input>
                   </template>
                 </el-table-column>
-                <el-table-column label="文献内容提取">
+                <el-table-column prop="sex" label="性别">
                   <template slot-scope="scope">
-                    <el-button
-                      type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji"
-                      >编辑</el-button
-                    >
+                    <el-select v-model="scope.row.sex"></el-select>
                   </template>
                 </el-table-column>
-                <el-table-column prop="accessoryId" label="文献上传">
+                <el-table-column prop="ageGroup" label="年龄段">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-input
+                      type="textarea"
+                      v-model="scope.row.ageGroup"
+                    ></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="nation" label="民族">
+                  <template slot-scope="scope">
+                    <el-input
+                      type="textarea"
+                      v-model="scope.row.nation"
+                    ></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="nativePlace" label="籍贯">
+                  <template slot-scope="scope">
+                    <el-input
+                      type="textarea"
+                      v-model="scope.row.nativePlace"
+                    ></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="porResultId" label="位点结果">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.porResultId"></el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="testAmount" label="检测量">
+                  <template slot-scope="scope">
+                    <el-input
+                      type="textarea"
+                      v-model="scope.row.testAmount"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -404,7 +267,7 @@
                         size="mini"
                         v-if="!scope.row.editing"
                         icon="el-icon-delete"
-                        @click="handleDelete_seventeen(scope.$index, scope.row)"
+                        @click="handleDelete_twentyTwo(scope.$index, scope.row)"
                       ></i>
                     </div>
                   </template>
@@ -412,36 +275,10 @@
               </el-table>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="文献上传" name="three">
-            <div class="">
-              <el-upload
-                style="display:inline-block"
-                :limit="2"
-                class="upload-demo"
-                ref="upload"
-                action="/hqx/knowledge/importKnowledge"
-                :file-list="fileList"
-                :http-request="uploadSectionFile"
-                :auto-upload="false"
-              >
-                <el-button slot="trigger" size="small" type="primary" plain
-                  >选取文件</el-button
-                >
-                <el-button
-                  style="margin-left: 10px;"
-                  size="small"
-                  icon="el-icon-upload2"
-                  type="success"
-                  @click="submitUpload"
-                  >导入</el-button
-                >
-              </el-upload>
-            </div>
-          </el-tab-pane>
         </el-tabs>
         <div slot="footer" class="dialog-footer">
           <el-button
-            @click="outerVisible_seventeen = false"
+            @click="outerVisible_twentyTwo = false"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >取 消</el-button
           >
@@ -452,71 +289,14 @@
             >确 定</el-button
           >
           <el-button
-            @click="outerVisible_seventeen = false"
+            @click="outerVisible_twentyTwo = false"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >放弃任务</el-button
           >
         </div>
       </el-dialog>
     </div>
-    <!-- 内层弹窗 开始-->
-    <el-dialog
-      width="30%"
-      title="内层 Dialog13"
-      :visible.sync="innerVisible"
-      :append-to-body="true"
-    >
-      <li
-        class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
-        style="margin-bottom:10px;"
-      >
-        <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
-          style="width:83%"
-          v-if="item.type.indexOf('_input') >= 0"
-        ></el-input>
-        <el-input
-          style="width:83%"
-          type="textarea"
-          :rows="2"
-          v-model="textarea"
-          v-if="item.type.indexOf('_textarea') >= 0"
-        >
-          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
-        </el-input>
-        <el-select
-          v-model="form.region"
-          style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
-        >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-        <div
-          id="history"
-          v-if="item.type.indexOf('_ckeditor') >= 0"
-          style="width:100%"
-        ></div>
-      </li>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          @click="innerVisible = false"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="innerVisible = false"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
-    <!-- 内层弹窗 结束-->
-    <!-- 弹窗 17 -->
+    <!-- 弹窗 22 -->
   </div>
 </template>
 
@@ -549,6 +329,101 @@ export default {
       input1: '',
       input2: '',
       input_three: '',
+      tableData: [
+        {
+          drugGenericName: '',
+          caozuo: '',
+          approvalNumber: '',
+          specifications: '',
+          drugTradeName: '',
+          originPlace: ''
+        }
+      ],
+      tableData_three: [
+        {
+          pmid: '',
+          name: '',
+          liter_content: '',
+          accessoryId: ''
+        }
+      ],
+      tableData_four: [
+        {
+          pathways: '',
+          relatedPathways: '',
+          publication: '',
+          authors: '',
+          caozuo: ''
+        }
+      ],
+      tableData_five: [
+        {
+          pathways: '',
+          drugs: '',
+          genes: '',
+          diseases: ''
+        }
+      ],
+      tableData_six: [
+        {
+          pathways: '',
+          relatedPathways: ''
+        }
+      ],
+      tableData_seven: [
+        {
+          pmid: '',
+          name: '',
+          liter_content: '',
+          accessoryId: '',
+          drugInstruction_picture: ''
+        }
+      ],
+      tableData_eight: [
+        {
+          medicalInsuranceArea: '',
+          number: '',
+          drugName: '',
+          drugForm: '',
+          drugClassification: '',
+          medicalInsuranceCategory: '',
+          supplementaryInformation: '',
+          changes: '',
+          remarks: ''
+        }
+      ],
+      tableData_nine: [
+        {
+          name: '',
+          interactiveDrugs: '',
+          effectiveness: ''
+        }
+      ],
+      tableData_ten: [
+        {
+          medicationType: '',
+          evidenceLevel: '',
+          race: '',
+          raceDetails: '',
+          phenotypes: '',
+          genotype: '',
+          porMedicationSuggestionEnglish: '',
+          porMedicationSuggestionChinese: ''
+        }
+      ],
+      tableData_eleven: [
+        {
+          pathways: '',
+          drugs: '',
+          genes: '',
+          diseases: ''
+        }
+      ],
+      tableData_twelve: [
+        {
+          conclusion: ''
+        }
+      ],
       tableData_thirteen: [
         {
           pmid: '',
@@ -590,6 +465,48 @@ export default {
           accessoryId: ''
         }
       ],
+      tableData_eighteen: [
+        {
+          pmid: '',
+          name: '',
+          liter_content: '',
+          accessoryId: '',
+          drugInstruction_picture: '',
+          currentTaskComment: ''
+        }
+      ],
+      tableData_nineteen: [
+        {
+          pmid: '',
+          name: '',
+          liter_content: '',
+          accessoryId: '',
+          currentTaskComment: ''
+        }
+      ],
+      tableData_twentyOne: [
+        {
+          dataSource: '',
+          project: '',
+          fatherRace: '',
+          race: '',
+          area: '',
+          porResultId: '',
+          testAmount: '',
+          currentTaskComment: ''
+        }
+      ],
+      tableData_twentyTwo: [
+        {
+          dataSource: '',
+          project: '',
+          sex: '',
+          ageGroup: '',
+          nation: '',
+          nativePlace: '',
+          currentTaskComment: ''
+        }
+      ],
       dialogTableVisible: false,
       dialogFormVisible1: false,
       dialogFormVisible2: false,
@@ -597,10 +514,26 @@ export default {
       dialogVisible_imgshow: false,
       outerVisible: false,
       innerVisible: false,
+      outerVisible_four: false,
+      outerVisible_five: false,
+      outerVisible_six: false,
+      outerVisible_seven: false,
+      outerVisible_eight: false,
+      outerVisible_nine: false,
+      outerVisible_ten: false,
+      outerVisible_eleven: false,
+      outerVisible_twelve: false,
+      outerVisible_thirteen: false,
       outerVisible_fourteen: false, // 国外指南文献的上传,国内指南文献的上传,
-      outerVisible_fiveteen: false, // 同fourteen，比14多评论内容
+      outerVisible_fiveteen: false, // 国内外药物基因文献的上传
       outerVisible_sixteen: false, // 国内外药物标签文献的上传 有评论内容
-      outerVisible_seventeen: false,
+      outerVisible_seventeen: false, // 国内外药物标签文献的上传 无评论内容。。国内外临床注释文献的上传
+      outerVisible_eighteen: false, // 国内外专利注释文献的上传 有评论内容,无评论内容
+      outerVisible_nineteen: false, // 说明书原文上传、、说明书包装图片
+      outerVisible_twenty: false, // 3GBio基因位点频率地理分布【中国 】
+      outerVisible_twentyOne: false, // 3GBio基因位点频率地理分布【世界 】
+      outerVisible_twentyTwo: false, // 3GBio住院病案首页数据统计
+
       form: {
         name: '',
         region: '',
@@ -750,6 +683,134 @@ export default {
     handleClick(tab, event) {
       // console.log(tab, event)
     },
+    addLine_two() {
+      // 添加行数
+      var newValue = {
+        drugGenericName: '',
+        drugTradeName: '',
+        approvalNumber: '',
+        specifications: '',
+        originPlace: '',
+        caozuo: ''
+      }
+      // 添加新的行数
+      this.tableData.push(newValue)
+    },
+    addLine_three() {
+      // 添加行数
+      var newValue = {
+        pmid: '',
+        name: '',
+        accessoryId: '',
+        caozuo: ''
+      }
+      // 添加新的行数
+      this.tableData_three.push(newValue)
+    },
+    addLine_four() {
+      // 添加行数
+      var newValue = {
+        pathways: '',
+        relatedPathways: '',
+        publication: '',
+        authors: '',
+        caozuo: ''
+      }
+      // 添加新的行数
+      this.tableData_four.push(newValue)
+    },
+    addLine_five() {
+      // 添加行数
+      var newValue = {
+        pathways: '',
+        drugs: '',
+        genes: '',
+        diseases: ''
+      }
+      // 添加新的行数
+      this.tableData_five.push(newValue)
+    },
+    addLine_six() {
+      // 添加行数
+      var newValue = {
+        pathways: '',
+        relatedPathways: ''
+      }
+      // 添加新的行数
+      this.tableData_six.push(newValue)
+    },
+    addLine_seven() {
+      // 添加行数
+      var newValue = {
+        pmid: '',
+        name: '',
+        liter_content: '',
+        accessoryId: '',
+        drugInstruction_picture: ''
+      }
+      // 添加新的行数
+      this.tableData_seven.push(newValue)
+    },
+    addLine_eight() {
+      // 添加行数
+      var newValue = {
+        medicalInsuranceArea: '',
+        number: '',
+        drugName: '',
+        drugForm: '',
+        drugClassification: '',
+        medicalInsuranceCategory: '',
+        supplementaryInformation: '',
+        changes: '',
+        remarks: ''
+      }
+      // 添加新的行数
+      this.tableData_eight.push(newValue)
+    },
+    addLine_nine() {
+      // 添加行数
+      var newValue = {
+        name: '',
+        interactiveDrugs: '',
+        effectiveness: ''
+      }
+      // 添加新的行数
+      this.tableData_nine.push(newValue)
+    },
+    addLine_ten() {
+      // 添加行数
+      var newValue = {
+        medicationType: '',
+        evidenceLevel: '',
+        race: '',
+        raceDetails: '',
+        phenotypes: '',
+        genotype: '',
+        porMedicationSuggestionEnglish: '',
+        porMedicationSuggestionChinese: ''
+      }
+      // 添加新的行数
+      this.tableData_ten.push(newValue)
+    },
+    addLine_eleven() {
+      // 添加行数
+      var newValue = {
+        pathways: '',
+        drugs: '',
+        genes: '',
+        diseases: ''
+      }
+      // 添加新的行数
+      this.tableData_eleven.push(newValue)
+    },
+    addLine_twelve() {
+      // 添加行数
+      var newValue = {
+        conclusion: ''
+      }
+      // 添加新的行数
+      this.tableData_twelve.push(newValue)
+    },
     addLine_thirteen() {
       // 添加行数
       var newValue = {
@@ -806,39 +867,89 @@ export default {
       // 添加新的行数
       this.tableData_seventeen.push(newValue)
     },
+    addLine_eighteen() {
+      // 添加行数
+      var newValue = {
+        pmid: '',
+        name: '',
+        liter_content: '',
+        accessoryId: '',
+        currentTaskComment: ''
+      }
+      // 添加新的行数
+      this.tableData_eighteen.push(newValue)
+    },
+    addLine_nineteen() {
+      // 添加行数
+      var newValue = {
+        pmid: '',
+        name: '',
+        liter_content: '',
+        accessoryId: '',
+        drugInstruction_picture: '',
+        currentTaskComment: ''
+      }
+      // 添加新的行数
+      this.tableData_nineteen.push(newValue)
+    },
+    addLine_twenty() {
+      // 添加行数
+      var newValue = {
+        dataSource: '',
+        year: '',
+        project: '',
+        area: '',
+        receiveLaboratory: '',
+        sex: '',
+        ageGroup: '',
+        sampleType: '',
+        porResultId: '',
+        testAmount: '',
+        currentTaskComment: ''
+      }
+      // 添加新的行数
+      this.tableData_twenty.push(newValue)
+    },
+    addLine_twentyOne() {
+      // 添加行数
+      var newValue = {
+        dataSource: '',
+        project: '',
+        fatherRace: '',
+        race: '',
+        area: '',
+        porResultId: '',
+        testAmount: '',
+        currentTaskComment: ''
+      }
+      // 添加新的行数
+      this.tableData_twentyOne.push(newValue)
+    },
+
+    addLine_twentyTwo() {
+      // 添加行数
+      var newValue = {
+        dataSource: '',
+        project: '',
+        sex: '',
+        ageGroup: '',
+        nation: '',
+        nativePlace: '',
+        currentTaskComment: ''
+      }
+      // 添加新的行数
+      this.tableData_twentyTwo.push(newValue)
+    },
     bianji1() {
-      this.outerVisible_seventeen = true
+      this.outerVisible_twentyTwo = true
     },
-    // 删除行17
-    handleDelete_seventeen(index) {
+    // 删除行20
+    handleDelete_twentyTwo(index) {
       // console.log(index)
       // 删除行数
-      this.tableData_seventeen.splice(index, 1)
+      this.tableData_twentyTwo.splice(index, 1)
     },
-    // 删除行16
-    handleDelete_sixteen(index) {
-      // console.log(index)
-      // 删除行数
-      this.tableData_sixteen.splice(index, 1)
-    },
-    // 删除行15
-    handleDelete_fiveteen(index) {
-      // console.log(index)
-      // 删除行数
-      this.tableData_fiveteen.splice(index, 1)
-    },
-    // 删除行14
-    handleDelete_fourteen(index) {
-      // console.log(index)
-      // 删除行数
-      this.tableData_fourteen.splice(index, 1)
-    },
-    // 删除行13
-    handleDelete_thirteen(index) {
-      console.log(index)
-      // 删除行数
-      this.tableData_thirteen.splice(index, 1)
-    },
+
     // 弹窗中确定提交按钮
     save() {
       this.outerVisible_five = false
@@ -1658,12 +1769,18 @@ ul.box {
 .thirteen .el-dialog--small,
 .fourteen .el-dialog--small,
 .fiveteen .el-dialog--small,
-.sixteen .el-dialog--small,.seventeen .el-dialog--small {
+.sixteen .el-dialog--small,
+.seventeen .el-dialog--small,
+.eighteen .el-dialog--small {
   width: 86% !important;
 }
 .eight .el-dialog--small,
 .ten .el-dialog--small,
-.eleven .el-dialog--small {
+.eleven .el-dialog--small,
+.nineteen .el-dialog--small,
+.twenty .el-dialog--small,
+.twentyOne .el-dialog--small,
+.twentyTwo .el-dialog--small {
   width: 100% !important;
 }
 .el-dialog__header {
