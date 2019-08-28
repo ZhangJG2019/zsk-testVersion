@@ -7,6 +7,10 @@
         <!-- 左侧内容区域  start-->
         <li style="margin-right:10px;background-color:#fff;">
           <div class="main_content">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+              <el-breadcrumb-item>任务大厅</el-breadcrumb-item>
+            </el-breadcrumb>
             <!-- 顶部筛选条件 1-->
             <div class="task_classify clearfix">
               <ul class="task_class " style="border-bottom:1px solid #ccc">
@@ -63,10 +67,7 @@
                 <!-- 任务大厅具体列表数据展示 1-->
                 <li
                   class="center_content"
-                  v-for="(item, key) in taskhall.slice(
-                    (currentPage - 1) * pageSize,
-                    currentPage * pageSize
-                  )"
+                  v-for="(item, key) in taskhall"
                   :key="key"
                   :id="forId(key)"
                   @current-change="handleCurrentChange"
@@ -76,11 +77,12 @@
                     alt=""
                     style="color:blue;float:left!important; display:inline-block;"
                   />
+                  <!-- @click="See(item.articleLinkUrl)" -->
                   <a
-                    @click="See(item.articleLinkUrl)"
                     class="title"
                     style="float:left!important; display:inline-block;"
                     v-text="item.name"
+                    :id="item.id"
                   ></a>
                   <!-- <el-button
                     :id="forId2(key)"
@@ -94,7 +96,7 @@
                   <el-button
                     :id="forId2(key)"
                     type="button"
-                    @click="bianji1(item.id)"
+                    @click="bianji(item.id)"
                     v-if="disabled == false"
                     v-text="btntxt"
                   >
@@ -111,10 +113,10 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="currentPage"
-                    :page-sizes="[3, 6, 9]"
+                    :page-sizes="[8, 20, 30]"
                     :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="taskhall.length"
+                    :total="total"
                     style="float:right;margin:25px 10px 0 0;"
                   >
                   </el-pagination>
@@ -166,137 +168,73 @@
       </ul>
     </div>
     <y-footer></y-footer>
-        <!-- 弹窗 22 3GBio住院病案首页数据统计 -->
-    <div class="twentyTwo">
-      <el-dialog
-        title="外层 Dialog 3GBio住院病案首页数据统计，含评论内容"
-        :visible.sync="outerVisible_twentyTwo"
+    <!-- 弹窗 1-->
+    <el-dialog
+      width="30%"
+      title="位点基本信息"
+      :visible.sync="innerVisible"
+      :append-to-body="true"
+    >
+      <li style="margin-bottom:10px;">
+        <span style="float:left;width:100px;">任务名称:</span>
+        <el-input
+          style="width:83%"
+          :disabled="true"
+          id="taskname"
+          v-model="taskname"
+        ></el-input>
+        <!-- v-text="res.data.name" -->
+      </li>
+      <li
+        class="center_content"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
+        style="margin-bottom:10px;"
       >
-        <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-          <el-tab-pane label="任务信息" name="first">
-            <div class="">
-              任务名称：
-              <el-input suffix-icon="el-icon-date" v-model="input_three">
-              </el-input>
-              评论内容：
-              <el-input
-                type="textarea"
-                suffix-icon="el-icon-date"
-                v-model="tableData_twentyTwo[0].currentTaskComment"
-              >
-              </el-input>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="任务编辑" name="second">
-            <div class="TestFiveteen">
-              <div class="insertbutton">
-                <el-button @click="addLine_twentyTwo" class="addrow"
-                  >添加行数</el-button
-                >
-              </div>
-              <el-table :data="tableData_twentyTwo" style="width: 100%">
-                <el-table-column prop="xuhao" label="序号" width="100px">
-                  <template slot-scope="scope">
-                    <label v-text="scope.$index + 1"></label>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="dataSource" label="数据来源">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.dataSource"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-
-                <el-table-column prop="project" label="项目">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.project"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="sex" label="性别">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.sex"></el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="ageGroup" label="年龄段">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.ageGroup"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="nation" label="民族">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.nation"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="nativePlace" label="籍贯">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.nativePlace"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="porResultId" label="位点结果">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.porResultId"></el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="testAmount" label="检测量">
-                  <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.testAmount"
-                    ></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="caozuo" label="操作">
-                  <template slot-scope="scope">
-                    <div class="insertbutton">
-                      <i
-                        class="el-icon-delete delete"
-                        size="mini"
-                        v-if="!scope.row.editing"
-                        icon="el-icon-delete"
-                        @click="handleDelete_twentyTwo(scope.$index, scope.row)"
-                      ></i>
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
-        <div slot="footer" class="dialog-footer">
-          <el-button
-            @click="outerVisible_twentyTwo = false"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >取 消</el-button
-          >
-          <el-button
-            type="primary"
-            @click="save"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >确 定</el-button
-          >
-          <el-button
-            @click="outerVisible_twentyTwo = false"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >放弃任务</el-button
-          >
-        </div>
-      </el-dialog>
-    </div>
-    <!-- 弹窗 22 -->
+        <span style="float:left;width:100px;" v-text="item.name"></span>
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-input
+          class="readonly"
+          v-model="form.name"
+          style="width:83%"
+          v-if="item.type.indexOf('_input') >= 0"
+          :data-id="item.value"
+        ></el-input>
+        <el-input
+          :data-id="item.value"
+          style="width:83%"
+          type="textarea"
+          :rows="2"
+          v-model="textarea"
+          v-if="item.type.indexOf('_textarea') >= 0"
+        >
+          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
+        </el-input>
+        <el-select
+          v-model="form.region"
+          style="width:83%"
+          v-if="item.type.indexOf('_select') >= 0"
+          :data-id="item.value"
+        >
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+        </el-select>
+      </li>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          @click="innerVisible = false"
+          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+          >取 消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="save"
+          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
+    <!-- 弹窗 1-->
   </div>
 </template>
 
@@ -305,11 +243,11 @@ import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-// import { taskHall } from '/api/index.js' // zsk模拟接口
+import { taskHall } from '/api/index.js' // zsk模拟接口
 import 'jquery'
 import 'element-ui'
 import axios from 'axios'
-import Editor from 'wangeditor'
+// import Editor from 'wangeditor'
 export default {
   // 生命周期函数
   created() {
@@ -317,11 +255,12 @@ export default {
     this.getProblems() // 常见问题
     this.getNum() // 左侧内容数字
     this.getTaskList() // 任务大厅列表
-    // this.test() // zsk连接测试
   },
   data() {
     return {
       // 弹窗 1
+      taskname: '位点基本信息 - CYP2D6 * 5(DEL)',
+      readonly: true,
       input_thirteen: '', // 任务信息弹窗中的评论内容
       accessoryId_value: '',
       dialogImageUrl: '',
@@ -347,166 +286,6 @@ export default {
           accessoryId: ''
         }
       ],
-      tableData_four: [
-        {
-          pathways: '',
-          relatedPathways: '',
-          publication: '',
-          authors: '',
-          caozuo: ''
-        }
-      ],
-      tableData_five: [
-        {
-          pathways: '',
-          drugs: '',
-          genes: '',
-          diseases: ''
-        }
-      ],
-      tableData_six: [
-        {
-          pathways: '',
-          relatedPathways: ''
-        }
-      ],
-      tableData_seven: [
-        {
-          pmid: '',
-          name: '',
-          liter_content: '',
-          accessoryId: '',
-          drugInstruction_picture: ''
-        }
-      ],
-      tableData_eight: [
-        {
-          medicalInsuranceArea: '',
-          number: '',
-          drugName: '',
-          drugForm: '',
-          drugClassification: '',
-          medicalInsuranceCategory: '',
-          supplementaryInformation: '',
-          changes: '',
-          remarks: ''
-        }
-      ],
-      tableData_nine: [
-        {
-          name: '',
-          interactiveDrugs: '',
-          effectiveness: ''
-        }
-      ],
-      tableData_ten: [
-        {
-          medicationType: '',
-          evidenceLevel: '',
-          race: '',
-          raceDetails: '',
-          phenotypes: '',
-          genotype: '',
-          porMedicationSuggestionEnglish: '',
-          porMedicationSuggestionChinese: ''
-        }
-      ],
-      tableData_eleven: [
-        {
-          pathways: '',
-          drugs: '',
-          genes: '',
-          diseases: ''
-        }
-      ],
-      tableData_twelve: [
-        {
-          conclusion: ''
-        }
-      ],
-      tableData_thirteen: [
-        {
-          pmid: '',
-          name: '',
-          liter_content: '',
-          accessoryId: '',
-          currentTaskComment: ''
-        }
-      ],
-      tableData_fourteen: [
-        {
-          pmid: '',
-          name: '',
-          liter_content: '',
-          accessoryId: ''
-        }
-      ],
-      tableData_fiveteen: [
-        {
-          pmid: '',
-          name: '',
-          liter_content: '',
-          accessoryId: '',
-          currentTaskComment: ''
-        }
-      ],
-      tableData_sixteen: [
-        {
-          name: '',
-          liter_content: '',
-          accessoryId: '',
-          currentTaskComment: ''
-        }
-      ],
-      tableData_seventeen: [
-        {
-          name: '',
-          liter_content: '',
-          accessoryId: ''
-        }
-      ],
-      tableData_eighteen: [
-        {
-          pmid: '',
-          name: '',
-          liter_content: '',
-          accessoryId: '',
-          drugInstruction_picture: '',
-          currentTaskComment: ''
-        }
-      ],
-      tableData_nineteen: [
-        {
-          pmid: '',
-          name: '',
-          liter_content: '',
-          accessoryId: '',
-          currentTaskComment: ''
-        }
-      ],
-      tableData_twentyOne: [
-        {
-          dataSource: '',
-          project: '',
-          fatherRace: '',
-          race: '',
-          area: '',
-          porResultId: '',
-          testAmount: '',
-          currentTaskComment: ''
-        }
-      ],
-      tableData_twentyTwo: [
-        {
-          dataSource: '',
-          project: '',
-          sex: '',
-          ageGroup: '',
-          nation: '',
-          nativePlace: '',
-          currentTaskComment: ''
-        }
-      ],
       dialogTableVisible: false,
       dialogFormVisible1: false,
       dialogFormVisible2: false,
@@ -515,25 +294,6 @@ export default {
       outerVisible: false,
       innerVisible: false,
       outerVisible_four: false,
-      outerVisible_five: false,
-      outerVisible_six: false,
-      outerVisible_seven: false,
-      outerVisible_eight: false,
-      outerVisible_nine: false,
-      outerVisible_ten: false,
-      outerVisible_eleven: false,
-      outerVisible_twelve: false,
-      outerVisible_thirteen: false,
-      outerVisible_fourteen: false, // 国外指南文献的上传,国内指南文献的上传,
-      outerVisible_fiveteen: false, // 国内外药物基因文献的上传
-      outerVisible_sixteen: false, // 国内外药物标签文献的上传 有评论内容
-      outerVisible_seventeen: false, // 国内外药物标签文献的上传 无评论内容。。国内外临床注释文献的上传
-      outerVisible_eighteen: false, // 国内外专利注释文献的上传 有评论内容,无评论内容
-      outerVisible_nineteen: false, // 说明书原文上传、、说明书包装图片
-      outerVisible_twenty: false, // 3GBio基因位点频率地理分布【中国 】
-      outerVisible_twentyOne: false, // 3GBio基因位点频率地理分布【世界 】
-      outerVisible_twentyTwo: false, // 3GBio住院病案首页数据统计
-
       form: {
         name: '',
         region: '',
@@ -575,7 +335,6 @@ export default {
         }
       ],
       id: [],
-      name: '',
       taskTitleUrl: '',
       btntxt: '编辑',
       disabled: false,
@@ -591,7 +350,6 @@ export default {
       drugLabelsnum: '',
 
       // 中间八个分类 2
-      total: '',
       articleTitle: '', // 小标题
       articleLinkUrl: '', // 小标题链接=具体内容页面
       columnTitle: '', // 分组大标题
@@ -607,11 +365,11 @@ export default {
       topNews: [],
       // 接收最新研究内容列表信息
       newContent: [],
-      // taskHall: [], // 暂存请求到的任务大厅数据
       taskhall: [], // 暂存请求到的任务大厅数据
+      total: 1, // 最大条数
       currentPage: 1, // 当前页面
-      alltotal: '', // 最多条数
-      pageSize: 3 // 每页15条
+      pageSize: 8, // 每页83条
+      flag: 'true'
     }
   },
   mounted() {
@@ -625,6 +383,7 @@ export default {
       })
     })
     // 菜单切换高亮显示 2
+    $('#taskname').val('位点基本信息 - CYP2D6 * 5(DEL)')
   },
   methods: {
     // 上传文献
@@ -707,283 +466,10 @@ export default {
       // 添加新的行数
       this.tableData_three.push(newValue)
     },
-    addLine_four() {
-      // 添加行数
-      var newValue = {
-        pathways: '',
-        relatedPathways: '',
-        publication: '',
-        authors: '',
-        caozuo: ''
-      }
-      // 添加新的行数
-      this.tableData_four.push(newValue)
-    },
-    addLine_five() {
-      // 添加行数
-      var newValue = {
-        pathways: '',
-        drugs: '',
-        genes: '',
-        diseases: ''
-      }
-      // 添加新的行数
-      this.tableData_five.push(newValue)
-    },
-    addLine_six() {
-      // 添加行数
-      var newValue = {
-        pathways: '',
-        relatedPathways: ''
-      }
-      // 添加新的行数
-      this.tableData_six.push(newValue)
-    },
-    addLine_seven() {
-      // 添加行数
-      var newValue = {
-        pmid: '',
-        name: '',
-        liter_content: '',
-        accessoryId: '',
-        drugInstruction_picture: ''
-      }
-      // 添加新的行数
-      this.tableData_seven.push(newValue)
-    },
-    addLine_eight() {
-      // 添加行数
-      var newValue = {
-        medicalInsuranceArea: '',
-        number: '',
-        drugName: '',
-        drugForm: '',
-        drugClassification: '',
-        medicalInsuranceCategory: '',
-        supplementaryInformation: '',
-        changes: '',
-        remarks: ''
-      }
-      // 添加新的行数
-      this.tableData_eight.push(newValue)
-    },
-    addLine_nine() {
-      // 添加行数
-      var newValue = {
-        name: '',
-        interactiveDrugs: '',
-        effectiveness: ''
-      }
-      // 添加新的行数
-      this.tableData_nine.push(newValue)
-    },
-    addLine_ten() {
-      // 添加行数
-      var newValue = {
-        medicationType: '',
-        evidenceLevel: '',
-        race: '',
-        raceDetails: '',
-        phenotypes: '',
-        genotype: '',
-        porMedicationSuggestionEnglish: '',
-        porMedicationSuggestionChinese: ''
-      }
-      // 添加新的行数
-      this.tableData_ten.push(newValue)
-    },
-    addLine_eleven() {
-      // 添加行数
-      var newValue = {
-        pathways: '',
-        drugs: '',
-        genes: '',
-        diseases: ''
-      }
-      // 添加新的行数
-      this.tableData_eleven.push(newValue)
-    },
-    addLine_twelve() {
-      // 添加行数
-      var newValue = {
-        conclusion: ''
-      }
-      // 添加新的行数
-      this.tableData_twelve.push(newValue)
-    },
-    addLine_thirteen() {
-      // 添加行数
-      var newValue = {
-        pmid: '',
-        name: '',
-        liter_content: '',
-        accessoryId: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_thirteen.push(newValue)
-    },
-    addLine_fourteen() {
-      // 添加行数
-      var newValue = {
-        pmid: '',
-        name: '',
-        liter_content: '',
-        accessoryId: ''
-      }
-      // 添加新的行数
-      this.tableData_fourteen.push(newValue)
-    },
-    addLine_fiveteen() {
-      // 添加行数
-      var newValue = {
-        pmid: '',
-        name: '',
-        liter_content: '',
-        accessoryId: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_fiveteen.push(newValue)
-    },
-    addLine_sixteen() {
-      // 添加行数
-      var newValue = {
-        name: '',
-        liter_content: '',
-        accessoryId: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_sixteen.push(newValue)
-    },
-    addLine_seventeen() {
-      // 添加行数
-      var newValue = {
-        name: '',
-        liter_content: '',
-        accessoryId: ''
-      }
-      // 添加新的行数
-      this.tableData_seventeen.push(newValue)
-    },
-    addLine_eighteen() {
-      // 添加行数
-      var newValue = {
-        pmid: '',
-        name: '',
-        liter_content: '',
-        accessoryId: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_eighteen.push(newValue)
-    },
-    addLine_nineteen() {
-      // 添加行数
-      var newValue = {
-        pmid: '',
-        name: '',
-        liter_content: '',
-        accessoryId: '',
-        drugInstruction_picture: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_nineteen.push(newValue)
-    },
-    addLine_twenty() {
-      // 添加行数
-      var newValue = {
-        dataSource: '',
-        year: '',
-        project: '',
-        area: '',
-        receiveLaboratory: '',
-        sex: '',
-        ageGroup: '',
-        sampleType: '',
-        porResultId: '',
-        testAmount: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_twenty.push(newValue)
-    },
-    addLine_twentyOne() {
-      // 添加行数
-      var newValue = {
-        dataSource: '',
-        project: '',
-        fatherRace: '',
-        race: '',
-        area: '',
-        porResultId: '',
-        testAmount: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_twentyOne.push(newValue)
-    },
-
-    addLine_twentyTwo() {
-      // 添加行数
-      var newValue = {
-        dataSource: '',
-        project: '',
-        sex: '',
-        ageGroup: '',
-        nation: '',
-        nativePlace: '',
-        currentTaskComment: ''
-      }
-      // 添加新的行数
-      this.tableData_twentyTwo.push(newValue)
-    },
-    bianji1() {
-      this.outerVisible_twentyTwo = true
-    },
-    // 删除行20
-    handleDelete_twentyTwo(index) {
-      // console.log(index)
-      // 删除行数
-      this.tableData_twentyTwo.splice(index, 1)
-    },
-
-    // 弹窗中确定提交按钮
-    save() {
-      this.outerVisible_five = false
-      // 这部分应该是保存提交你添加的内容
-      // console.log(JSON.stringify(this.tableData_five))
-    },
-    // 给任务大厅数据列表动态添加id
-    forId: function(index) {
-      return 'forid_' + index
-    },
-    //  给任务大厅数据列表中按钮动态添加id
-    forId2: function(index) {
-      return 'forid2_' + index
-    },
-    // 获取任务大厅数据列表
-    getTaskList() {
-      var url = 'static/data/taskhall.json'
-      axios({
-        method: 'get',
-        url: url,
-        rows: '3',
-        page: '1'
-      }).then(res => {
-        // console.log(res)
-        // console.log(res.data[0])
-        this.taskhall = res.data
-        this.name = res.data[0].name
-        this.taskTitleUrl = res.data[0].taskTitleUrl
-        this.id = res.data.id
-      })
-    },
     bianji() {
       this.innerVisible = true
       this.tasklist = []
+      // console.log(this.tasklist)
       // var url = 'static/data/taskhall.json'
       // axios({
       //   method: 'get',
@@ -1005,15 +491,10 @@ export default {
       //   }
       // })
       let data2 = {
-        id_input: 'id',
-        drug_input: 'DRUGS',
-        genes_input: 'GENES',
-        title_input: 'TITLE',
-        source_textarea: 'SOURCE',
-        summary_textarea: 'Summary',
-        publications_textarea: 'Publications',
-        // history_ckeditor2: 'History',
-        annotation_ckeditor1: 'Annotation'
+        rsId_input: '位点RSID',
+        geneId_select: '基因名称',
+        source_textarea: '来源',
+        haploidType_input: '单倍型'
       }
       for (var key3 in data2) {
         // console.log(key3 + ' : ' + data2[key3])
@@ -1027,28 +508,87 @@ export default {
         this.tasklist.push(s)
       }
 
-      setTimeout(function() {
-        // for (let k of this.tasklist) {
-        // debugger
-        // if (k.type.indexOf('_ckeditor') >= 0) {
-        // var editor1 = new Editor('#' + k.value)
+      // setTimeout(function() {
+      //   // for (let k of this.tasklist) {
+      //   // debugger
+      //   // if (k.type.indexOf('_ckeditor') >= 0) {
+      //   // var editor1 = new Editor('#' + k.value)
 
-        var editor1 = new Editor('#history')
-        editor1.create()
-        // }
-        // }
-      }, 1000)
+      //   var editor1 = new Editor('#history')
+      //   editor1.create()
+      //   // }
+      //   // }
+      // }, 1000)
     },
+    bianji1() {
+      this.innerVisible = true
+    },
+    // 删除行20
+    handleDelete_twentyTwo(index) {
+      // console.log(index)
+      // 删除行数
+      this.tableData_twentyTwo.splice(index, 1)
+    },
+    // 删除行3
+    handleDelete_three(index) {
+      // console.log(index)
+      // 删除行数
+      this.tableData_three.splice(index, 1)
+    },
+    // 删除行2
+    handleDelete(index) {
+      // console.log(index)
+      // 删除行数
+      this.tableData.splice(index, 1)
+    },
+    // 弹窗中确定提交按钮
+    save() {
+      // this.outerVisible_five = false
+      this.innerVisible = false
+      // 这部分应该是保存提交你添加的内容tasklist
+      // console.log(JSON.stringify(this.tableData_five))
+      // console.log(JSON.stringify(this.tableData))
+    },
+    // 给任务大厅数据列表动态添加id
+    forId: function(index) {
+      return 'forid_' + index
+    },
+    //  给任务大厅数据列表中按钮动态添加id
+    forId2: function(index) {
+      return 'forid2_' + index
+    },
+    // 获取任务大厅数据列表
+    getTaskList() {
+      if (this.flag) {
+        this.flag = false
+        let data = new FormData()
+        data.append('page', this.currentPage)
+        data.append('rows', this.pageSize)
+        data.append(
+          'order',
+          'convert(t.`create_time` USING gbk) COLLATE gbk_chinese_ci'
+        )
+        data.append('search', 'false')
+        data.append('orderType', 'asc')
+        taskHall(data)
+          .then(res => {
+            // console.log(res)
+            // console.log(res.list[0])
+            this.taskhall = res.list
+            this.name = res.list[0].name
+            this.id = res.list.id
+            this.total = res.total
+            this.currentPage = res.pageNum
+            this.flag = true
+          })
+          .catch(res => {
+            this.flag = true
+          })
+      }
+    },
+
     lingqu(id) {
       this.disabled = true
-    },
-    test() {
-      // 链接知识库跨域测试
-      // let data = new FormData()
-      // data.append('test', 'hello world')
-      // taskHall(data).then(res => {
-      //   console.log(res)
-      // })
     },
     // 任务列表数据分页
     handleSizeChange(val) {
@@ -1744,6 +1284,9 @@ ul.box {
 </style>
 
 <style>
+/* .readonly:first-child {
+  readonly: 'value';
+} */
 .insertbutton .addrow {
   width: 90px;
   height: 30px;
@@ -1812,12 +1355,14 @@ ul.box {
   /*滚动条里面小方块*/
   border-radius: 5px;
   -webkit-box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.2);
 }
 
 .el-select__tags::-webkit-scrollbar-track {
   /*滚动条里面轨道*/
   -webkit-box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
   border-radius: 0;
   background: rgba(255, 255, 255, 0.1);
 }

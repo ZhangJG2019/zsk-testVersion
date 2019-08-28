@@ -27,7 +27,11 @@
             </div>
             <div class="nav-aside" ref="aside" :class="{ fixed: st }">
               <div class="user pr">
-                <router-link to="/user">个人中心</router-link>
+                <!-- <router-link to="#/taskhall">个人中心</router-link> -->
+                <a
+                  href="http://192.168.1.169:9100/cas?service=http://192.168.1.153:9999/#/getajax"
+                  >个人中心</a
+                >
                 <!--用户信息显示-->
                 <div class="nav-user-wrapper pa" v-if="login">
                   <div class="nav-user-list">

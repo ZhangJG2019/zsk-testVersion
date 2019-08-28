@@ -41,7 +41,7 @@
                   class="input-val"
                   @keyup.enter="login"
                 />
-                <canvas id="canvas" @click="draw"></canvas>
+                <canvas id="canvas"></canvas>
               </div>
             </li>
             <li style="text-align: right" class="pr">
@@ -100,7 +100,7 @@ export default {
     return {
       loginPage: true,
       ruleForm: {
-        userName: 'zjg',
+        userName: '111',
         userPwd: '123456',
         code: '',
         num: [],
@@ -156,7 +156,7 @@ export default {
         removeStore('rpassword')
       }
     },
-    // 跳转到注册页
+    // 跳转到登录页
     toRegister() {
       this.$router.push({
         path: '/register'
@@ -173,35 +173,37 @@ export default {
     home() {
       window.location.href = '/'
     },
+    // getCode(arg1, arg2) {
+    //   console.log('子组件传过来的数据是', arg1, arg2)
+    // },
     // 登录返回按钮
     login_back() {
       this.$router.go(-1)
     },
     // 登录
     // 从validateCode组件中获取用户输入的验证码和系统自动生成的验证码
-    login() {
+    login(arg1, arg2) {
       this.logintxt = '登录中...'
       this.rememberPass()
-      this.ruleForm.code = $('.input-val')
-        .val()
-        .toLowerCase()
-      let numStr = this.ruleForm.num.join('')
       if (
         !this.ruleForm.userName ||
         !this.ruleForm.userPwd ||
         !this.ruleForm.code
       ) {
+        // this.ruleForm.errMsg = '账号或者密码不能为空!'
         this.message('账号、密码或者验证码不能为空!')
         this.logintxt = '登录'
-        this.draw()
+        console.log(this.ruleForm.code)
+        console.log(this.ruleForm.num)
         return
-      }
-      if (this.ruleForm.code !== numStr) {
-        this.message('验证码输入错误!')
-        this.logintxt = '登录'
-        this.ruleForm.code = ''
-        this.draw()
-        return
+      } else {
+        if (this.ruleForm.code !== this.ruleForm.num) {
+          console.log(this.ruleForm.code)
+          console.log(this.ruleForm.num)
+          this.message('验证码不正确!')
+          this.logintxt = '登录'
+          return
+        }
       }
       let data = new FormData()
       data.append('username', this.ruleForm.userName)
@@ -234,18 +236,53 @@ export default {
           if (res.response === null) {
             this.$message.error('用户不存在')
             this.logintxt = '登录'
-            this.draw()
             return
           } else {
             this.$message.error('用户或密码错误')
             this.logintxt = '登录'
-            this.draw()
             return
           }
         })
-    },
-
-    draw() {
+    }
+  },
+  created() {
+    // 留言动态验证码
+    $(function() {
+      // eslint-disable-next-line camelcase
+      var showNum = []
+      this.ruleForm.num = showNum
+      draw(this.ruleForm.num)
+      $('#canvas').on('click', function() {
+        draw(this.ruleForm.num)
+      })
+      $('.btn').on('click', function() {
+        this.ruleForm.code = $('.input-val')
+          .val()
+          .toLowerCase()
+        this.ruleForm.num = this.ruleForm.num.join('')
+        // eslint-disable-next-line eqeqeq
+        if (this.ruleForm.code == '') {
+          this.$message({
+            message: '请输入验证码',
+            type: 'error'
+          })
+          // eslint-disable-next-line eqeqeq
+        } else if (this.ruleForm.code == this.ruleForm.num) {
+          $('.input-val').val('')
+          // draw(show_num);
+        } else {
+          this.$message({
+            message: '验证码错误！请重新输入！',
+            type: 'error'
+          })
+          $('.input-val').val('')
+          // draw(show_num);
+        }
+      })
+    })
+    // 生成并渲染出验证码图形
+    // eslint-disable-next-line camelcase
+    function draw(show_num) {
       // eslint-disable-next-line camelcase
       var canvasWidth = $('#canvas').width()
       // eslint-disable-next-line camelcase
@@ -260,28 +297,27 @@ export default {
         'a,b,c,d,e,f,g,h,i,j,k,m,n,p,q,r,s,t,u,v,w,x,y,z,A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0'
       var aCode = sCode.split(',')
       var aLength = aCode.length // 获取到数组的长度
-      for (var i = 0; i < 4; i++) {
+      for (var i = 0; i < 6; i++) {
         // 这里的for循环可以控制验证码位数（如果想显示6位数，4改成6即可）
         var j = Math.floor(Math.random() * aLength) // 获取到随机的索引值
         // var deg = Math.random() * 30 * Math.PI / 180;//产生0~30之间的随机弧度
         var deg = Math.random() - 0.5 // 产生一个随机弧度
         var txt = aCode[j] // 得到随机的一个内容
-        this.ruleForm.num[i] = txt.toLowerCase()
+        show_num[i] = txt.toLowerCase()
         var x = 10 + i * 20 // 文字在canvas上的x坐标
         var y = 20 + Math.random() * 8 // 文字在canvas上的y坐标
         context.font = 'bold 23px 微软雅黑'
         context.translate(x, y)
         context.rotate(deg)
-        context.fillStyle = this.randomColor()
+        context.fillStyle = randomColor()
         context.fillText(txt, 0, 0)
         context.rotate(-deg)
         context.translate(-x, -y)
       }
-
       // eslint-disable-next-line no-redeclare
       for (var i = 0; i <= 5; i++) {
         // 验证码上显示线条
-        context.strokeStyle = this.randomColor()
+        context.strokeStyle = randomColor()
         context.beginPath()
         context.moveTo(
           // eslint-disable-next-line camelcase
@@ -300,15 +336,16 @@ export default {
       // eslint-disable-next-line no-redeclare
       for (var i = 0; i <= 30; i++) {
         // 验证码上显示小点
-        context.strokeStyle = this.randomColor()
+        context.strokeStyle = randomColor()
         context.beginPath()
         let x = Math.random() * canvasWidth
         context.moveTo(x, y)
         context.lineTo(x + 1, y + 1)
         context.stroke()
       }
-    },
-    randomColor() {
+    }
+    // 得到随机的颜色值
+    function randomColor() {
       var r = Math.floor(Math.random() * 256)
       var g = Math.floor(Math.random() * 256)
       var b = Math.floor(Math.random() * 256)
@@ -317,8 +354,9 @@ export default {
   },
   mounted() {
     this.getRemembered()
+    // this.login_addCart()
+    // this.init_geetest()
     // this.open('登录提示', '测试体验账号密码：admin | 123456')
-    this.draw() // 生成并渲染出验证码图形
   },
   components: {
     Valicode,
@@ -529,10 +567,13 @@ export default {
   border-radius: 6px;
   padding: 10px 15px;
   margin: 0 !important;
+  vertical-align: middle;
+  box-sizing: border-box;
 }
 .inputCode #canvas {
   width: 40% !important;
   height: 50px !important;
   border-radius: 6px;
+  vertical-align: middle;
 }
 </style>

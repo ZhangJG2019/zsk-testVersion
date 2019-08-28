@@ -8,7 +8,7 @@
             <!-- 最新事件 -->
             <div class="w326 news mb15" style="width:326px;">
               <h2>
-                <a @click="See(columnLinkUrl)"><strong>最新事件</strong></a>
+                <a @click="See(columnLinkUrl)"><span>最新事件</span></a>
               </h2>
               <ul class="left_ul left_content">
                 <li v-for="(item, key) in topNews" :key="key">
@@ -19,12 +19,15 @@
                   >
                   </a>
                 </li>
+                <li class="static_null" style="display:none">
+                  <a>暂无好消息，请耐心等待~</a>
+                </li>
               </ul>
             </div>
             <!-- 最新研究内容 -->
             <div class="w326 news" style="width:326px;margin-top:18px">
               <h2>
-                <a @click="See(columnLinkUrl)"><strong>最新研究内容</strong></a>
+                <a @click="See(columnLinkUrl)"><span>最新研究内容</span></a>
               </h2>
               <ul id="newlog" class="left_content">
                 <li v-for="(item, key) in newContent" :key="key">
@@ -33,6 +36,9 @@
                     @click="See(item.articleLinkUrl)"
                     v-text="item.articleTitle"
                   ></a>
+                </li>
+                <li class="static_null" style="display:none">
+                  <a>暂无好消息，请耐心等待~</a>
                 </li>
               </ul>
             </div>
@@ -44,9 +50,7 @@
           <div class="slide_center fl ml20">
             <div class="w550 news bgc_white">
               <h2>
-                <span href="####" style="cursor: pointer;"
-                  ><strong>分类标签</strong></span
-                >
+                <span href="####" style="cursor: pointer;">分类标签</span>
               </h2>
               <ul>
                 <li
@@ -151,7 +155,7 @@
             <!-- 公告 -->
             <div class="w286 news">
               <h2>
-                <a @click="See(columnLinkUrl)"><strong>公告</strong></a>
+                <a @click="See(columnLinkUrl)"><span>公告</span></a>
               </h2>
               <ul class="right_content left_content">
                 <li v-for="(item, key) in notice" :key="key">
@@ -161,12 +165,15 @@
                     v-text="item.articleTitle"
                   ></a>
                 </li>
+                <li class="static_null" style="display:none">
+                  <a>暂无好消息，请耐心等待~</a>
+                </li>
               </ul>
             </div>
             <!-- 联系 -->
             <div class="w286 news tel h535  mt20">
               <h2 class="w284">
-                <a href="####"><strong>联系</strong></a>
+                <a href="####"><span>联系</span></a>
               </h2>
               <div class="phone contents">
                 <!-- <i class="iconfont icon-dianhua-1"></i> -->
@@ -180,7 +187,7 @@
             <!-- 我要留言 -->
             <div class="w286 news Message">
               <h2 class="w284">
-                <a href="####"><strong>我要留言</strong></a>
+                <a href="####"><span>我要留言</span></a>
               </h2>
               <div class="right_bottom">
                 <el-form
@@ -210,11 +217,12 @@
                     >
                     </el-input>
                   </el-form-item>
-                  <el-form-item style="margin-top:20px;">
+                  <el-form-item style="margin-top:20px;" prop="msgcode">
                     <input
                       type="text"
                       value=""
                       placeholder="请输入验证码"
+                      v-model="sizeForm.msgcode"
                       class="input-val"
                       style="width:90px;height:30px;border:1px solid #bfcbd9;vertical-align:middle;margin-left: 10px;"
                     />
@@ -343,7 +351,8 @@ export default {
       timer: '',
       sizeForm: {
         email: '',
-        msgcontent: ''
+        msgcontent: '',
+        msgcode: ''
       },
       // 接收最新事件列表信息
       topNews: [],
@@ -358,6 +367,7 @@ export default {
     sentemail(sizeForm) {
       this.$refs[sizeForm].validate(valid => {
         if (valid) {
+          console.log(this.$refs[sizeForm])
           let data = new FormData()
           data.append('email', this.sizeForm.email)
           data.append('msgcontent', this.sizeForm.msgcontent)
@@ -425,11 +435,25 @@ export default {
         url: url
       }).then(res => {
         // console.log(res)
-        console.log(res.data[0].columnLinkUrl)
+        // console.log(res.data[0].columnLinkUrl)
         // 把获得好的最新事件 赋予topNews 给成员
         this.topNews = res.data
-        this.columnLinkUrl = res.data[0].columnLinkUrl
+        if (this.topNews.length > 0) {
+          this.columnLinkUrl = res.data[0].columnLinkUrl
+        } else {
+          this.showdiv()
+        }
       })
+    },
+    // 当公告、最新事件、最新研究内容没有数据时显示提示
+    showdiv() {
+      if ($('.static_null').css('display') === 'none') {
+        // 如果show是隐藏的
+        $('.static_null').css('display', 'block') // show的display属性设置为block（显示）
+      } else {
+        // 如果show是显示的
+        $('.static_null').css('display', 'none') // show的display属性设置为none（隐藏）
+      }
     },
     // 最新研究内容
     getNewContent() {
@@ -442,7 +466,10 @@ export default {
       }).then(res => {
         // 把获得好的最新事件 赋予 给NewContent成员
         this.newContent = res.data
-        this.columnLinkUrl = res.data[0].columnLinkUrl
+        if (this.newContent.length > 0) {
+          this.columnLinkUrl = res.data[0].columnLinkUrl
+        } else {
+        }
       })
     },
     // 公告
@@ -456,7 +483,10 @@ export default {
       }).then(res => {
         // 把获得好的最新事件 赋予 给notice成员
         this.notice = res.data
-        this.columnLinkUrl = res.data[0].columnLinkUrl
+        if (this.notice.length > 0) {
+          this.columnLinkUrl = res.data[0].columnLinkUrl
+        } else {
+        }
       })
     },
     // cms页面跳转
@@ -502,13 +532,13 @@ export default {
     // eslint-disable-next-line camelcase
     function draw(show_num) {
       // eslint-disable-next-line camelcase
-      var canvas_width = $('#canvas').width()
+      var canvasWidth = $('#canvas').width()
       // eslint-disable-next-line camelcase
       var canvas_height = $('#canvas').height()
       var canvas = document.getElementById('canvas') // 获取到canvas的对象，演员
       var context = canvas.getContext('2d') // 获取到canvas画图的环境，演员表演的舞台
       // eslint-disable-next-line camelcase
-      canvas.width = canvas_width
+      canvas.width = canvasWidth
       // eslint-disable-next-line camelcase
       canvas.height = canvas_height
       var sCode =
@@ -539,13 +569,13 @@ export default {
         context.beginPath()
         context.moveTo(
           // eslint-disable-next-line camelcase
-          Math.random() * canvas_width,
+          Math.random() * canvasWidth,
           // eslint-disable-next-line camelcase
           Math.random() * canvas_height
         )
         context.lineTo(
           // eslint-disable-next-line camelcase
-          Math.random() * canvas_width,
+          Math.random() * canvasWidth,
           // eslint-disable-next-line camelcase
           Math.random() * canvas_height
         )
@@ -556,7 +586,7 @@ export default {
         // 验证码上显示小点
         context.strokeStyle = randomColor()
         context.beginPath()
-        var x = Math.random() * canvas_width
+        let x = Math.random() * canvasWidth
         context.moveTo(x, y)
         context.lineTo(x + 1, y + 1)
         context.stroke()
@@ -654,13 +684,14 @@ export default {
   display: block;
   text-decoration: none;
 }
-.news h2 strong {
-  font: bold 20px 'microsoft yahei';
+.news h2 span {
+  // font: 500 20px 'SimSun';
+  font: 500 20px 'Microsoft YaHei';
   height: 56px;
   padding: 0px 24px;
   box-sizing: border-box;
 }
-.news h2 strong:hover {
+.news h2 span:hover {
   border-bottom: 3px solid #417eec;
   padding-bottom: 14px;
 }

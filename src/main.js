@@ -2,6 +2,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+// import axios from 'axios'
 import store from './store/'
 import VueLazyload from 'vue-lazyload'
 import infiniteScroll from 'vue-infinite-scroll'
@@ -36,6 +37,8 @@ import {
   Option,
   Card,
   Tag,
+  Breadcrumb,
+  BreadcrumbItem,
   Form,
   FormItem,
   CheckboxGroup,
@@ -48,48 +51,9 @@ import {
   getStore
 } from '/utils/storage'
 import VueContentPlaceholders from 'vue-content-placeholders'
-Vue.use(VueContentPlaceholders)
-Vue.use(Tabs)
-Vue.use(TabPane)
-Vue.use(Button)
-Vue.use(ButtonGroup)
-Vue.use(Pagination)
-Vue.use(Checkbox)
-Vue.use(Icon)
-Vue.use(Autocomplete)
-Vue.use(Steps)
-Vue.use(Step)
-Vue.use(Table)
-Vue.use(TableColumn)
-Vue.use(TimePicker)
-Vue.use(Input)
-Vue.use(Dialog)
-Vue.use(DatePicker)
-Vue.use(Select)
-Vue.use(Option)
-Vue.use(Loading.directive)
-Vue.use(Card)
-Vue.use(Tag)
-Vue.use(Form)
-Vue.use(FormItem)
-Vue.use(CheckboxGroup)
-Vue.use(Upload)
-Vue.use(Row)
-Vue.use(Col)
-Vue.use(infiniteScroll)
-Vue.use(VueCookie)
-Vue.use(VueResource)
-Vue.prototype.$loading = Loading.service
-Vue.prototype.$notify = Notification
-Vue.prototype.$message = Message
-Vue.use(VueLazyload, {
-  // preLoad: 1.3,
-  // error: 'dist/error.png',
-  loading: '/static/images/load.gif'
-  // attempt: 1
-})
-Vue.config.productionTip = false
-const whiteList = ['/home', '/gene', '/login', '/register', '/search', '/taskhall', '/forgetpwd'] // 不需要登陆的页面
+
+const whiteList = ['/home', '/gene', '/getajax', '/login', '/register', '/search', '/taskhall', '/forgetpwd'] // 不需要登陆的页面
+
 router.beforeEach(function (to, from, next) {
   if (getStore('token')) {
     let params = {
@@ -124,6 +88,60 @@ router.beforeEach(function (to, from, next) {
     }
   }
 })
+
+// axios.interceptors.request.use(
+//   function (config) {
+//     let token = window.localStorage.getItem('token')
+//     config.headers.Authorization = token
+//     return config
+//   }
+// )
+
+Vue.use(VueContentPlaceholders)
+Vue.use(Tabs)
+Vue.use(TabPane)
+Vue.use(Button)
+Vue.use(ButtonGroup)
+Vue.use(Pagination)
+Vue.use(Checkbox)
+Vue.use(Icon)
+Vue.use(Autocomplete)
+Vue.use(Steps)
+Vue.use(Step)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(TimePicker)
+Vue.use(Input)
+Vue.use(Dialog)
+Vue.use(DatePicker)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(Loading.directive)
+Vue.use(Card)
+Vue.use(Tag)
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(CheckboxGroup)
+Vue.use(Upload)
+Vue.use(Row)
+Vue.use(Col)
+Vue.use(infiniteScroll)
+Vue.use(VueCookie)
+Vue.use(VueResource)
+// 给axios配置给Vue的$http成员
+// Vue.prototype.$http = axios
+Vue.prototype.$loading = Loading.service
+Vue.prototype.$notify = Notification
+Vue.prototype.$message = Message
+Vue.use(VueLazyload, {
+  // preLoad: 1.3,
+  // error: 'dist/error.png',
+  loading: '/static/images/load.gif'
+  // attempt: 1
+})
+Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

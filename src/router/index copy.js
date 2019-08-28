@@ -6,7 +6,6 @@ const register = () => import('/page/Login/register.vue')
 const forgetpwd = () => import('/page/Login/forgetpwd.vue')
 const Home = () => import('/page/Home/home.vue')
 const Gene = () => import('/page/Home/gene.vue')
-const getajax = () => import('/page/Home/getajax.vue')
 const order = () => import('/page/Order/order.vue')
 const user = () => import('/page/User/user.vue')
 const information = () => import('/page/User/children/information.vue')
@@ -16,7 +15,8 @@ const RefreshSearch = () => import('/page/Refresh/refreshsearch.vue')
 const RefreshGoods = () => import('/page/Refresh/refreshgoods.vue')
 
 Vue.use(Router)
-export default new Router({
+
+var router = new Router({
   routes: [{
     path: '/',
     component: Index,
@@ -85,13 +85,25 @@ export default new Router({
     component: taskhall
   },
   {
-    path: '/getajax',
-    name: 'getajax',
-    component: getajax
-  },
-  {
     path: '*',
     redirect: '/home'
   }
   ]
 })
+
+// 给路由设置“导航守卫”
+// 在守卫中对token进行监听，有token就让执行，否则跳转到登录页去
+router.beforeEach((to, from, next) => {
+  // 请求"login"就直接通过
+  if (to.path === '/login') {
+    return next()
+  }
+  // 请求"非login"，就判断token
+  var token = window.localStorage.getItem('token')
+  if (!token) {
+    return next('/login')
+  }
+
+  next() // 请继续你的旅行
+})
+export default router

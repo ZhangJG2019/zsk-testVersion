@@ -36,7 +36,11 @@ export const updateheadimage = (params) => {
 export const recommend = (params) => {
   return http.fetchGet('/front/recommend', params)
 }
-// 任务大厅
+// 任务大厅数据获取
 export const taskHall = (params) => {
-  return http.fetchPost('/hall/task/test', params)
+  return http.fetchPost('/apis/taskApi/visitorTask', params)
+}
+// 获取token
+export const getToken = (params) => {
+  return http.fetchPost('/apis/', params)
 }
