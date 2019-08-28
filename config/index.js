@@ -42,8 +42,8 @@ module.exports = {
         // target: 'http://192.168.1.40:8099', // 测试服务器有nginx
         // target: 'http://192.168.1.40:8089', // 测试服务器无nginx
         // target: 'http://47.104.168.172:8084', //测试服务器2
-        // target: 'http://192.168.1.156:8080', // 彪哥
-        target: 'http://192.168.1.169:8080', // 江哥
+        target: 'http://192.168.1.156:8080', // 彪哥
+        // target: 'http://192.168.1.169:8080', // 江哥
         changeOrigin: true,
         pathRewrite: {
           '^/apis': '/' // 通过pathRewrite重写地址，将前缀/front转为/

@@ -1,4 +1,18 @@
 import http from './public'
+
+// 单点test
+// export function getAction(url, parameter) {
+//   return axios({
+//     url: url,
+//     method: 'get',
+//     params: parameter
+//   })
+// }
+// 单点登录
+export const getAction = (params) => {
+  return http.fetchPost('/front/login', params)
+}
+
 // 登陆
 export const userLogin = (params) => {
   return http.fetchPost('/front/login', params)
@@ -9,7 +23,7 @@ export const loginOut = (params) => {
 }
 // 用户信息
 export const userInfo = (params) => {
-  return http.fetchGet('/front/checkLogin', params)
+  return http.fetchGet('/front/getUserInfo', params)
 }
 
 // 注册账号
@@ -41,6 +55,6 @@ export const taskHall = (params) => {
   return http.fetchPost('/apis/taskApi/visitorTask', params)
 }
 // 获取token
-export const getToken = (params) => {
-  return http.fetchPost('/apis/', params)
-}
+// export const getToken = (params) => {
+//   return http.fetchPost('/apis/', params)
+// }
