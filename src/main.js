@@ -9,6 +9,7 @@ import infiniteScroll from 'vue-infinite-scroll'
 import VueCookie from 'vue-cookie'
 import VueResource from 'vue-resource'
 import './assets/icon/font-yewuhuafen/iconfont.css'
+import './assets/icon/font_jiyinguanlian/iconfont.css'
 
 import $ from 'jquery'
 import {
