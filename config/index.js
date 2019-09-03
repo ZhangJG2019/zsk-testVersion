@@ -29,32 +29,31 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/front': {
-        target: 'http://192.168.1.160:8084', // 夏哥
-        // target: 'http://192.168.1.157:8083', // 测试服务器1
-        // target: 'http://47.104.168.172:8084', //测试服务器2
-        // target: 'http://192.168.1.40:8084', //测试服务器2
+        // target: 'http://192.168.1.157:8084', // 夏哥
+        target: 'http://192.168.1.40:8084', //测试服务器2
+        // target: 'http://47.105.75.254:8084', // 测试服务器1
         changeOrigin: true,
-        pathRewrite: {
-          '^/front': '/' // 通过pathRewrite重写地址，将前缀/front转为/
-        }
+        // pathRewrite: {
+        //   '^/front': '/' // 通过pathRewrite重写地址，将前缀/front转为/
+        // }
       },
       '/apis': {
-        // target: 'http://192.168.1.40:8099', // 测试服务器有nginx
-        // target: 'http://192.168.1.40:8089', // 测试服务器无nginx
-        // target: 'http://47.104.168.172:8084', //测试服务器2
-        target: 'http://192.168.1.156:8080', // 彪哥
+        // target: 'http://47.105.75.254:8080', // 测试服务器有nginx
+        target: 'http://192.168.1.40:8099', // 测试服务器有nginx
+        // target: 'http://192.168.1.156:8080', // 彪哥
         // target: 'http://192.168.1.169:8080', // 江哥
         changeOrigin: true,
-        pathRewrite: {
-          '^/apis': '/' // 通过pathRewrite重写地址，将前缀/front转为/
-        }
+        // pathRewrite: {
+        //   '^/apis': '/' // 通过pathRewrite重写地址，将前缀/front转为/
+        // }
       },
       '/hall': {
-        target: 'http://192.168.1.155:8080', // 测试服务器
+        target: 'http://192.168.1.155:8080', // 测试服务器47.105.75.254
+        // target: 'http://47.105.75.254:8080', // 测试服务器
         changeOrigin: true,
-        pathRewrite: {
-          '^/hall': '/' // 通过pathRewrite重写地址，将前缀/front转为/
-        }
+        // pathRewrite: {
+        //   '^/hall': '/' // 通过pathRewrite重写地址，将前缀/front转为/
+        // }
       }
     },
 

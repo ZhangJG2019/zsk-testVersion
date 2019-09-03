@@ -435,7 +435,7 @@ export default {
         }
       })
     },
-    // 上传图片1
+    // 上传图片
     handleRemove(file) {
       // console.log(file)
     },
@@ -446,7 +446,6 @@ export default {
     handleDownload(file) {
       // console.log(file)
     },
-    // 上传图片2
     yulan() {
       this.innerVisible_img = true
     },
@@ -481,13 +480,36 @@ export default {
     bianji() {
       this.innerVisible = true
       this.tasklist = []
+
+      //   .then(res => {
+      //     console.log(res)
+      //     console.log(res.data)
+      //     let data2 = {}
+      //     data2 = res.data
+      //     for (var key3 in data2) {
+      //       // console.log(key3 + ' : ' + data2[key3])
+      //       let id = key3.substring(0, key3.lastIndexOf('_'))
+      //       let type = key3.substring(key3.lastIndexOf('_'), key3.length)
+      //       let s = {
+      //         name: data2[key3],
+      //         value: id,
+      //         type: type
+      //       }
+      //       this.tasklist.push(s)
+      //     }
+      //   })
+      //   .catch()
+
       let data2 = {
-        // 请求成功后返回数组中的一个对象
         rsId_input: '位点RSID',
         geneId_select: '基因名称',
         source_textarea: '来源',
         haploidType_input: '单倍型'
       }
+      // this.user = Object.assign({}, this.user, {
+      //   tel: 18888888888,
+      //   sex: 'Y'
+      // })
       this.taskNameMap.clear()
       this.test_models = []
       for (var key3 in data2) {
@@ -501,21 +523,21 @@ export default {
         this.tasklist.push(s)
         let t = 'task.' + id
         this.test_models.push(t)
-        // console.log(this.test_models)
+        console.log(this.test_models)
         this.test_models.forEach((e, index) => {
           if (e === t) {
             this.taskNameMap.set(id, index)
-            // console.log(this.taskNameMap)
+            console.log(this.taskNameMap)
           }
         })
       }
       this.taskNameMap.forEach((index, value) => {
-        // console.log(1111)
-        // console.log(value)
+        console.log(1111)
+        console.log(value)
         this.$set(this.task, value, value + 1232321)
       })
-      // console.log(222)
-      // console.log(this.task)
+      console.log(222)
+      console.log(this.task)
     },
     indexof(item) {
       for (let index = 0; index < this.test_model.length; index++) {
@@ -529,47 +551,30 @@ export default {
     },
     // 删除行20
     handleDelete_twentyTwo(index) {
-      // console.log(index)
-      // 删除行数
       this.tableData_twentyTwo.splice(index, 1)
     },
     // 删除行3
     handleDelete_three(index) {
-      // console.log(index)
-      // 删除行数
       this.tableData_three.splice(index, 1)
     },
     // 删除行2
     handleDelete(index) {
-      // console.log(index)
-      // 删除行数
       this.tableData.splice(index, 1)
     },
     // 弹窗中确定提交按钮
     save() {
-      // console.log(this.task)
+      console.log(this.task)
       let data = new FormData()
       data.append('page', this.currentPage)
       data.append('rows', this.pageSize)
       // this.outerVisible_five = false
       this.innerVisible = false
-      for (var i = 0; i < this.tasklist.length; i++) {
-        console.log(33)
-        console.log(this.tasklist)
-      }
+
       // 这部分应该是保存提交你添加的内容tasklist
       // console.log(JSON.stringify(this.tableData_five))
       // console.log(JSON.stringify(this.tableData))
     },
-    // 给任务大厅数据列表动态添加id
-    forId: function(index) {
-      return 'forid_' + index
-    },
-    //  给任务大厅数据列表中按钮动态添加id
-    forId2: function(index) {
-      return 'forid2_' + index
-    },
-    // 获取任务大厅数据列表
+    // 获取任务大厅首屏数据获取
     getTaskList() {
       if (this.flag) {
         this.flag = false
@@ -598,7 +603,7 @@ export default {
           })
       }
     },
-
+    // 领取按钮
     lingqu(id) {
       this.disabled = true
     },
@@ -608,12 +613,13 @@ export default {
       this.pageSize = val // 动态改变
       this.getTaskList() // 重新获取数据列表
     },
+    // 任务列表数据分页
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`)
       this.currentPage = val // 动态改变
       this.getTaskList() // 重新获取数据列表
     },
-    // 查询信息
+    // 搜索框查询信息
     handleIconClick(ev) {
       if (this.$route.path === '/search') {
         this.$router.push({
@@ -631,6 +637,7 @@ export default {
         })
       }
     },
+    // 搜索框
     querySearchAsync(queryString, cb) {
       if (this.input === undefined) {
         cb([])
@@ -647,16 +654,11 @@ export default {
         }, 300)
       }
     },
+    // 获取搜索框输入内容
     handleSelect(item) {
       this.input = item.value
     },
-    // 基因
-    gene() {
-      this.$router.push({
-        path: '/gene'
-      })
-    },
-    // 获取各分类标签数量
+    // 左侧内容数字
     getNum() {
       var url = 'static/data/home_center.json'
       axios({

@@ -53,7 +53,7 @@ import {
 } from '/utils/storage'
 import VueContentPlaceholders from 'vue-content-placeholders'
 
-const whiteList = ['/home', '/gene', '/getajax', '/login', '/register', '/search', '/taskhall', '/forgetpwd'] // 不需要登陆的页面
+const whiteList = ['/home', '/drug', '/gene', '/getajax', '/login', '/register', '/search', '/taskhall', '/forgetpwd'] // 不需要登陆的页面
 
 router.beforeEach(function (to, from, next) {
   if (getStore('token')) {

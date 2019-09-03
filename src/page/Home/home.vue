@@ -68,7 +68,7 @@
                 <li
                   class="center_content"
                   style="background-color:#5fc46d;"
-                  @click="gene"
+                  @click="drug"
                 >
                   <img src="../../../static/images/xianguanyaowu.png" alt="" />
                   <a href="" class="title">药物</a>
@@ -78,7 +78,7 @@
                 <li
                   class="center_content"
                   style="background-color:#6661d5;"
-                  @click="gene"
+                  @click="drugGenePair"
                 >
                   <!-- <li class="center_content"> -->
                   <img src="../../../static/images/yaowujiyindui.png" alt="" />
@@ -89,7 +89,7 @@
                 <li
                   class="center_content"
                   style="background-color:#01c4c3;"
-                  @click="gene"
+                  @click="authority"
                 >
                   <!-- <li class="center_content"> -->
                   <img src="../../../static/images/quanweizhinan.png" alt="" />
@@ -100,7 +100,7 @@
                 <li
                   class="center_content"
                   style="background-color:#62b6e5;"
-                  @click="gene"
+                  @click="drugLabels"
                 >
                   <!-- <li class="center_content"> -->
                   <img src="../../../static/images/yaowubiaoqian.png" alt="" />
@@ -111,7 +111,7 @@
                 <li
                   class="center_content"
                   style="background-color:#ff6765;"
-                  @click="gene"
+                  @click="clinicalNotes"
                 >
                   <!-- <li class="center_content"> -->
                   <img src="../../../static/images/linchuangzhushi.png" />
@@ -122,7 +122,7 @@
                 <li
                   class="center_content"
                   style="background-color:#7dc691;"
-                  @click="gene"
+                  @click="clinicalTrials"
                 >
                   <!-- <li class="center_content"> -->
                   <img
@@ -136,7 +136,7 @@
                 <li
                   class="center_content"
                   style="background-color:#feab1c;"
-                  @click="gene"
+                  @click="patent"
                 >
                   <!-- <li class="center_content"> -->
                   <img src="../../../static/images/zhuanli.png" alt="" />
@@ -158,7 +158,7 @@
                 <a @click="See(columnLinkUrl)"><span>公告</span></a>
               </h2>
               <ul class="right_content left_content">
-                <li v-for="(item, key) in notice" :key="key">
+                <li v-for="(item, key) in notice.slice(5)" :key="key">
                   <span v-text="key + 1"></span>
                   <a
                     @click="See(item.articleLinkUrl)"
@@ -363,6 +363,12 @@ export default {
     }
   },
   methods: {
+    patent() {},
+    clinicalTrials() {},
+    clinicalNotes() {},
+    drugLabels() {},
+    authority() {},
+    drugGenePair() {},
     // 发送留言
     sentemail(sizeForm) {
       this.$refs[sizeForm].validate(valid => {
@@ -405,6 +411,12 @@ export default {
     gene() {
       this.$router.push({
         path: '/gene'
+      })
+    },
+    // 药物
+    drug() {
+      this.$router.push({
+        path: '/drug'
       })
     },
     // 获取各分类标签数量
@@ -484,6 +496,8 @@ export default {
         // 把获得好的最新事件 赋予 给notice成员
         this.notice = res.data
         if (this.notice.length > 0) {
+          // console.log(this.columnLinkUrl)
+          // console.log(res.data)
           this.columnLinkUrl = res.data[0].columnLinkUrl
         } else {
         }
@@ -491,7 +505,7 @@ export default {
     },
     // cms页面跳转
     See(e) {
-      window.location = e
+      window.location.href = '' + e
     }
   },
   mounted() {

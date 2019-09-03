@@ -3,8 +3,8 @@
 </template>
 <script>
 // import { getToken } from '/api/index.js'
-import { userInfo } from '/api/index.js'
-import { setStore, getStore } from '/utils/storage'
+// import { userInfo } from '/api/index.js'
+import { setStore } from '/utils/storage'
 // import store from './store/'
 
 // 格式化时间函数 2
@@ -37,21 +37,23 @@ export default {
       setStore('ticket', opts)
       // this.$router.push({ path: 'http://localhost:9999/#/home' })
       // window.location.href = 'http://192.168.1.153:9999/#/home'
-      // window.location.href = 'http://localhost:9999/#/home'
-      let params = {
-        params: {
-          ticket: getStore('ticket')
-        }
-      }
-      userInfo(params).then(res => {
-        debugger
-        // if (res && res.data) {
-        //   store.commit('RECORD_USERINFO', {
-        //     info: res.data.user
-        //   })
-        // }
-        console.log(res)
-      })
+      window.location.href = 'http://localhost:9999/#/home'
+
+      // let data = new FormData()
+      // var tick = getStore('ticket')
+      // console.log(tick)
+      // data.append(' ticket', tick)
+      // userInfo(data)
+      // .then(res => {
+      //   debugger
+      //   // if (res && res.data) {
+      //   //   store.commit('RECORD_USERINFO', {
+      //   //     info: res.data.user
+      //   //   })
+      //   // }
+      //   console.log(res)
+      // })
+      // .catch(console.log(data))
     }
   }
 }

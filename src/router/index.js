@@ -6,6 +6,7 @@ const register = () => import('/page/Login/register.vue')
 const forgetpwd = () => import('/page/Login/forgetpwd.vue')
 const Home = () => import('/page/Home/home.vue')
 const Gene = () => import('/page/Home/gene.vue')
+const Drug = () => import('/page/Home/drug.vue')
 const getajax = () => import('/page/Home/getajax.vue')
 const order = () => import('/page/Order/order.vue')
 const user = () => import('/page/User/user.vue')
@@ -37,6 +38,11 @@ export default new Router({
     path: '/gene',
     name: 'gene',
     component: Gene
+  },
+  {
+    path: '/drug',
+    name: 'drug',
+    component: Drug
   },
   {
     path: '/login',

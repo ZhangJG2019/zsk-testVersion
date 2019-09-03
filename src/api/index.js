@@ -23,7 +23,7 @@ export const loginOut = (params) => {
 }
 // 用户信息
 export const userInfo = (params) => {
-  return http.fetchGet('/front/getUserInfo', params)
+  return http.fetchPost('/front/getUserInfo', params)
 }
 
 // 注册账号
@@ -53,6 +53,10 @@ export const recommend = (params) => {
 // 任务大厅数据获取
 export const taskHall = (params) => {
   return http.fetchPost('/apis/taskApi/visitorTask', params)
+}
+// 任务大厅弹窗中基因名称数据获取
+export const getGene = (params) => {
+  return http.fetchPost('/apis/dictionary/genes', params)
 }
 // 获取token
 // export const getToken = (params) => {
