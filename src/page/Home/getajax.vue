@@ -1,5 +1,5 @@
 <template>
-  <div>中专获取token页</div>
+  <div>中转获取token页</div>
 </template>
 <script>
 // import { getToken } from '/api/index.js'
@@ -11,12 +11,12 @@ import { setStore } from '/utils/storage'
 export default {
   // 生命周期函数
   created() {
-    this.gettoken()
+    this.getUsername()
   },
 
   methods: {
-    // 发送留言
-    gettoken() {
+    // 获取cas返回的用户名
+    getUsername() {
       // getToken()
       //   .then(res => {
       //     console.log(res)
@@ -28,17 +28,17 @@ export default {
       //     alert('获取token失败')
       //   })
       // alert(111)
-      var opt = window.location.href.split('=')[1]
-      console.log(opt)
-      var opts = opt.split('#')[0]
-      window.location.ticket = opts
-      console.log(window.location.ticket)
-      console.log(opts)
-      setStore('ticket', opts)
+      // var opt = window.location.href.split('=')[1]
+      // console.log(opt)
+      // var opts = opt.split('#')[0]
+      // window.location.ticket = opts
+      // console.log(window.location.ticket)
+      // console.log(opts)
+      // setStore('ticket', opts)
+      // request.getRemoteUser()
       // this.$router.push({ path: 'http://localhost:9999/#/home' })
       // window.location.href = 'http://192.168.1.153:9999/#/home'
-      window.location.href = 'http://localhost:9999/#/home'
-
+      // window.location.href = 'http://localhost:9999/#/home'
       // let data = new FormData()
       // var tick = getStore('ticket')
       // console.log(tick)

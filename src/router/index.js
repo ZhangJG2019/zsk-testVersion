@@ -7,7 +7,7 @@ const forgetpwd = () => import('/page/Login/forgetpwd.vue')
 const Home = () => import('/page/Home/home.vue')
 const Gene = () => import('/page/Home/gene.vue')
 const Drug = () => import('/page/Home/drug.vue')
-const getajax = () => import('/page/Home/getajax.vue')
+// const getajax = () => import('/page/Home/getajax.vue')
 const order = () => import('/page/Order/order.vue')
 const user = () => import('/page/User/user.vue')
 const information = () => import('/page/User/children/information.vue')
@@ -90,11 +90,11 @@ export default new Router({
     name: 'taskhall',
     component: taskhall
   },
-  {
-    path: '/getajax',
-    name: 'getajax',
-    component: getajax
-  },
+    // {
+    //   path: '/getajax',
+    //   name: 'getajax',
+    //   component: getajax
+    // },
   {
     path: '*',
     redirect: '/home'

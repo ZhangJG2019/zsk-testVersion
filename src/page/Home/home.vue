@@ -393,6 +393,7 @@ export default {
               }
             })
             .catch(res => {
+              console.log(111111111111)
               this.$message({
                 message: res.message,
                 type: 'error'
@@ -425,26 +426,33 @@ export default {
       axios({
         method: 'get',
         url: url
-      }).then(res => {
-        // console.log(res)
-        // console.log(res.data[0].genenum)
-        this.genenum = res.data[0].genenum
-        this.drugnum = res.data[0].drugnum
-        this.drugGenePairnum = res.data[0].drugGenePairnum
-        this.authoritynum = res.data[0].authoritynum
-        this.drugLabelsnum = res.data[0].drugLabelsnum
-        this.clinicalNotesnum = res.data[0].clinicalNotesnum
-        this.clinicalTrialsnum = res.data[0].clinicalTrialsnum
-        this.patentnum = res.data[0].patentnum
       })
+        .then(res => {
+          // console.log(res)
+          // console.log(res.data[0].genenum)
+          this.genenum = res.data[0].genenum
+          this.drugnum = res.data[0].drugnum
+          this.drugGenePairnum = res.data[0].drugGenePairnum
+          this.authoritynum = res.data[0].authoritynum
+          this.drugLabelsnum = res.data[0].drugLabelsnum
+          this.clinicalNotesnum = res.data[0].clinicalNotesnum
+          this.clinicalTrialsnum = res.data[0].clinicalTrialsnum
+          this.patentnum = res.data[0].patentnum
+        })
+        .catch(console.log(111111111111))
     },
     // 最新事件
     getTopNews() {
       var topNew = '最新事件'
       var url = '/apis/cms/api/getColumnNewList?title=' + topNew
+      axios.defaults.withCredentials = true
+      axios.defaults.headers.common['Authentication-Token'] =
+        window.localStorage.token
+
       axios({
         method: 'get',
-        url: url
+        url: url,
+        withCredentials: true
       }).then(res => {
         // console.log(res)
         // console.log(res.data[0].columnLinkUrl)
@@ -470,6 +478,7 @@ export default {
     // 最新研究内容
     getNewContent() {
       var newContent = '最新研究内容'
+      axios.defaults.withCredentials = true
       var url = '/apis/cms/api/getColumnNewList?title=' + newContent
       // var url = 'static/data/home_newContent.json'
       axios({
@@ -487,6 +496,7 @@ export default {
     // 公告
     getNotice() {
       var gonggao = '公告'
+      axios.defaults.withCredentials = true
       var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
       // var url = 'static/data/home_notice.json'
       axios({

@@ -29,7 +29,7 @@
               <div class="user pr">
                 <!-- <router-link to="#/taskhall">个人中心</router-link> -->
                 <a
-                  href="http://192.168.1.169:9100/cas?service=http://192.168.1.155:9999/#/"
+                  href="http://192.168.1.169:9100/cas?service=http://192.168.1.160:9999/#/getajax"
                   >个人中心</a
                 >
                 <!-- <a

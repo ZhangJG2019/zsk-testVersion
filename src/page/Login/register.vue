@@ -255,7 +255,7 @@ export default {
               }
             })
             .catch(res => {
-              console.log(222)
+              console.log(222222222)
               this.$message({
                 message: res.message,
                 type: 'error'

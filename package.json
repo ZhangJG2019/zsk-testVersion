@@ -11,6 +11,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "@form-create/element-ui": "^1.0.3",
     "axios": "^0.16.2",
     "element-ui": "^1.4.13",
     "geetest3": "^1.0.0",

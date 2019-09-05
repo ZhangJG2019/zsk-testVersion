@@ -230,6 +230,7 @@ export default {
           }
         })
         .catch(res => {
+          console.log(222222222)
           // eslint-disable-next-line no-debugger
           if (res.response === null) {
             this.$message.error('用户不存在')

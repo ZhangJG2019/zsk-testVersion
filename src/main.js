@@ -10,8 +10,9 @@ import VueCookie from 'vue-cookie'
 import VueResource from 'vue-resource'
 import './assets/icon/font-yewuhuafen/iconfont.css'
 import './assets/icon/font_jiyinguanlian/iconfont.css'
-
 import $ from 'jquery'
+import axios from 'axios'
+Vue.prototype.axios = axios
 import {
   userInfo
 } from './api'
@@ -136,6 +137,7 @@ Vue.use(VueResource)
 Vue.prototype.$loading = Loading.service
 Vue.prototype.$notify = Notification
 Vue.prototype.$message = Message
+
 Vue.use(VueLazyload, {
   // preLoad: 1.3,
   // error: 'dist/error.png',

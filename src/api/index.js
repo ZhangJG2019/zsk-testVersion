@@ -9,9 +9,9 @@ import http from './public'
 //   })
 // }
 // 单点登录
-export const getAction = (params) => {
-  return http.fetchPost('/front/login', params)
-}
+// export const getAction = (params) => {
+//   return http.fetchPost('/front/login', params)
+// }
 
 // 登陆
 export const userLogin = (params) => {
@@ -51,13 +51,10 @@ export const recommend = (params) => {
   return http.fetchGet('/front/recommend', params)
 }
 // 任务大厅数据获取
-export const taskHall = (params) => {
-  return http.fetchPost('/apis/taskApi/visitorTask', params)
-}
-// 任务大厅弹窗中基因名称数据获取
-export const getGene = (params) => {
-  return http.fetchPost('/apis/dictionary/genes', params)
-}
+// export const taskHall = (params) => {
+//   return http.fetchPost('http://192.168.1.40:8099/apis/taskApi/visitorTask', params)
+// }
+
 // 获取token
 // export const getToken = (params) => {
 //   return http.fetchPost('/apis/', params)

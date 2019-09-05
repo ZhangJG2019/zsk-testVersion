@@ -35,6 +35,7 @@
                 style="width:800px;"
                 class="taskchoose"
               >
+                <!-- 二级筛选条件循环 -->
                 <el-option
                   id="task"
                   v-for="item in options"
@@ -70,7 +71,7 @@
                   class="center_content"
                   v-for="(item, key) in taskhall"
                   :key="key"
-                  :id="forId(key)"
+                  :id="item.subCategoryId"
                   @current-change="handleCurrentChange"
                 >
                   <img
@@ -97,7 +98,7 @@
                   <el-button
                     :id="forId2(key)"
                     type="button"
-                    @click="bianji(item.id)"
+                    @click="bianji(item.subCategoryId, item.name, item.id)"
                     v-if="disabled == false"
                     v-text="btntxt"
                   >
@@ -178,7 +179,11 @@
     >
       <li style="margin-bottom:10px;">
         <span style="float:left;width:100px;">任务名称:</span>
-        <el-input style="width:83%" :disabled="true" :id="taskname"></el-input>
+        <el-input
+          style="width:83%"
+          :disabled="true"
+          :value="this.taskname"
+        ></el-input>
         <!-- v-text="res.data.name" -->
       </li>
       <li
@@ -192,30 +197,37 @@
         <el-input
           class="readonly"
           style="width:83%"
-          v-model="test_model[taskNameMap.get(item.value)]"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          :value="test_model[taskNameMap.get(item.value)]"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
-          :data-id="form.id"
+          :id="item.id"
+          @change="getValue"
         >
           <el-option
             v-for="(item, key) in geneList"
             :key="key"
-            label="item.name"
-            value="item.id"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
           ></el-option>
+          <!-- <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option> -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -235,17 +247,19 @@
     <!-- 弹窗 1-->
   </div>
 </template>
-
 <script>
 import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-import { taskHall, getGene } from '/api/index.js' // zsk模拟接口getGene
+import { taskHall, getGene, Save, getSearch } from '/api/taskhall.js'
+import { getStore } from '/utils/storage.js'
+
 import 'jquery'
 import 'element-ui'
 import axios from 'axios'
 // import Editor from 'wangeditor'
+
 export default {
   // 生命周期函数
   created() {
@@ -253,15 +267,14 @@ export default {
     this.getProblems() // 常见问题
     this.getNum() // 左侧内容数字
     this.getTaskList() // 任务大厅列表
-    this.zsktest() // 任务大厅列表
+    // this.zsktest() // 任务大厅select数据列表
   },
   data() {
     return {
       test_model: [],
       // 弹窗 1
-      geneList: [], // 基因名称下拉列表
-      // taskname: '位点基本信息 - CYP2D6 * 5(DEL)',
-      taskname: '',
+      geneList: [], // 基因名称下拉列表// 获取gene下拉列表数据
+      taskname: '', // 位点基本信息-固定任务名称
       readonly: true,
       input_thirteen: '', // 任务信息弹窗中的评论内容
       accessoryId_value: '',
@@ -309,11 +322,12 @@ export default {
       textarea: '',
       formLabelWidth: '100px',
       tasklist: [],
-      task: { id: '' },
+      // task: { id: '' },
       taskNameMap: new Map(),
       fileList: [], // 上传文件列表
       // 弹窗 2
       value1: [],
+      // 二级筛选条件
       options: [
         {
           value: '选项1',
@@ -338,7 +352,8 @@ export default {
           label: '项目基本信息'
         }
       ],
-      id: [],
+      subCategoryId: '', // 任务大厅每一条数据对应弹窗id
+      id: '', // 任务大厅弹窗内容id
       taskTitleUrl: '',
       btntxt: '编辑',
       disabled: false,
@@ -352,7 +367,6 @@ export default {
       drugGenePairnum: '',
       authoritynum: '',
       drugLabelsnum: '',
-
       // 中间八个分类 2
       articleTitle: '', // 小标题
       articleLinkUrl: '', // 小标题链接=具体内容页面
@@ -365,14 +379,12 @@ export default {
       notify: '1',
       dialogVisible: false,
       timer: '',
-      // 接收最新事件列表信息
-      topNews: [],
-      // 接收最新研究内容列表信息
-      newContent: [],
+      topNews: [], // 帮助指南列表信息
+      newContent: [], // 常见问题列表信息
       taskhall: [], // 暂存请求到的任务大厅数据
-      total: 1, // 最大条数
-      currentPage: 1, // 当前页面
-      pageSize: 8, // 每页83条
+      total: 1, // 最大条数,初始化默认为1
+      currentPage: 1, // 当前页
+      pageSize: 8, // 每页8条
       flag: 'true'
     }
   },
@@ -387,16 +399,9 @@ export default {
       })
     })
     // 菜单切换高亮显示 2
-    // $('#taskname').val('位点基本信息 - CYP2D6 * 5(DEL)')
   },
   methods: {
-    zsktest() {
-      getGene()
-        .then(res => {
-          console.log(res)
-        })
-        .catch(console.log('bug'))
-    },
+    // zsktest() {},
     // 上传文献
     submitUpload() {
       let list = document.getElementsByClassName(
@@ -478,52 +483,7 @@ export default {
       // 添加新的行数
       this.tableData_three.push(newValue)
     },
-    bianji() {
-      this.innerVisible = true
-      this.tasklist = []
-      let data2 = {
-        // 请求成功后返回数组中的一个对象
-        rsId_input: '位点RSID',
-        geneId_select: '基因名称',
-        source_textarea: '来源',
-        haploidType_input: '单倍型'
-      }
-      this.taskNameMap.clear()
-      this.test_models = []
-      for (var key3 in data2) {
-        let id = key3.substring(0, key3.lastIndexOf('_'))
-        let type = key3.substring(key3.lastIndexOf('_'), key3.length)
-        let s = {
-          name: data2[key3],
-          value: id,
-          type: type
-        }
-        this.tasklist.push(s)
-        let t = 'task.' + id
-        this.test_models.push(t)
-        // console.log(this.test_models)
-        this.test_models.forEach((e, index) => {
-          if (e === t) {
-            this.taskNameMap.set(id, index)
-            // console.log(this.taskNameMap)
-          }
-        })
-      }
-      this.taskNameMap.forEach((index, value) => {
-        // console.log(1111)
-        // console.log(value)
-        this.$set(this.task, value, value + 1232321)
-      })
-      // console.log(222)
-      // console.log(this.task)
-    },
-    indexof(item) {
-      for (let index = 0; index < this.test_model.length; index++) {
-        if (this.test_model[index] === item) {
-          return index
-        }
-      }
-    },
+
     bianji1() {
       this.innerVisible = true
     },
@@ -545,29 +505,57 @@ export default {
       // 删除行数
       this.tableData.splice(index, 1)
     },
-    // 弹窗中确定提交按钮
-    save() {
-      // console.log(this.task)
-      let data = new FormData()
-      data.append('page', this.currentPage)
-      data.append('rows', this.pageSize)
-      // this.outerVisible_five = false
-      this.innerVisible = false
-      for (var i = 0; i < this.tasklist.length; i++) {
-        console.log(33)
-        console.log(this.tasklist)
+    // select下拉框获取选中的值
+    getValue(a) {
+      // console.log(a.value)
+      // console.log(a.label)
+    },
+    bianji(subCategoryId, name, id) {
+      if (subCategoryId === 6) {
+        this.innerVisible = true
+        this.tasklist = []
+        this.taskname = name // 将点击的数据名称赋值到input框中
+        getGene() // 获取位点基本信息里面得options
+          .then(res => {
+            this.geneList = res
+            // console.log(this.geneList)
+            // console.log(this.geneList)
+          })
+        let data = new FormData()
+        data.append('id', this.id)
+        getSearch(data).then(res => {
+          let data2 = JSON.parse(res.templateContent) // 根据获取到的字段名动态生成title和输入框
+          this.taskNameMap.clear()
+          this.test_models = []
+          for (var key3 in data2) {
+            let id = key3.substring(0, key3.lastIndexOf('_'))
+            let type = key3.substring(key3.lastIndexOf('_'), key3.length)
+            let s = {
+              name: data2[key3], // 具体的值
+              id: id, // 输入框的id
+              type: type // 输入框的类型
+            }
+            this.tasklist.push(s) // this.tasklist存储的是name，id，type
+            // let t = id // 键名["rsId", "geneId", "source", "haploidType"]
+            this.test_models.push(id)
+            this.test_models.forEach((e, index) => {
+              if (e === id) {
+                this.taskNameMap.set(id, index)
+              }
+            })
+            // console.log(this.taskNameMap) // 键名对应的下标{"rsId" => 0, "geneId" => 1, "source" => 2, "haploidType" => 3}
+            // console.log(this.test_models) // 键名["rsId", "geneId", "source", "haploidType"]
+          }
+
+          let obj = JSON.parse(res.taskMessage) // 输入框中的值
+          console.log(obj) // aa bb cc dd
+          for (let i in obj) {
+            // console.log(obj[i]) // aa bb cc dd
+            this.test_model[this.taskNameMap.get(i)] = obj[i]
+            // console.log(this.test_model[i])
+          }
+        })
       }
-      // 这部分应该是保存提交你添加的内容tasklist
-      // console.log(JSON.stringify(this.tableData_five))
-      // console.log(JSON.stringify(this.tableData))
-    },
-    // 给任务大厅数据列表动态添加id
-    forId: function(index) {
-      return 'forid_' + index
-    },
-    //  给任务大厅数据列表中按钮动态添加id
-    forId2: function(index) {
-      return 'forid2_' + index
     },
     // 获取任务大厅数据列表
     getTaskList() {
@@ -585,10 +573,10 @@ export default {
         taskHall(data)
           .then(res => {
             // console.log(res)
-            // console.log(res.list[0])
             this.taskhall = res.list
             this.name = res.list[0].name
-            this.id = res.list.id
+            this.subCategoryId = res.list[0].subCategoryId
+            this.id = res.list[0].id
             this.total = res.total
             this.currentPage = res.pageNum
             this.flag = true
@@ -598,11 +586,56 @@ export default {
           })
       }
     },
+    indexof(item) {
+      for (let index = 0; index < this.test_model.length; index++) {
+        if (this.test_model[index] === item) {
+          return index
+        }
+      }
+    },
+    // 弹窗中确定提交按钮
+    save() {
+      let data = new FormData()
+      this.taskNameMap.forEach((index, value) => {
+        // this.$set(this.task, value, value + 1232321)
+        data.append(value, this.test_model[index])
+        console.log(data.get(value)) // 获取到select狂选中的具体值
+      })
+
+      // Save(data)
+      //   .then(res => {
+      //     console.log(res)
+      //     // console.log(res.list[0])
+      //   })
+      //   .catch(console.log('请求失败'))
+      // this.innerVisible = false
+      // 这部分应该是保存提交你添加的内容tasklist
+      // console.log(JSON.stringify(this.tableData_five))
+      // console.log(JSON.stringify(this.tableData))
+    },
+    // 任务大厅首屏数据列表id
+    forId: function(index) {
+      return 'forid_' + index
+    },
+    //  给任务大厅首屏数据列表中按钮动态添加id
+    forId2: function(index) {
+      return 'forid2_' + index
+    },
 
     lingqu(id) {
-      this.disabled = true
+      var judge = getStore('token')
+      // if (judge === 'false') {
+      if (judge === 'true') {
+        this.disabled = true
+      } else {
+        $('#someElement').attr('display', 'none')
+        this.$message.error({
+          message: '你还未登录，请先登录',
+          type: 'error'
+        })
+      }
     },
-    // 任务列表数据分页
+    // 任务列表数据分页 1
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`)
       this.pageSize = val // 动态改变
@@ -613,6 +646,7 @@ export default {
       this.currentPage = val // 动态改变
       this.getTaskList() // 重新获取数据列表
     },
+    // 任务列表数据分页 2
     // 查询信息
     handleIconClick(ev) {
       if (this.$route.path === '/search') {
@@ -631,6 +665,7 @@ export default {
         })
       }
     },
+    // 搜索框
     querySearchAsync(queryString, cb) {
       if (this.input === undefined) {
         cb([])
