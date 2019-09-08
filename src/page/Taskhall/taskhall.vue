@@ -53,17 +53,16 @@
               <ul>
                 <!-- 任务搜索框 1-->
                 <li style="float:right;margin-bottom:13px">
-                  <el-autocomplete
+                  <el-input
                     icon="search"
+                    placeholder="请输入关键字"
                     v-model="input"
-                    minlength="1"
-                    maxlength="100"
-                    :fetch-suggestions="querySearchAsync"
-                    @select="handleSelect"
+                    :minlength="1"
+                    :maxlength="100"
                     :on-icon-click="handleIconClick"
                     @keydown.enter.native="handleIconClick"
                   >
-                  </el-autocomplete>
+                  </el-input>
                 </li>
                 <!-- 任务搜索框 2-->
                 <!-- 任务大厅具体列表数据展示 1-->
@@ -194,6 +193,14 @@
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
+          style="width:83%"
+           v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期">
+        </el-date-picker>
         <el-input
           class="readonly"
           style="width:83%"
@@ -433,14 +440,26 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.approvalNumber"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id)"
                       >编辑</el-button
-                    >
+                    ><el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="accessoryId" label="文献上传">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-select v-model="scope.row.accessoryId">
+                      <el-option
+                        v-for="(item, key) in geneList"
+                        :key="key"
+                        :id="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -513,8 +532,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') > 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -585,14 +609,26 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.approvalNumber"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id)"
                       >编辑</el-button
-                    >
+                    ><el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="accessoryId" label="文献上传">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-select v-model="scope.row.accessoryId">
+                      <el-option
+                        v-for="(item, key) in geneList"
+                        :key="key"
+                        :id="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -665,8 +701,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') > 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -685,7 +726,6 @@
     </el-dialog>
     <!-- 内层弹窗 结束-->
     <!-- 弹窗 23 -->
-
 
     <!-- 弹窗 15 和14一样，调用13的弹窗及内容,且包含评论内容-->
     <div class="fiveteen">
@@ -749,14 +789,26 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.approvalNumber"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id)"
                       >编辑</el-button
-                    >
+                    ><el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="accessoryId" label="文献上传">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-select v-model="scope.row.accessoryId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -855,8 +907,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') > 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -930,14 +987,26 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.approvalNumber"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id)"
                       >编辑</el-button
-                    >
+                    ><el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="accessoryId" label="文献上传">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-select v-model="scope.row.accessoryId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -1036,8 +1105,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') > 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
         <div
           id="history"
@@ -1124,14 +1198,26 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.approvalNumber"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id)"
                       >编辑</el-button
-                    >
+                    ><el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="accessoryId" label="文献上传">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-select v-model="scope.row.accessoryId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -1230,8 +1316,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') > 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
         <div
           id="history"
@@ -1292,10 +1383,10 @@
                 >
               </div>
               <el-table :data="tableData_nineteen" style="width: 100%">
-                <el-table-column prop="xuhao" label="序号" width="100px">
-                  <template slot-scope="scope">
+                <el-table-column type="index" label="序号" width="100px">
+                  <!-- <template slot-scope="scope">
                     <label v-text="scope.$index + 1"></label>
-                  </template>
+                  </template> -->
                 </el-table-column>
                 <el-table-column prop="pmid" label="说明书来源">
                   <template slot-scope="scope">
@@ -1325,7 +1416,15 @@
                 </el-table-column>
                 <el-table-column prop="accessoryId" label="原文上传">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-select v-model="scope.row.accessoryId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column label="包装图片上传">
@@ -1434,8 +1533,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') > 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
         <div
           id="history"
@@ -1545,14 +1649,14 @@
                 </el-table-column>
                 <el-table-column label="内容提取">
                   <template slot-scope="scope">
-                    <el-button type="primary" @click="bianji1(this.id)"
+                    <el-button type="primary" @click="bianji1(scope.row.id)"
                       >编辑</el-button
                     >
-                    <el-button
+                    <el-input
                       type="textarea"
                       style="display:none;"
                       v-model="scope.row.liter_content"
-                    ></el-button>
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column label="原文上传" prop="accessoryId_value">
@@ -1563,15 +1667,13 @@
                       clearable
                       placeholder="请选择"
                     >
-                      <!-- <el-option
-                      v-for="item in options"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option> -->
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
+                      <el-option
+                        v-for="(item, key) in geneList"
+                        :key="key"
+                        :id="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
                     </el-select>
                   </template>
                 </el-table-column>
@@ -1654,8 +1756,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+         <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -1764,14 +1871,26 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.approvalNumber"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id)"
                       >编辑</el-button
-                    >
+                    ><el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="accessoryId" label="文献上传">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.accessoryId"></el-select>
+                    <el-select v-model="scope.row.accessoryId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -1844,8 +1963,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') > 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
         <div
           id="history"
@@ -1953,7 +2077,23 @@
                 </el-table-column>
                 <el-table-column prop="sex" label="性别">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.sex"></el-select>
+                    <el-select v-model="scope.row.sex">
+                      <el-option
+                        :id="id"
+                        label="男"
+                        value="1"
+                      ></el-option>
+                      <el-option
+                        :id="id"
+                        label="女"
+                        value="0"
+                      ></el-option>
+                      <el-option
+                        :id="id"
+                        label="保密"
+                        value="2"
+                      ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="ageGroup" label="年龄段">
@@ -1974,7 +2114,15 @@
                 </el-table-column>
                 <el-table-column prop="porResultId" label="位点结果">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.porResultId"></el-select>
+                    <el-select v-model="scope.row.porResultId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="testAmount" label="检测量">
@@ -2108,7 +2256,15 @@
                 </el-table-column>
                 <el-table-column prop="porResultId" label="位点结果">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.porResultId"></el-select>
+                    <el-select v-model="scope.row.porResultId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="testAmount" label="检测量">
@@ -2218,7 +2374,15 @@
                 </el-table-column>
                 <el-table-column prop="sex" label="性别">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.sex"></el-select>
+                    <el-select v-model="scope.row.sex">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="ageGroup" label="年龄段">
@@ -2247,7 +2411,15 @@
                 </el-table-column>
                 <el-table-column prop="porResultId" label="位点结果">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.porResultId"></el-select>
+                    <el-select v-model="scope.row.porResultId">
+                      <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column prop="testAmount" label="检测量">
@@ -2372,7 +2544,12 @@
                 </el-table-column>
                 <el-table-column label="更多信息">
                   <template slot-scope="scope">
-                    <el-button type="primary" @click="bianji">编辑</el-button>
+                    <el-button type="primary" @click="bianji1(scope.row.id)">编辑</el-button>
+                    <el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
 
@@ -2445,8 +2622,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+         <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -2541,7 +2723,12 @@
                 </el-table-column>
                 <el-table-column label="更多信息">
                   <template slot-scope="scope" prop="liter_content">
-                    <el-button type="primary" @click="bianji">编辑</el-button>
+                    <el-button type="primary" @click="bianji1(scope.row.id)">编辑</el-button>
+                    <el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="caozuo" label="操作">
@@ -2613,8 +2800,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -2792,12 +2984,12 @@
                 </el-table-column>
                 <el-table-column label="内容提取">
                   <template slot-scope="scope">
-                    <el-button type="primary" @click="bianji">编辑</el-button>
-                    <el-button
+                    <el-button type="primary" @click="bianji1(scope.row.id)">编辑</el-button>
+                    <el-input
                       type="textarea"
                       style="display:none;"
                       v-model="scope.row.liter_content"
-                    ></el-button>
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column label="原文上传" prop="accessoryId_value">
@@ -2808,15 +3000,13 @@
                       clearable
                       placeholder="请选择"
                     >
-                      <!-- <el-option
-                      v-for="item in options"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option> -->
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
+                     <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
                     </el-select>
                   </template>
                 </el-table-column>
@@ -2899,8 +3089,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+         <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
@@ -3345,7 +3540,7 @@
     </div>
     <!-- 弹窗 10 -->
 
-   <!-- 弹窗 12 -->
+    <!-- 弹窗 12 -->
     <div class="twelve">
       <el-dialog
         title="外层 Dialog（药物基因用药建议）"
@@ -3391,9 +3586,13 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.liter_content"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id)"
                       >编辑</el-button
-                    >
+                    ><el-input
+                      type="textarea"
+                      style="display:none;"
+                      v-model="scope.row.liter_content"
+                    ></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column prop="conclusion" label="用药建议">
@@ -3473,8 +3672,13 @@
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
         >
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="(item, key) in geneList"
+            :key="key"
+            :id="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
         </el-select>
         <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         <div id="item.value"></div>
@@ -3495,7 +3699,6 @@
     </el-dialog>
     <!-- 内层弹窗 结束-->
     <!-- 弹窗 12 -->
-
   </div>
 </template>
 <script>
@@ -3503,7 +3706,7 @@ import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-import { taskHall, getGene, getSearch } from '/api/taskhall.js' // , Save
+import { taskHall, getGene, getSearch, Save } from '/api/taskhall.js'
 import { getStore } from '/utils/storage.js'
 
 import 'jquery'
@@ -3522,6 +3725,8 @@ export default {
   },
   data() {
     return {
+      two_dialog: [], // 第二层弹窗结构
+      two_msg: [], // 第二层弹窗数据
       test_model: [],
       // 弹窗 1
       geneList: [], // 基因名称下拉列表// 获取gene下拉列表数据
@@ -3779,6 +3984,7 @@ export default {
       tasklist: [],
       // task: { id: '' },
       taskNameMap: new Map(),
+      literNoteStrMap: new Map(),
       fileList: [], // 上传文件列表
       // 弹窗 2
       value1: [],
@@ -3840,9 +4046,10 @@ export default {
       total: 1, // 最大条数,初始化默认为1
       currentPage: 1, // 当前页
       pageSize: 8, // 每页8条
-      flag: 'true'
+      flag1: 'true', // 分页中，点击下一页
+      flag: 0 // 区分操作员操作，（ 默认为0 ）0标注员可领取，1标注员已领取，2检查员可领取，3检查员已领取，4质检员可领取，5质检员已领取，6专家可领取，7专家已领取，8完成，9完成并更新，10任务管理员处理
     }
-  },
+  }, 
   mounted() {
     // 菜单切换高亮显示 1
     $(document).ready(function() {
@@ -3856,45 +4063,194 @@ export default {
     // 菜单切换高亮显示 2
   },
   methods: {
-    bianji1(id) {
+    // 弹窗中确定提交按钮
+    save() {
+      let sub = this.subCategoryId
+      let task = {
+          id: this.id
+          }
+        for(let key of this.taskNameMap.keys()){
+          this.$set(task,key,this.test_model[this.taskNameMap.get(key)])
+        }
+        // console.log(task)
+          console.log(sub)
+        if (sub === 44) {
+          // 说明书信息整理
+          console.log(this.tableData_seven)
+          this.outerVisible_seven = true
+        } else if (sub === 57) {
+          // 药物商品名            commonUserGenePathwaysContentPage
+          console.log(this.tableData);
+          this.dialogFormVisible2 = true
+        } else if (
+          sub === 29 ||
+          sub === 30 ||
+          sub === 17 ||
+          sub === 18
+        ) {
+          // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
+          console.log(this.tableData_sixteen);
+          this.outerVisible_sixteen = true
+        } else if (
+          sub === 26 ||
+          sub === 13 ||
+          sub === 14 ||
+          sub === 21 ||
+          sub === 22 ||
+          sub === 43 ||
+          sub === 53
+        ) {
+          // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
+          console.log(this.tableData_thirteen)
+          this.outerVisible_fiveteen = true
+        } else if (sub === 33 || sub === 34) {
+          // 国内外专利注释文献的上传
+          console.log(this.tableData_eighteen)
+          this.outerVisible_eighteen = true
+        } else if (sub === 45) {
+          // 说明书原文上传
+          console.log(this.tableData_nineteen)
+          this.outerVisible_nineteen = true
+        } else if (sub === 46) {
+          // 说明书包装图片
+           console.log(this.tableData_seven)
+          this.outerVisible_seven = true
+        } else if (sub === 35) {
+          // 基因位点频率信息分布（中国）
+          console.log(this.tableData_twenty);
+          this.outerVisible_twenty = true
+        } else if (sub === 36) {
+          // 基因位点频率信息分布（世界）
+          console.log(this.tableData_twentyOne);
+
+          this.outerVisible_twentyOne = true
+        } else if (sub === 37) {
+          // 基因位点频率信息分布（住院病案首页数据统计）
+          console.log(this.tableData_twentyTwo);
+
+          this.outerVisible_twentyTwo = true
+        } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
+          // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
+          console.log(this.tableData_three);
+
+          this.outerVisible = true
+        } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
+          // 国内外药物标签注释，国内外临床注释
+          console.log(this.tableData_twentyThree);
+
+          this.outerVisible_twentyThree = true
+        } else if (sub === 31 || sub === 32) {
+          // 国内外专利注释
+          console.log(this.tableData_eighteen);
+
+          this.outerVisible_eighteen = true
+        } else if (sub === 39) {
+          // 药物基因参与通路描述
+          console.log(this.tableData_four);
+
+          this.outerVisible_four = true
+        } else if (sub === 40) {
+          // 药物基因组成部分
+          console.log(this.tableData_eleven);
+
+          this.outerVisible_eleven = true
+        } else if (sub === 41) {
+          // 药物基因相关通路
+          console.log(this.tableData_six);
+
+          this.outerVisible_six = true
+        } else if (sub === 55) {
+          // 药物医保目录查询
+          console.log(this.tableData_eight);
+
+          this.outerVisible_eight = true
+        } else if (sub === 56) {
+          // 药物相互作用
+          console.log(this.tableData_nine);
+
+          this.outerVisible_nine = true
+        } else if (sub === 23) {
+          // 药物基因位点用药建议
+          console.log(this.tableData_ten);
+
+          this.outerVisible_ten = true
+        } else if (sub === 24) {
+          // 药物基因用药建议
+          console.log(this.tableData_twelve);
+
+          this.outerVisible_twelve = true
+        }
+      this.innerVisible = false
+      // 这部分应该是保存提交你添加的内容tasklist
+      // console.log(JSON.stringify(this.tableData_five))
+      // console.log(JSON.stringify(this.tableData))
+    },
+    bianji1(rowId) {
       // 内层弹窗
       this.innerVisible_one = true
       this.tasklist = []
+      this.taskNameMap.clear()
+      this.test_models = []
+      let data3 = JSON.parse(this.two_dialog)
+      // console.log(data3)
+      for (var key3 in data3) {
+        let id = key3.substring(0, key3.lastIndexOf('_'))
+        let type = key3.substring(key3.lastIndexOf('_'), key3.length)
+        let s = {
+          name: data3[key3], // 具体的值
+          id: id, // 输入框的id
+          type: type // 输入框的类型
+        }
+        this.tasklist.push(s) // this.tasklist存储的是name，id，type
+        // let t = id // 键名["rsId", "geneId", "source", "haploidType"]
+        this.test_models.push(id)
+        this.test_models.forEach((e, index) => {
+          if (e === id) {
+            this.taskNameMap.set(id, index)
+          }
+        })
+        // console.log(this.taskNameMap) // 键名对应的下标{"rsId" => 0, "geneId" => 1, "source" => 2, "haploidType" => 3}
+        // console.log(this.test_models) // 键名["rsId", "geneId", "source", "haploidType"]
+      }
+      // 获取返回的res.taskMessage数据{id: 48, geneId: 25, name: "CYP2D6*5(del)", rsId: "", haploidType: "",}
+      let literNote = this.literNoteStrMap.get(rowId)
+      if (literNote !== '') {
+        for (let i in literNote) {
+          // console.log(obj[i]) // 具体获取到那一个输入框的值
+          this.test_model[this.taskNameMap.get(i)] = literNote[i]
+        }
+      }
+    },
+    bianji(subCategoryId, id) {
+      this.subCategoryId = subCategoryId
+      this.tasklist = []
+      getGene() // 获取位点基本信息里面得options
+        .then(res => {
+          this.geneList = res
+          // console.log(this.geneList)
+        })
       let data = new FormData()
       data.append('id', id)
       getSearch(data).then(res => {
-        let data2 = JSON.parse(res.templateContent) // 根据获取到的字段名动态生成title和输入框
-        this.taskNameMap.clear()
-        this.test_models = []
-        for (var key3 in data2) {
-          let id = key3.substring(0, key3.lastIndexOf('_'))
-          let type = key3.substring(key3.lastIndexOf('_'), key3.length)
-          let s = {
-            name: data2[key3], // 具体的值
-            id: id, // 输入框的id
-            type: type // 输入框的类型
-          }
-          this.tasklist.push(s) // this.tasklist存储的是name，id，type
-          // let t = id // 键名["rsId", "geneId", "source", "haploidType"]
-          this.test_models.push(id)
-          this.test_models.forEach((e, index) => {
-            if (e === id) {
-              this.taskNameMap.set(id, index)
+        console.log(res)
+        this.taskname = res.name // 将点击数据名称赋值到input框中
+        this.two_dialog = res.templateContent // 二层弹窗结构
+        let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
+        console.log(taskMessage)
+        this.tableData_seven = taskMessage  // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
+        if(taskMessage != null && taskMessage != ''){
+          taskMessage.forEach((item ,index) => {
+            console.log(item)
+            console.log(index)
+            if( item.literNoteStr != ''){
+              this.literNoteStrMap.set(item.id,JSON.parse(item.literNoteStr)) 
+              // let obj = 
+              this.test_model[this.taskNameMap.get(index)] = obj[index]
             }
           })
-          // console.log(this.taskNameMap) // 键名对应的下标{"rsId" => 0, "geneId" => 1, "source" => 2, "haploidType" => 3}
-          // console.log(this.test_models) // 键名["rsId", "geneId", "source", "haploidType"]
         }
-        this.taskname = res.name // 将点击数据名称赋值到input框中
-        let obj = JSON.parse(res.taskMessage) // 输入框中的值
-        console.log(obj) // 获取返回的res.taskMessage数据{id: 48, geneId: 25, name: "CYP2D6*5(del)", rsId: "", haploidType: "",}
-        for (let i in obj) {
-          // console.log(obj[i]) // 具体获取到那一个输入框的值
-          this.test_model[this.taskNameMap.get(i)] = obj[i]
-        }
+        
       })
-    },
-    bianji(subCategoryId, id) {
       if (
         subCategoryId === 1 ||
         subCategoryId === 2 ||
@@ -3944,21 +4300,23 @@ export default {
             // console.log(this.taskNameMap) // 键名对应的下标{"rsId" => 0, "geneId" => 1, "source" => 2, "haploidType" => 3}
             // console.log(this.test_models) // 键名["rsId", "geneId", "source", "haploidType"]
           }
-          this.taskname = res.name // 将点击数据名称赋值到input框中
           let obj = JSON.parse(res.taskMessage) // 输入框中的值
-          console.log(obj) // 获取返回的res.taskMessage数据{id: 48, geneId: 25, name: "CYP2D6*5(del)", rsId: "", haploidType: "",}
+          // console.log(obj) // 获取返回的res.taskMessage数据{id: 48, geneId: 25, name: "CYP2D6*5(del)", rsId: "", haploidType: "",}
+          // obj就是输入框中的值
           for (let i in obj) {
             // console.log(obj[i]) // 具体获取到那一个输入框的值
             this.test_model[this.taskNameMap.get(i)] = obj[i]
           }
-        })
-      } else if (subCategoryId === 57) {
-        // 药物商品名            commonUserGenePathwaysContentPage
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
+          console.log(this.test_model) 
+          this.two_dialog = res.templateContent // 二层弹窗结构
+          this.two_msg = res.taskMessage.literNoteStr // 二层弹窗数据
           this.taskname = res.name // 将点击数据名称赋值到input框中
         })
+      } else if (subCategoryId === 44) {
+        // 说明书信息整理
+        this.outerVisible_seven = true
+      } else if (subCategoryId === 57) {
+        // 药物商品名            commonUserGenePathwaysContentPage
         this.dialogFormVisible2 = true
       } else if (
         subCategoryId === 29 ||
@@ -3967,11 +4325,6 @@ export default {
         subCategoryId === 18
       ) {
         // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_sixteen = true
       } else if (
         subCategoryId === 26 ||
@@ -3983,154 +4336,61 @@ export default {
         subCategoryId === 53
       ) {
         // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_fiveteen = true
       } else if (subCategoryId === 33 || subCategoryId === 34) {
         // 国内外专利注释文献的上传
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_eighteen = true
       } else if (subCategoryId === 45) {
         // 说明书原文上传
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_nineteen = true
       } else if (subCategoryId === 46) {
         // 说明书包装图片
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_seven = true
       } else if (subCategoryId === 35) {
         // 基因位点频率信息分布（中国）
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_twenty = true
       } else if (subCategoryId === 36) {
         // 基因位点频率信息分布（世界）
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_twentyOne = true
       } else if (subCategoryId === 37) {
         // 基因位点频率信息分布（住院病案首页数据统计）
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_twentyTwo = true
       } else if (subCategoryId === 11 || subCategoryId === 12 || subCategoryId === 19 || subCategoryId === 20 || subCategoryId === 25 || subCategoryId === 42 || subCategoryId === 52) {
         // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible = true
       } else if (subCategoryId === 27 || subCategoryId === 28 || subCategoryId === 15 || subCategoryId === 16) {
         // 国内外药物标签注释，国内外临床注释
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_twentyThree = true
       } else if (subCategoryId === 31 || subCategoryId === 32) {
         // 国内外专利注释
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_eighteen = true
       } else if (subCategoryId === 39) {
         // 药物基因参与通路描述
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_four = true
       } else if (subCategoryId === 40) {
         // 药物基因组成部分
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_eleven = true
       } else if (subCategoryId === 41) {
         // 药物基因相关通路
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_six = true
-      } else if (subCategoryId === 44) {
-        // 说明书信息整理
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
-        this.outerVisible_seven = true
       } else if (subCategoryId === 55) {
         // 药物医保目录查询
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_eight = true
       } else if (subCategoryId === 56) {
         // 药物相互作用
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_nine = true
       } else if (subCategoryId === 23) {
         // 药物基因位点用药建议
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_ten = true
       } else if (subCategoryId === 24) {
         // 药物基因用药建议
-        let data = new FormData()
-        data.append('id', id)
-        getSearch(data).then(res => {
-          this.taskname = res.name // 将点击数据名称赋值到input框中
-        })
         this.outerVisible_twelve = true
       }
     },
     // 获取任务大厅数据列表
-    getTaskList() {
-      if (this.flag) {
-        this.flag = false
+    getTaskList(searchField, searchString, searchOper) {
+      if (this.flag1) {
+        this.flag1 = false
         let data = new FormData()
         data.append('page', this.currentPage)
         data.append('rows', this.pageSize)
@@ -4138,8 +4398,15 @@ export default {
           'order',
           'convert(t.`create_time` USING gbk) COLLATE gbk_chinese_ci'
         )
-        data.append('search', 'false')
         data.append('orderType', 'asc')
+        if(searchField == null) {
+          data.append('search', 'false')
+        } else {
+          data.append('search', 'true')
+          data.append('searchField', searchField)
+          data.append('searchString', searchString)
+          data.append('searchOper', searchOper)
+        }
         taskHall(data)
           .then(res => {
             // console.log(res)
@@ -4149,31 +4416,13 @@ export default {
             this.id = res.list[0].id
             this.total = res.total
             this.currentPage = res.pageNum
-            this.flag = true
+            this.flag1 = true  // 限制频繁点击分页
+            this.flag = res.list[0].flag // 判断操作员状态
           })
           .catch(res => {
-            this.flag = true
+            this.flag1 = true
           })
       }
-    },
-    // 弹窗中确定提交按钮
-    save() {
-      let data = new FormData()
-      this.taskNameMap.forEach((index, value) => {
-        // this.$set(this.task, value, value + 1232321)
-        data.append(value, this.test_model[index])
-        // console.log(data.get(value)) // 获取到输入框中的具体值
-      })
-      // Save(data)
-      //   .then(res => {
-      //     console.log(res)
-      //     // console.log(res.list[0])
-      //   })
-      //   .catch(console.log('请求失败'))
-      this.innerVisible = false
-      // 这部分应该是保存提交你添加的内容tasklist
-      // console.log(JSON.stringify(this.tableData_five))
-      // console.log(JSON.stringify(this.tableData))
     },
     // zsktest() {},
     // 上传文献
@@ -4441,6 +4690,7 @@ export default {
       }
       // 添加新的行数
       this.tableData_nineteen.push(newValue)
+      console.log(this.tableData_nineteen);
     },
     addLine_twenty() {
       // 添加行数
@@ -4658,43 +4908,14 @@ export default {
       this.getTaskList() // 重新获取数据列表
     },
     // 任务列表数据分页 2
-    // 查询信息
-    handleIconClick(ev) {
-      if (this.$route.path === '/search') {
-        this.$router.push({
-          path: '/refreshsearch',
-          query: {
-            key: this.input
-          }
-        })
-      } else {
-        this.$router.push({
-          path: '/search',
-          query: {
-            key: this.input
-          }
-        })
-      }
-    },
     // 搜索框
-    querySearchAsync(queryString, cb) {
-      if (this.input === undefined) {
-        cb([])
-        return
+    handleIconClick(ev) {
+      console.log(this.input)
+      if(this.input == '' || this.input == null ){
+        this.getTaskList()
+      }else{
+        this.getTaskList("name",this.input,"EqualTo")
       }
-      this.input = this.input.trim()
-      if (this.input === '') {
-        cb([])
-        return
-      } else {
-        this.loadAll()
-        setTimeout(() => {
-          cb(this.searchResults)
-        }, 300)
-      }
-    },
-    handleSelect(item) {
-      this.input = item.value
     },
     // 帮助指南
     getHelp() {

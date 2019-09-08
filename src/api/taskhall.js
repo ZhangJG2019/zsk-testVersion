@@ -4,7 +4,7 @@ export const taskHall = (params) => {
 }
 // 任务大厅弹窗中确定按钮
 export const Save = (params) => {
-  return http.fetchPost('/apis/urlSubmitTask', params)
+  return http.fetchPost('/apis/taskApi/urlSubmitTask', params)
 }
 // 任务大厅弹窗中基因名称数据获取
 export const getGene = (params) => {
