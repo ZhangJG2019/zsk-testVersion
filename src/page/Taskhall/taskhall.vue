@@ -97,9 +97,9 @@
                   <el-button
                     :id="item.id"
                     type="button"
-                    @click="bianji(item.subCategoryId, item.id)"
+                    @click="bianji(item.subCategoryId, item.id  )"
                     v-if="disabled == false"
-                    v-text="btntxt"
+                    v-text="btntxt" 
                   >
                   </el-button>
                 </li>
@@ -197,7 +197,7 @@
           v-model="test_model[taskNameMap.get(item.id)]"
           type="date"
           style="width:83%"
-           v-if="item.type.indexOf('_date') >= 0"
+          v-if="item.type.indexOf('_date') >= 0"
           :id="item.id"
           placeholder="选择日期">
         </el-date-picker>
@@ -4244,12 +4244,10 @@ export default {
             console.log(index)
             if( item.literNoteStr != ''){
               this.literNoteStrMap.set(item.id,JSON.parse(item.literNoteStr)) 
-              // let obj = 
               this.test_model[this.taskNameMap.get(index)] = obj[index]
             }
           })
-        }
-        
+        }  
       })
       if (
         subCategoryId === 1 ||
