@@ -5,7 +5,7 @@
     </y-header>
     <div class="w">
       <div class="content">
-        <!-- <div class="account-sidebar">
+        <div class="account-sidebar">
           <div class="avatar gray-box ">
             <div>
               <img :src="userInfo.info.file" />
@@ -26,7 +26,7 @@
               </ul>
             </div>
           </div>
-        </div> -->
+        </div>
         <div class="account-content">
           <router-view></router-view>
           <router-view></router-view>

@@ -14,14 +14,14 @@
             </el-breadcrumb>
             <!-- 顶部筛选条件 1-->
             <div class="task_classify clearfix">
-              <ul class="task_class " style="border-bottom:1px solid #ccc">
-                <strong class="fl">任务类型 :</strong>
-                <li class="fl anow"><a>全部</a></li>
-                <li class="fl"><a>基本信息类</a></li>
-                <li class="fl"><a>注释类信息</a></li>
-                <li class="fl"><a>文献原文指标分解整理</a></li>
-                <li class="fl"><a>上传</a></li>
-                <li class="fl"><a>数据统计</a></li>
+              <ul>
+               <el-row class="task_class " style="border-bottom:1px solid #ccc">
+                 <strong class="fl">任务类型 :</strong>
+                  <el-button v-for="(item,index) in wpList" :key="index" 
+                  :id="forId(index)"
+                  :class="{anow : anow == this.indexsss}" 
+                  @click="selected(index)" v-text="item.name"></el-button>
+              </el-row>
               </ul>
               <!-- <ul class="task_power">
                 <span class="fl">任务权限 :</span>
@@ -29,19 +29,19 @@
                 <li class="fl">完全开放</li>
                 <li class="fl">勋章开放</li>
               </ul> -->
-              <el-select
-                v-model="value1"
+             <el-select
+                v-model="wpList_secarch"
                 multiple
                 style="width:800px;"
                 class="taskchoose"
+                  @change="selected_options"
               >
                 <!-- 二级筛选条件循环 -->
                 <el-option
-                  id="task"
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="(item,key) in wpList_options"
+                  :key="key"
+                  :label="item.name"
+                  :value="item.id"
                   style="overflow: auto;height:36px;"
                 >
                 </el-option>
@@ -172,7 +172,7 @@
     <!-- 弹窗 1-->
     <el-dialog
       width="30%"
-      title="位点基本信息"
+      title="位点基本信息22222"
       :visible.sync="innerVisible_one"
       :append-to-body="true"
     >
@@ -235,6 +235,8 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+           <div ref="editor" style="text-align:left" v-model="test_model[taskNameMap.get(item.id)]"
+          v-if="item.type.indexOf('_ckeditor') >= 0"></div>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -244,7 +246,7 @@
         >
         <el-button
           type="primary"
-          @click="save"
+          @click="save(this.flag)"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >确 定</el-button
         >
@@ -367,7 +369,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -439,8 +441,7 @@
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji1(scope.row.id)"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     ><el-input
                       type="textarea"
@@ -487,7 +488,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -502,35 +503,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog3（不带three）"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
+          v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -539,19 +555,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -608,8 +626,7 @@
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji1(scope.row.id)"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     ><el-input
                       type="textarea"
@@ -656,7 +673,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -671,35 +688,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog3（不带three）"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
+          v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -708,19 +740,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -788,8 +822,7 @@
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji1(scope.row.id)"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     ><el-input
                       type="textarea"
@@ -862,7 +895,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -877,35 +910,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog13"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
+          v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -914,19 +962,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -986,8 +1036,7 @@
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji1(scope.row.id)"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     ><el-input
                       type="textarea"
@@ -1060,7 +1109,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -1075,35 +1124,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog13"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
+          v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -1112,24 +1176,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
-        <div
-          id="history"
-          v-if="item.type.indexOf('_ckeditor') >= 0"
-          style="width:100%"
-        ></div>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -1197,8 +1258,7 @@
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji1(scope.row.id)"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     ><el-input
                       type="textarea"
@@ -1271,7 +1331,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -1286,35 +1346,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog13"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
+          v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -1323,24 +1398,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
-        <div
-          id="history"
-          v-if="item.type.indexOf('_ckeditor') >= 0"
-          style="width:100%"
-        ></div>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -1409,7 +1481,7 @@
                     <el-button
                       type="primary"
                       v-model="scope.row.approvalNumber"
-                      @click="bianji"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >查看</el-button
                     >
                   </template>
@@ -1488,9 +1560,9 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >确 定</el-button
+            >确定</el-button
           >
           <el-button
             @click="outerVisible_nineteen = false"
@@ -1503,35 +1575,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog13"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
+          v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -1540,27 +1627,25 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
-        <div
-          id="history"
-          v-if="item.type.indexOf('_ckeditor') >= 0"
-          style="width:100%"
-        ></div>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
+
     <el-dialog
       width="30%"
       title="内层 Dialog 图片预览"
@@ -1649,7 +1734,7 @@
                 </el-table-column>
                 <el-table-column label="内容提取">
                   <template slot-scope="scope">
-                    <el-button type="primary" @click="bianji1(scope.row.id)"
+                    <el-button type="primary" @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     >
                     <el-input
@@ -1712,7 +1797,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -1727,55 +1812,73 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog 药品说明书整理-编辑(动态生成)"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
+          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
-         <el-option
+          <el-option
             v-for="(item, key) in geneList"
             :key="key"
             :id="item.id"
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -1870,8 +1973,7 @@
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
-                      v-model="scope.row.approvalNumber"
-                      @click="bianji1(scope.row.id)"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     ><el-input
                       type="textarea"
@@ -1918,7 +2020,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -1933,35 +2035,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog13"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
           <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
-          v-if="item.type.indexOf('_select') > 0"
+          v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -1970,24 +2087,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
-        <div
-          id="history"
-          v-if="item.type.indexOf('_ckeditor') >= 0"
-          style="width:100%"
-        ></div>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -2158,7 +2272,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -2300,7 +2414,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -2455,7 +2569,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -2544,7 +2658,7 @@
                 </el-table-column>
                 <el-table-column label="更多信息">
                   <template slot-scope="scope">
-                    <el-button type="primary" @click="bianji1(scope.row.id)">编辑</el-button>
+                    <el-button type="primary" @click="bianji1(scope.row.id,scope.$index)">编辑</el-button>
                     <el-input
                       type="textarea"
                       style="display:none;"
@@ -2578,7 +2692,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -2593,55 +2707,73 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog 任务信息整理"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
+          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
-         <el-option
+          <el-option
             v-for="(item, key) in geneList"
             :key="key"
             :id="item.id"
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -2723,7 +2855,7 @@
                 </el-table-column>
                 <el-table-column label="更多信息">
                   <template slot-scope="scope" prop="liter_content">
-                    <el-button type="primary" @click="bianji1(scope.row.id)">编辑</el-button>
+                    <el-button type="primary" @click="bianji1(scope.row.id,scope.$index)">编辑</el-button>
                     <el-input
                       type="textarea"
                       style="display:none;"
@@ -2756,7 +2888,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -2771,34 +2903,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog 任务信息整理(动态生成)"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
+          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -2807,19 +2955,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -2911,7 +3061,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -2929,7 +3079,7 @@
     <div class="seven">
       <el-dialog
         title="外层 Dialog 药品说明书整理"
-        :visible.sync="outerVisible_seven"
+        :visible.sync="outerVisible_seven1"
       >
         <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
           <el-tab-pane label="任务信息" name="first">
@@ -2984,11 +3134,10 @@
                 </el-table-column>
                 <el-table-column label="内容提取">
                   <template slot-scope="scope">
-                    <el-button type="primary" @click="bianji1(scope.row.id)">编辑</el-button>
+                    <el-button type="primary" @click="bianji1(scope.row.id,scope.$index)">编辑</el-button>
                     <el-input
                       type="textarea"
                       style="display:none;"
-                      v-model="scope.row.liter_content"
                     ></el-input>
                   </template>
                 </el-table-column>
@@ -3001,12 +3150,12 @@
                       placeholder="请选择"
                     >
                      <el-option
-            v-for="(item, key) in geneList"
-            :key="key"
-            :id="item.id"
-            :label="item.name"
-            :value="item.id"
-          ></el-option>
+                        v-for="(item, key) in geneList"
+                        :key="key"
+                        :id="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
                     </el-select>
                   </template>
                 </el-table-column>
@@ -3039,18 +3188,18 @@
         </el-tabs>
         <div slot="footer" class="dialog-footer">
           <el-button
-            @click="outerVisible_seven = false"
+            @click="outerVisible_seven1 = false"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >取 消</el-button
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
           <el-button
-            @click="outerVisible_seven = false"
+            @click="outerVisible_seven1 = false"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >放弃任务</el-button
           >
@@ -3060,55 +3209,73 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog 药品说明书整理-编辑(动态生成)"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
+          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
-         <el-option
+          <el-option
             v-for="(item, key) in geneList"
             :key="key"
             :id="item.id"
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -3286,7 +3453,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -3390,7 +3557,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -3526,7 +3693,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -3585,8 +3752,7 @@
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
-                      v-model="scope.row.liter_content"
-                      @click="bianji1(scope.row.id)"
+                      @click="bianji1(scope.row.id,scope.$index)"
                       >编辑</el-button
                     ><el-input
                       type="textarea"
@@ -3628,7 +3794,7 @@
           >
           <el-button
             type="primary"
-            @click="save"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >确 定</el-button
           >
@@ -3643,34 +3809,50 @@
     <!-- 内层弹窗 开始-->
     <el-dialog
       width="30%"
-      title="内层 Dialog 任务信息整理(动态生成，非表中生成)"
+      title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
     >
       <li
         class="center_content"
-        v-for="(item, key_three) in tasklist"
-        :key="key_three"
+        v-for="(item, key_one) in tasklist"
+        :key="key_one"
         style="margin-bottom:10px;"
       >
         <span style="float:left;width:100px;" v-text="item.name"></span>
-        <el-input
-          v-model="form.name"
+        <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
+        <el-date-picker
+          v-model="test_model[taskNameMap.get(item.id)]"
+          type="date"
           style="width:83%"
+          v-if="item.type.indexOf('_date') >= 0"
+          :id="item.id"
+          placeholder="选择日期"
+        >
+        </el-date-picker>
+        <el-input
+          class="readonly"
+          style="width:83%"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_input') >= 0"
+          :id="item.id"
         ></el-input>
         <el-input
           style="width:83%"
           type="textarea"
           :rows="2"
-          v-model="textarea"
+          v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.type.indexOf('_textarea') >= 0"
+          :id="item.id"
         >
+          <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
         </el-input>
         <el-select
-          v-model="form.region"
+          filterable
+          v-model="test_model[taskNameMap.get(item.id)]"
           style="width:83%"
           v-if="item.type.indexOf('_select') >= 0"
+          :id="item.id"
         >
           <el-option
             v-for="(item, key) in geneList"
@@ -3679,21 +3861,21 @@
             :label="item.name"
             :value="item.id"
           ></el-option>
+          <!-- item.id代表当前option提交到后代的id -->
+          <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
-        <!-- v-if="item.type.indexOf('_ckeditor') >= 0" -->
-        <div id="item.value"></div>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
         <el-button
           type="primary"
-          @click="innerVisible = false"
+          @click="save2"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >确 定</el-button
+          >保存</el-button
         >
       </div>
     </el-dialog>
@@ -3706,14 +3888,13 @@ import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-import { taskHall, getGene, getSearch, Save } from '/api/taskhall.js'
+import { taskHall, getGene, getSearch, Save , searchOptions } from '/api/taskhall.js'
 import { getStore } from '/utils/storage.js'
-
 import 'jquery'
 import 'element-ui'
 import axios from 'axios'
 // import Editor from 'wangeditor'
-
+ import E from 'wangeditor'
 export default {
   // 生命周期函数
   created() {
@@ -3721,10 +3902,40 @@ export default {
     this.getProblems() // 常见问题
     // this.getNum() // 左侧内容数字
     this.getTaskList() // 任务大厅列表
-    // this.zsktest() // 任务大厅select数据列表
   },
   data() {
     return {
+      // 富文本编辑器
+      editorContent: '',
+      // 富文本编辑器
+
+      // 顶部筛选
+      ids: '',
+      indexsss: 0,
+      anow: '',
+      wpList: [
+        {
+          name: '全部'
+        },
+        {
+          name: '基本信息类'
+        },
+        {
+          name: '注释类信息'
+        },
+        {
+          name: '文献原文指标分解整理'
+        },
+        {
+          name: '上传'
+        },
+        {
+          name: '数据统计'
+        }
+      ],
+      wpList_options: [], // 存放点击button后，改条件下所有的options
+      wpList_secarch: [],  // 用户选中的options 
+      // 顶部筛选
       two_dialog: [], // 第二层弹窗结构
       two_msg: [], // 第二层弹窗数据
       test_model: [],
@@ -3740,7 +3951,8 @@ export default {
       input2: '',
       input_three: '',
       tableData: [
-        {
+        {id:'',
+        literNoteStr:'',
           drugGenericName: '',
           caozuo: '',
           approvalNumber: '',
@@ -3750,15 +3962,15 @@ export default {
         }
       ],
       tableData_three: [
-        {
+        {id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: ''
         }
       ],
       tableData_four: [
-        {
+        {id:'',
           pathways: '',
           relatedPathways: '',
           publication: '',
@@ -3767,7 +3979,7 @@ export default {
         }
       ],
       tableData_five: [
-        {
+        {id:'',
           pathways: '',
           drugs: '',
           genes: '',
@@ -3775,22 +3987,25 @@ export default {
         }
       ],
       tableData_six: [
-        {
+        {id:'',
           pathways: '',
+           literNoteStr:'',
           relatedPathways: ''
         }
       ],
       tableData_seven: [
         {
+          id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: '',
           drugInstruction_picture: ''
         }
       ],
       tableData_eight: [
-        {
+        {id:'',
+         literNoteStr:'',
           medicalInsuranceArea: '',
           number: '',
           drugName: '',
@@ -3803,18 +4018,20 @@ export default {
         }
       ],
       tableData_nine: [
-        {
+        {id:'',
           name: '',
+           literNoteStr:'',
           interactiveDrugs: '',
           effectiveness: ''
         }
       ],
       tableData_ten: [
-        {
+        {id:'',
           medicationType: '',
           evidenceLevel: '',
           race: '',
           raceDetails: '',
+           literNoteStr:'',
           phenotypes: '',
           genotype: '',
           porMedicationSuggestionEnglish: '',
@@ -3822,80 +4039,85 @@ export default {
         }
       ],
       tableData_eleven: [
-        {
+        {id:'',
           pathways: '',
           drugs: '',
+           literNoteStr:'',
           genes: '',
           diseases: ''
         }
       ],
       tableData_twelve: [
-        {
+        {id:'',
+         literNoteStr:'',
           conclusion: ''
         }
       ],
       tableData_thirteen: [
         {
+          id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: '',
           currentTaskComment: ''
         }
       ],
       tableData_fourteen: [
-        {
+        {id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: ''
         }
       ],
       tableData_fiveteen: [
         {
+          id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr:'',
           accessoryId: '',
           currentTaskComment: ''
         }
       ],
       tableData_sixteen: [
-        {
+        {id:'',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: '',
           currentTaskComment: ''
         }
       ],
       tableData_seventeen: [
-        {
+        {id:'',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: ''
         }
       ],
       tableData_eighteen: [
-        {
+        {id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: '',
           drugInstruction_picture: '',
           currentTaskComment: ''
         }
       ],
       tableData_nineteen: [
-        {
+        {id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: '',
           currentTaskComment: ''
         }
       ],
       tableData_twenty: [
-        {
+        {id:'',
+          literNoteStr:'',
           dataSource: '',
           year: '',
           project: '',
@@ -3910,7 +4132,8 @@ export default {
         }
       ],
       tableData_twentyOne: [
-        {
+        {id:'',
+          literNoteStr:'',
           dataSource: '',
           project: '',
           fatherRace: '',
@@ -3922,7 +4145,8 @@ export default {
         }
       ],
       tableData_twentyTwo: [
-        {
+        {id:'',
+          literNoteStr:'',
           dataSource: '',
           project: '',
           sex: '',
@@ -3933,10 +4157,10 @@ export default {
         }
       ],
       tableData_twentyThree: [
-        {
+        {id:'',
           pmid: '',
           name: '',
-          liter_content: '',
+          literNoteStr: '',
           accessoryId: ''
         }
       ],
@@ -3952,6 +4176,7 @@ export default {
       outerVisible_five: false,
       outerVisible_six: false,
       outerVisible_seven: false,
+      outerVisible_seven1: false,
       outerVisible_eight: false,
       outerVisible_nine: false,
       outerVisible_ten: false,
@@ -4015,8 +4240,9 @@ export default {
       ],
       subCategoryId: '', // 任务大厅每一条数据对应弹窗id
       id: '', // 任务大厅弹窗内容id
+      taskRowIndex:'',//弹窗里的多条数据在数组里对应的下标
       taskTitleUrl: '',
-      btntxt: '编辑',
+      btntxt: '编辑任务',
       disabled: false,
       currentPage4: 1,
       input: '',
@@ -4047,39 +4273,84 @@ export default {
       currentPage: 1, // 当前页
       pageSize: 8, // 每页8条
       flag1: 'true', // 分页中，点击下一页
-      flag: 0 // 区分操作员操作，（ 默认为0 ）0标注员可领取，1标注员已领取，2检查员可领取，3检查员已领取，4质检员可领取，5质检员已领取，6专家可领取，7专家已领取，8完成，9完成并更新，10任务管理员处理
+      flag: 1 // 区分操作员操作，（ 默认为0 ）0标注员可领取，1标注员已领取，2检查员可领取，3检查员已领取，4质检员可领取，5质检员已领取，6专家可领取，7专家已领取，8完成，9完成并更新，10任务管理员处理
     }
   }, 
-  mounted() {
-    // 菜单切换高亮显示 1
-    $(document).ready(function() {
-      $('.task_class li').click(function() {
-        $(this)
-          .addClass('anow')
-          .siblings()
-          .removeClass('anow')
-      })
-    })
-    // 菜单切换高亮显示 2
+  mounted(){
+    this.selected(0)
+    this.selected_options()
+    var editor = new E(this.$refs.editor)
+        editor.customConfig.onchange = (html) => {
+          this.editorContent = html
+        }
+        editor.create()
   },
   methods: {
+    forId(index) {
+				return "forid_" +index
+    },
+    selected(count) {
+      this.wpList_secarch = []
+      // console.log(count)
+      if ( count == null || count == '') {
+        this.index = 0
+      }
+      this.index = count
+      searchOptions(this.index).then( res => {
+        // this.wpList_options = []
+        // this.wpList_secarch = []
+        let options = JSON.parse(res)
+        this.wpList_options = options
+        console.log(this.wpList_options)
+        let ids = this.wpList_options.map(item => item.id)
+        ids = ids.join(",")
+
+        this.getTaskList("subCategoryId",ids,"In")
+      })
+    },
+    selected_options(){
+      let ids = this.wpList_secarch.join(",")
+      console.log(ids)
+      this.getTaskList("subCategoryId",ids,"In")
+    },
     // 弹窗中确定提交按钮
-    save() {
+    save(flag) {
       let sub = this.subCategoryId
       let task = {
-          id: this.id
+          id: this.id,
+          flag: 1,
+          currentTaskComment: " ",
+          name: this.taskname
           }
-        for(let key of this.taskNameMap.keys()){
-          this.$set(task,key,this.test_model[this.taskNameMap.get(key)])
-        }
-        // console.log(task)
-          console.log(sub)
-        if (sub === 44) {
+        if (sub === 1 ||
+          sub === 2 ||
+          sub === 3 ||
+          sub === 4 ||
+          sub === 5 ||
+          sub === 6 ||
+          sub === 7 ||
+          sub === 8 ||
+          sub === 9 ||
+          sub === 10 ||
+          sub === 47 ||
+          sub === 48 ||
+          sub === 49 ||
+          sub === 50 ||
+          sub === 51){
+            let taskMessage = {}
+          for(let key of this.taskNameMap.keys()){
+            this.$set(taskMessage,key,this.test_model[this.taskNameMap.get(key)])
+          }
+          this.$set(task,"taskMessage",JSON.stringify(taskMessage))
+
+        }else if (sub === 44) {
+          this.$set(task,"taskMessage",JSON.stringify(this.tableData_seven))
           // 说明书信息整理
           console.log(this.tableData_seven)
-          this.outerVisible_seven = true
+          this.outerVisible_seven1 = true
         } else if (sub === 57) {
           // 药物商品名            commonUserGenePathwaysContentPage
+          this.$set(task,"taskMessage",JSON.stringify(this.dialogFormVisible2))
           console.log(this.tableData);
           this.dialogFormVisible2 = true
         } else if (
@@ -4089,6 +4360,7 @@ export default {
           sub === 18
         ) {
           // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_sixteen))
           console.log(this.tableData_sixteen);
           this.outerVisible_sixteen = true
         } else if (
@@ -4102,80 +4374,98 @@ export default {
         ) {
           // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
           console.log(this.tableData_thirteen)
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_fiveteen))
           this.outerVisible_fiveteen = true
         } else if (sub === 33 || sub === 34) {
           // 国内外专利注释文献的上传
           console.log(this.tableData_eighteen)
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eighteen))
           this.outerVisible_eighteen = true
         } else if (sub === 45) {
           // 说明书原文上传
           console.log(this.tableData_nineteen)
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_nineteen))
           this.outerVisible_nineteen = true
         } else if (sub === 46) {
           // 说明书包装图片
+          this.$set(task,"taskMessage",JSON.stringify(this.tableData_seven))
            console.log(this.tableData_seven)
           this.outerVisible_seven = true
         } else if (sub === 35) {
           // 基因位点频率信息分布（中国）
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twenty))
           console.log(this.tableData_twenty);
           this.outerVisible_twenty = true
         } else if (sub === 36) {
           // 基因位点频率信息分布（世界）
           console.log(this.tableData_twentyOne);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyOne))
 
           this.outerVisible_twentyOne = true
         } else if (sub === 37) {
           // 基因位点频率信息分布（住院病案首页数据统计）
           console.log(this.tableData_twentyTwo);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyTwo))
 
           this.outerVisible_twentyTwo = true
         } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
           // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
           console.log(this.tableData_three);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible))
+
           this.outerVisible = true
         } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
           // 国内外药物标签注释，国内外临床注释
           console.log(this.tableData_twentyThree);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyThree))
 
           this.outerVisible_twentyThree = true
         } else if (sub === 31 || sub === 32) {
           // 国内外专利注释
           console.log(this.tableData_eighteen);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eighteen))
 
           this.outerVisible_eighteen = true
         } else if (sub === 39) {
           // 药物基因参与通路描述
           console.log(this.tableData_four);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_four))
 
           this.outerVisible_four = true
         } else if (sub === 40) {
           // 药物基因组成部分
           console.log(this.tableData_eleven);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eleven))
 
           this.outerVisible_eleven = true
         } else if (sub === 41) {
           // 药物基因相关通路
           console.log(this.tableData_six);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_six))
 
           this.outerVisible_six = true
         } else if (sub === 55) {
           // 药物医保目录查询
           console.log(this.tableData_eight);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eight))
 
           this.outerVisible_eight = true
         } else if (sub === 56) {
           // 药物相互作用
           console.log(this.tableData_nine);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_nine))
 
           this.outerVisible_nine = true
         } else if (sub === 23) {
           // 药物基因位点用药建议
           console.log(this.tableData_ten);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_ten))
 
           this.outerVisible_ten = true
         } else if (sub === 24) {
           // 药物基因用药建议
           console.log(this.tableData_twelve);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twelve))
 
           this.outerVisible_twelve = true
         }
@@ -4183,10 +4473,122 @@ export default {
       // 这部分应该是保存提交你添加的内容tasklist
       // console.log(JSON.stringify(this.tableData_five))
       // console.log(JSON.stringify(this.tableData))
+      Save(task).then(res=>{
+        console.log(res);
+      })
     },
-    bianji1(rowId) {
+    save2(){
+        let sub = this.subCategoryId
+          let task = {}
+          for(let key of this.taskNameMap.keys()){
+          this.$set(task,key,this.test_model[this.taskNameMap.get(key)])
+          }
+        if (sub === 44) {
+          // 说明书信息整理
+          // console.log(this.test_model)
+          // console.log( this.tableData_seven[this.taskRowIndex])
+          this.tableData_seven[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+
+          console.log(this.tableData_seven)
+        } else if (sub === 57) {
+          // 药物商品名            commonUserGenePathwaysContentPage
+          this.tableData[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData);
+        } else if (
+          sub === 29 ||
+          sub === 30 ||
+          sub === 17 ||
+          sub === 18
+        ) {
+          // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
+          this.tableData_sixteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData_sixteen);
+        } else if (
+          sub === 26 ||
+          sub === 13 ||
+          sub === 14 ||
+          sub === 21 ||
+          sub === 22 ||
+          sub === 43 ||
+          sub === 53
+        ) {
+          // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
+          this.tableData_thirteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData_thirteen)
+        } else if (sub === 33 || sub === 34) {
+          // 国内外专利注释文献的上传
+          this.tableData_eighteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData_eighteen)
+        } else if (sub === 45) {
+          // 说明书原文上传
+          this.tableData_nineteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData_nineteen)
+        } else if (sub === 46) {
+          // 说明书包装图片
+          this.tableData_seven[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+
+           console.log(this.tableData_seven)
+        } else if (sub === 35) {
+          // 基因位点频率信息分布（中国）
+          this.tableData_twenty[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData_twenty);
+        } else if (sub === 36) {
+          // 基因位点频率信息分布（世界）
+          this.tableData_twentyOne[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData_twentyOne);
+        } else if (sub === 37) {
+          // 基因位点频率信息分布（住院病案首页数据统计）
+          console.log(this.tableData_twentyTwo);
+          this.tableData_twentyTwo[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
+          // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
+          this.tableData_three[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+          console.log(this.tableData_three);
+        } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
+          // 国内外药物标签注释，国内外临床注释
+          console.log(this.tableData_twentyThree);
+          this.tableData_twentyThree[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 31 || sub === 32) {
+          // 国内外专利注释
+          console.log(this.tableData_eighteen);
+          this.tableData_eighteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 39) {
+          // 药物基因参与通路描述
+          console.log(this.tableData_four);
+          this.tableData_four[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 40) {
+          // 药物基因组成部分
+          console.log(this.tableData_eleven);
+          this.tableData_eleven[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 41) {
+          // 药物基因相关通路
+          console.log(this.tableData_six);
+          this.tableData_six[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 55) {
+          // 药物医保目录查询
+          console.log(this.tableData_eight);
+          this.tableData_eight[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 56) {
+          // 药物相互作用
+          console.log(this.tableData_nine);
+          this.tableData_nine[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 23) {
+          // 药物基因位点用药建议
+          console.log(this.tableData_ten);
+          this.tableData_ten[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        } else if (sub === 24) {
+          // 药物基因用药建议
+          console.log(this.tableData_twelve);
+          this.tableData_twelve[this.taskRowIndex].literNoteStr = JSON.stringify(task)
+        }
+
+      this.innerVisible = false
+    },
+    bianji1(rowId,rowIndex) {
+      //编辑数据的下标
+      this.taskRowIndex = rowIndex
       // 内层弹窗
-      this.innerVisible_one = true
+      this.innerVisible = true
       this.tasklist = []
       this.taskNameMap.clear()
       this.test_models = []
@@ -4221,6 +4623,10 @@ export default {
       }
     },
     bianji(subCategoryId, id) {
+      this.test_models = []
+      this.test_model = []
+      this.taskNameMap.clear()
+
       if (
         subCategoryId === 1 ||
         subCategoryId === 2 ||
@@ -4238,7 +4644,7 @@ export default {
         subCategoryId === 50 ||
         subCategoryId === 51
       ) {
-        this.innerVisible_one = true
+        
         this.tasklist = []
         getGene() // 获取位点基本信息里面得options
           .then(res => {
@@ -4246,11 +4652,10 @@ export default {
             // console.log(this.geneList)
           })
         let data = new FormData()
+        this.id = id  //列表数据id
         data.append('id', id)
         getSearch(data).then(res => {
           let data2 = JSON.parse(res.templateContent) // 根据获取到的字段名动态生成title和输入框
-          this.taskNameMap.clear()
-          this.test_models = []
           for (var key3 in data2) {
             let id = key3.substring(0, key3.lastIndexOf('_'))
             let type = key3.substring(key3.lastIndexOf('_'), key3.length)
@@ -4266,6 +4671,7 @@ export default {
               if (e === id) {
                 this.taskNameMap.set(id, index)
               }
+             
             })
             // console.log(this.taskNameMap) // 键名对应的下标{"rsId" => 0, "geneId" => 1, "source" => 2, "haploidType" => 3}
             // console.log(this.test_models) // 键名["rsId", "geneId", "source", "haploidType"]
@@ -4281,6 +4687,7 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           this.two_msg = res.taskMessage.literNoteStr // 二层弹窗数据
           this.taskname = res.name // 将点击数据名称赋值到input框中
+           this.innerVisible_one = true
         })
       } else if (subCategoryId === 44) {
         // 说明书信息整理
@@ -4299,7 +4706,7 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+           taskMessage=(taskMessage== null?[]:taskMessage)
           this.tableData_seven = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
@@ -4311,8 +4718,8 @@ export default {
               }
             })
           }
+        this.outerVisible_seven1 = true
         })
-        this.outerVisible_seven = true
       } else if (subCategoryId === 57) {
         // 药物商品名            commonUserGenePathwaysContentPage
         this.subCategoryId = subCategoryId
@@ -4342,8 +4749,8 @@ export default {
               }
             })
           }
-        })
         this.dialogFormVisible2 = true
+        })
       } else if (
         subCategoryId === 29 ||
         subCategoryId === 30 ||
@@ -4378,8 +4785,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_sixteen = true
+        })
       } else if (
         subCategoryId === 26 ||
         subCategoryId === 13 ||
@@ -4417,8 +4824,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_fiveteen = true
+        })
       } else if (subCategoryId === 33 || subCategoryId === 34) {
         // 国内外专利注释文献的上传
         this.subCategoryId = subCategoryId
@@ -4448,8 +4855,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_eighteen = true
+        })
       } else if (subCategoryId === 45) {
         // 说明书原文上传
         this.subCategoryId = subCategoryId
@@ -4479,8 +4886,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_nineteen = true
+        })
       } else if (subCategoryId === 46) {
         // 说明书包装图片
         this.subCategoryId = subCategoryId
@@ -4510,8 +4917,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_seven = true
+        })
       } else if (subCategoryId === 35) {
         // 基因位点频率信息分布（中国）
         this.subCategoryId = subCategoryId
@@ -4541,8 +4948,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_twenty = true
+        })
       } else if (subCategoryId === 36) {
         // 基因位点频率信息分布（世界）
         this.subCategoryId = subCategoryId
@@ -4572,8 +4979,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_twentyOne = true
+        })
       } else if (subCategoryId === 37) {
         // 基因位点频率信息分布（住院病案首页数据统计）
         this.subCategoryId = subCategoryId
@@ -4603,8 +5010,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_twentyTwo = true
+        })
       } else if (
         subCategoryId === 11 ||
         subCategoryId === 12 ||
@@ -4643,8 +5050,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible = true
+        })
       } else if (
         subCategoryId === 27 ||
         subCategoryId === 28 ||
@@ -4679,8 +5086,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_twentyThree = true
+        })
       } else if (subCategoryId === 31 || subCategoryId === 32) {
         // 国内外专利注释
         this.subCategoryId = subCategoryId
@@ -4710,8 +5117,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_eighteen = true
+        })
       } else if (subCategoryId === 39) {
         // 药物基因参与通路描述
         this.subCategoryId = subCategoryId
@@ -4741,8 +5148,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_four = true
+        })
       } else if (subCategoryId === 40) {
         // 药物基因组成部分
         this.subCategoryId = subCategoryId
@@ -4772,8 +5179,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_eleven = true
+        })
       } else if (subCategoryId === 41) {
         // 药物基因相关通路
         this.subCategoryId = subCategoryId
@@ -4803,8 +5210,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_six = true
+        })
       } else if (subCategoryId === 55) {
         // 药物医保目录查询
         this.subCategoryId = subCategoryId
@@ -4834,8 +5241,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_eight = true
+        })
       } else if (subCategoryId === 56) {
         // 药物相互作用
         this.subCategoryId = subCategoryId
@@ -4865,8 +5272,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_nine = true
+        })
       } else if (subCategoryId === 23) {
         // 药物基因位点用药建议
         this.subCategoryId = subCategoryId
@@ -4896,8 +5303,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_ten = true
+        })
       } else if (subCategoryId === 24) {
         // 药物基因用药建议
         this.subCategoryId = subCategoryId
@@ -4927,8 +5334,8 @@ export default {
               }
             })
           }
-        })
         this.outerVisible_twelve = true
+        })
       }
     },
     // 获取任务大厅数据列表
@@ -4957,7 +5364,7 @@ export default {
             this.taskhall = res.list
             this.name = res.list[0].name
             this.subCategoryId = res.list[0].subCategoryId
-            this.id = res.list[0].id
+            // this.id = res.list[0].id
             this.total = res.total
             this.currentPage = res.pageNum
             this.flag1 = true  // 限制频繁点击分页
@@ -5028,7 +5435,8 @@ export default {
     },
     addLine_two() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         drugGenericName: '',
         drugTradeName: '',
         approvalNumber: '',
@@ -5041,7 +5449,8 @@ export default {
     },
     addLine_three() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         accessoryId: '',
@@ -5052,7 +5461,8 @@ export default {
     },
     addLine_four() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         relatedPathways: '',
         publication: '',
@@ -5064,7 +5474,8 @@ export default {
     },
     addLine_five() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         drugs: '',
         genes: '',
@@ -5075,7 +5486,8 @@ export default {
     },
     addLine_six() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         relatedPathways: ''
       }
@@ -5084,7 +5496,8 @@ export default {
     },
     addLine_seven() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         liter_content: '',
@@ -5096,7 +5509,8 @@ export default {
     },
     addLine_eight() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         medicalInsuranceArea: '',
         number: '',
         drugName: '',
@@ -5112,7 +5526,8 @@ export default {
     },
     addLine_nine() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         name: '',
         interactiveDrugs: '',
         effectiveness: ''
@@ -5122,7 +5537,8 @@ export default {
     },
     addLine_ten() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         medicationType: '',
         evidenceLevel: '',
         race: '',
@@ -5137,7 +5553,8 @@ export default {
     },
     addLine_eleven() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         drugs: '',
         genes: '',
@@ -5148,7 +5565,8 @@ export default {
     },
     addLine_twelve() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         conclusion: ''
       }
       // 添加新的行数
@@ -5156,7 +5574,8 @@ export default {
     },
     addLine_thirteen() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         liter_content: '',
@@ -5168,7 +5587,8 @@ export default {
     },
     addLine_fourteen() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         liter_content: '',
@@ -5179,7 +5599,8 @@ export default {
     },
     addLine_fiveteen() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         liter_content: '',
@@ -5191,7 +5612,8 @@ export default {
     },
     addLine_sixteen() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         name: '',
         liter_content: '',
         accessoryId: '',
@@ -5202,7 +5624,8 @@ export default {
     },
     addLine_seventeen() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         name: '',
         liter_content: '',
         accessoryId: ''
@@ -5212,7 +5635,8 @@ export default {
     },
     addLine_eighteen() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         liter_content: '',
@@ -5224,7 +5648,8 @@ export default {
     },
     addLine_nineteen() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         liter_content: '',
@@ -5238,7 +5663,8 @@ export default {
     },
     addLine_twenty() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         dataSource: '',
         year: '',
         project: '',
@@ -5256,7 +5682,8 @@ export default {
     },
     addLine_twentyOne() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         dataSource: '',
         project: '',
         fatherRace: '',
@@ -5271,7 +5698,8 @@ export default {
     },
     addLine_twentyTwo() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         dataSource: '',
         project: '',
         sex: '',
@@ -5285,7 +5713,8 @@ export default {
     },
     addLine_twentyThree() {
       // 添加行数
-      var newValue = {
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
         liter_content: '',
@@ -6085,6 +6514,14 @@ ul.box {
 </style>
 
 <style>
+.liMenu{
+  margin-right: 20px;
+  cursor:pointer;
+  float:left;
+}
+.liMenu.hover{
+  color:red;
+}
 /* .readonly:first-child {
   readonly: 'value';
 } */

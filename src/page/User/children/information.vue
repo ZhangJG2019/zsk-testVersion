@@ -1,6 +1,6 @@
 <template>
   <div>
-    <y-shelf title="用户资料">
+    <y-shelf title="用户资料(用户信息)">
       <div slot="content">
         <div class="avatar-box">
           <p style="font-size:20px;">姓名:admin <br /><br />性别:男</p>

@@ -12,6 +12,10 @@ import './assets/icon/font-yewuhuafen/iconfont.css'
 import './assets/icon/font_jiyinguanlian/iconfont.css'
 import $ from 'jquery'
 import axios from 'axios'
+// 富文本编辑器
+import VueUeditorWrap from 'vue-ueditor-wrap' // ES6 Module
+// 富文本编辑器
+
 Vue.prototype.axios = axios
 import {
   userInfo
@@ -58,12 +62,7 @@ const whiteList = ['/home', '/drug', '/gene', '/getajax', '/login', '/register',
 
 router.beforeEach(function (to, from, next) {
   if (getStore('token')) {
-    let params = {
-      params: {
-        token: getStore('token')
-      }
-    }
-    userInfo(params).then(res => {
+    userInfo().then(res => {
       if (res && res.data) {
         store.commit('RECORD_USERINFO', {
           info: res.data.user
@@ -144,6 +143,8 @@ Vue.use(VueLazyload, {
   loading: '/static/images/load.gif'
   // attempt: 1
 })
+
+Vue.component('vue-ueditor-wrap', VueUeditorWrap) // 注册富文本编辑器
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({

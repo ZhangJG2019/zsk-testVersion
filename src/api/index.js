@@ -22,8 +22,8 @@ export const loginOut = (params) => {
   return http.fetchGet('/front/logout/' + params)
 }
 // 用户信息
-export const userInfo = (params) => {
-  return http.fetchPost('/front/getUserInfo', params)
+export const userInfo = () => {
+  return http.fetchGet('/front/getUserInfo')
 }
 
 // 注册账号

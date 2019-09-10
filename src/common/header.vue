@@ -29,11 +29,11 @@
               <div class="user pr">
                 <!-- <router-link to="#/taskhall">个人中心</router-link> -->
                 <a
-                  href="http://192.168.1.169:9100/cas?service=http://192.168.1.160:9999/#/getajax"
+                  href="http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump"
                   >个人中心</a
                 >
                 <!-- <a
-                  href="http://47.105.75.254:9100/cas?service=http://47.105.75.254:9999/#/getajax"
+                  href="http://47.105.75.254:9100/cas?service=http://47.105.75.254:9999/"
                   >个人中心</a
                 > -->
                 <!--用户信息显示-->
@@ -276,7 +276,10 @@ export default {
           localStorage.clear()
           // window.location.href = '/'
           // window.location.href = '#/login'
-          this.$router.push({ path: '/login' })
+          this.$router.push({
+            path:
+              '/http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump'
+          })
         })
         .catch(res => {
           alert('请使用正确退出方式')
