@@ -30,14 +30,14 @@ module.exports = {
     proxyTable: {
       '/front': {
         // target: 'http://192.168.1.157:8084', // 夏哥
-        target: 'http://192.168.1.156:8080', // 夏哥
+        // target: 'http://192.168.1.156:8080', // 彪哥
         // target: 'http://192.168.1.192:8084', // 江哥
-        // target: 'http://192.168.1.40', //测试服务器2
+        target: 'http://192.168.1.40', //测试服务器2
         // target: 'http://47.105.75.254:8084', // 正式服务器1
         changeOrigin: true,
-        pathRewrite: {
-          '^/front': '/' // 通过pathRewrite重写地址，将前缀/front转为/
-        }
+        // pathRewrite: {
+        //   '^/front': '/' // 通过pathRewrite重写地址，将前缀/front转为/
+        // }
       },
       '/apis': {
         // target: 'http://47.105.75.254:8084', // 正式服务器1

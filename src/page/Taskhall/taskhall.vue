@@ -9,18 +9,22 @@
           <div class="main_content">
             <!-- 面包屑导航 -->
             <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-              <el-breadcrumb-item>任务大厅</el-breadcrumb-item>
+              <el-breadcrumb-item :to="{ path: '/' }"  style="height:40px;line-height:40px;margin-left:20px"> <span style="font-size:15px">首页</span>  </el-breadcrumb-item>
+              <el-breadcrumb-item style="height:40px;line-height:40px;"> <span style="font-size:15px">任务大厅</span> </el-breadcrumb-item>
             </el-breadcrumb>
             <!-- 顶部筛选条件 1-->
-            <div class="task_classify clearfix">
+            <div class="task_classify" style="height:100%" >
               <ul>
-               <el-row class="task_class " style="border-bottom:1px solid #ccc">
-                 <strong class="fl">任务类型 :</strong>
-                  <el-button v-for="(item,index) in wpList" :key="index" 
+               <el-row class="task_class " style="border-bottom:1px solid #ccc;padding-bottom:10px">
+                 <strong class="fl" style="height:34px;line-height:34px; display:inline-block;margin-right:20px; font-size:16px;">任务类型 :</strong>
+                  <el-button 
+                  v-for="(item,index) in wpList" :key="index" 
                   :id="forId(index)"
                   :class="{anow : anow == this.indexsss}" 
-                  @click="selected(index)" v-text="item.name"></el-button>
+                  @click="selected(index)"
+                  v-text="item.name"
+                  style="padding:10px 20px"
+                  ></el-button>
               </el-row>
               </ul>
               <!-- <ul class="task_power">
@@ -32,9 +36,9 @@
              <el-select
                 v-model="wpList_secarch"
                 multiple
-                style="width:800px;"
+                style="width:800px;margin-top:20px;"
                 class="taskchoose"
-                  @change="selected_options"
+                @change="selected_options"
               >
                 <!-- 二级筛选条件循环 -->
                 <el-option
@@ -72,6 +76,7 @@
                   :key="key"
                   :id="item.subCategoryId"
                   @current-change="handleCurrentChange"
+                  :flag="this.flag"
                 >
                   <img
                     src="../../../static/images/liwu.png"
@@ -235,8 +240,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
-           <div ref="editor" style="text-align:left" v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_ckeditor') >= 0"></div>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -558,6 +569,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -743,6 +762,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -965,6 +992,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -1179,6 +1214,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -1401,6 +1444,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -1630,6 +1681,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -1867,6 +1926,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -2090,6 +2157,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -2762,6 +2837,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -2958,6 +3041,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -3264,6 +3355,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -3598,6 +3697,19 @@
                     <label v-text="scope.$index + 1"></label>
                   </template>
                 </el-table-column>
+                <el-table-column prop="genePorId" label="变异位点">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.genePorId">
+                      <el-option
+                        v-for="(item, key) in bianyiGene"
+                        :key="key"
+                        :id="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="medicationType" label="用药类型">
                   <template slot-scope="scope">
                     <el-input
@@ -3638,12 +3750,17 @@
                     ></el-input>
                   </template>
                 </el-table-column>
-                <el-table-column prop="genotype" label="基因型">
+                <el-table-column prop="genotypeEnglish" label="基因型（英文）">
                   <template slot-scope="scope">
-                    <el-input
-                      type="textarea"
-                      v-model="scope.row.genotype"
-                    ></el-input>
+                    <el-select v-model="scope.row.genotypeEnglish">
+                      <el-option
+                        v-for="(item, key) in Gene_EN"
+                        :key="key"
+                        :id="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -3655,6 +3772,19 @@
                       type="textarea"
                       v-model="scope.row.porMedicationSuggestionEnglish"
                     ></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="genotypeChinese" label="基因型（中文）">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.genotypeChinese">
+                      <el-option
+                        v-for="(item, key) in Gene_EN"
+                        :key="key"
+                        :id="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -3864,6 +3994,14 @@
           <!-- item.id代表当前option提交到后代的id -->
           <!-- item.name代表当前option在列表中显示的名称 -->
         </el-select>
+        <quill-editor
+          v-model="test_model[taskNameMap.get(item.id)]"
+          ref="myQuillEditor"
+          style="width:84%;margin-left:100px;"
+          :options="editorOption"
+          v-if="item.type.indexOf('_ckeditor') >= 0"
+        >
+        </quill-editor>
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -3888,13 +4026,16 @@ import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-import { taskHall, getGene, getSearch, Save , searchOptions } from '/api/taskhall.js'
+import { taskHall, getGene, getSearch, Save, searchOptions } from '/api/taskhall.js'
 import { getStore } from '/utils/storage.js'
+import { quillEditor } from 'vue-quill-editor' // 调用编辑器
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 import 'jquery'
 import 'element-ui'
 import axios from 'axios'
 // import Editor from 'wangeditor'
- import E from 'wangeditor'
 export default {
   // 生命周期函数
   created() {
@@ -3905,10 +4046,14 @@ export default {
   },
   data() {
     return {
+      Gene_EN:[],   // 基因型（英文）
+      bianyiGene:[], // 变异位点下拉列表
       // 富文本编辑器
-      editorContent: '',
-      // 富文本编辑器
-
+      editorOption: {
+        action: '/img/uploadImg ', // 必填参数 图片上传地址
+        methods: 'post', // 必填参数 图片上传方式
+        name: 'upload_file' // 必填参数 文件的参数名
+      },
       // 顶部筛选
       ids: '',
       indexsss: 0,
@@ -4026,15 +4171,17 @@ export default {
         }
       ],
       tableData_ten: [
-        {id:'',
+        { id: '',
+          genePorId:'',
           medicationType: '',
           evidenceLevel: '',
           race: '',
           raceDetails: '',
-           literNoteStr:'',
+          literNoteStr:'',
           phenotypes: '',
-          genotype: '',
+          genotypeEnglish: '',
           porMedicationSuggestionEnglish: '',
+          genotypeChinese: '',
           porMedicationSuggestionChinese: ''
         }
       ],
@@ -4193,7 +4340,6 @@ export default {
       outerVisible_twentyOne: false, // 3GBio基因位点频率地理分布【世界 】
       outerVisible_twentyTwo: false, // 3GBio住院病案首页数据统计
       outerVisible_twentyThree: false, // 国内外药物标签注释
-
       form: {
         name: '',
         region: '',
@@ -4273,19 +4419,15 @@ export default {
       currentPage: 1, // 当前页
       pageSize: 8, // 每页8条
       flag1: 'true', // 分页中，点击下一页
-      flag: 1 // 区分操作员操作，（ 默认为0 ）0标注员可领取，1标注员已领取，2检查员可领取，3检查员已领取，4质检员可领取，5质检员已领取，6专家可领取，7专家已领取，8完成，9完成并更新，10任务管理员处理
+      flag: 0 // 区分任务操作，（ 默认为0 ）0标注员可领取，1标注员已领取，2检查员可领取，3检查员已领取，4质检员可领取，5质检员已领取，6专家可领取，7专家已领取，8完成，9完成并更新，10任务管理员处理
     }
   }, 
   mounted(){
     this.selected(0)
     this.selected_options()
-    var editor = new E(this.$refs.editor)
-        editor.customConfig.onchange = (html) => {
-          this.editorContent = html
-        }
-        editor.create()
   },
   methods: {
+    onEditorReady(editor) {},
     forId(index) {
 				return "forid_" +index
     },
@@ -4294,23 +4436,23 @@ export default {
       // console.log(count)
       if ( count == null || count == '') {
         this.index = 0
+      }else {
+      this.index = JSON.stringify(count)
       }
-      this.index = count
       searchOptions(this.index).then( res => {
         // this.wpList_options = []
         // this.wpList_secarch = []
         let options = JSON.parse(res)
         this.wpList_options = options
-        console.log(this.wpList_options)
+        // console.log(this.wpList_options)
         let ids = this.wpList_options.map(item => item.id)
         ids = ids.join(",")
-
         this.getTaskList("subCategoryId",ids,"In")
       })
     },
     selected_options(){
       let ids = this.wpList_secarch.join(",")
-      console.log(ids)
+      // console.log(ids)
       this.getTaskList("subCategoryId",ids,"In")
     },
     // 弹窗中确定提交按钮
@@ -4318,7 +4460,7 @@ export default {
       let sub = this.subCategoryId
       let task = {
           id: this.id,
-          flag: 1,
+          flag: this.flag,
           currentTaskComment: " ",
           name: this.taskname
           }
@@ -4338,21 +4480,21 @@ export default {
           sub === 50 ||
           sub === 51){
             let taskMessage = {}
-          for(let key of this.taskNameMap.keys()){
-            this.$set(taskMessage,key,this.test_model[this.taskNameMap.get(key)])
-          }
-          this.$set(task,"taskMessage",JSON.stringify(taskMessage))
-
+            for(let key of this.taskNameMap.keys()){
+              this.$set(taskMessage,key,this.test_model[this.taskNameMap.get(key)])
+            }
+            this.$set(task,"taskMessage",JSON.stringify(taskMessage))
+            this.innerVisible_one = false
         }else if (sub === 44) {
           this.$set(task,"taskMessage",JSON.stringify(this.tableData_seven))
           // 说明书信息整理
           console.log(this.tableData_seven)
-          this.outerVisible_seven1 = true
+          this.outerVisible_seven1 = false
         } else if (sub === 57) {
           // 药物商品名            commonUserGenePathwaysContentPage
           this.$set(task,"taskMessage",JSON.stringify(this.dialogFormVisible2))
           console.log(this.tableData);
-          this.dialogFormVisible2 = true
+          this.dialogFormVisible2 = false
         } else if (
           sub === 29 ||
           sub === 30 ||
@@ -4362,7 +4504,7 @@ export default {
           // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_sixteen))
           console.log(this.tableData_sixteen);
-          this.outerVisible_sixteen = true
+          this.outerVisible_sixteen = false
         } else if (
           sub === 26 ||
           sub === 13 ||
@@ -4375,105 +4517,105 @@ export default {
           // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
           console.log(this.tableData_thirteen)
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_fiveteen))
-          this.outerVisible_fiveteen = true
+          this.outerVisible_fiveteen = false
         } else if (sub === 33 || sub === 34) {
           // 国内外专利注释文献的上传
           console.log(this.tableData_eighteen)
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eighteen))
-          this.outerVisible_eighteen = true
+          this.outerVisible_eighteen = false
         } else if (sub === 45) {
           // 说明书原文上传
           console.log(this.tableData_nineteen)
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_nineteen))
-          this.outerVisible_nineteen = true
+          this.outerVisible_nineteen = false
         } else if (sub === 46) {
           // 说明书包装图片
           this.$set(task,"taskMessage",JSON.stringify(this.tableData_seven))
            console.log(this.tableData_seven)
-          this.outerVisible_seven = true
+          this.outerVisible_seven = false
         } else if (sub === 35) {
           // 基因位点频率信息分布（中国）
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twenty))
           console.log(this.tableData_twenty);
-          this.outerVisible_twenty = true
+          this.outerVisible_twenty = false
         } else if (sub === 36) {
           // 基因位点频率信息分布（世界）
           console.log(this.tableData_twentyOne);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyOne))
 
-          this.outerVisible_twentyOne = true
+          this.outerVisible_twentyOne = false
         } else if (sub === 37) {
           // 基因位点频率信息分布（住院病案首页数据统计）
           console.log(this.tableData_twentyTwo);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyTwo))
 
-          this.outerVisible_twentyTwo = true
+          this.outerVisible_twentyTwo = false
         } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
           // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
           console.log(this.tableData_three);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible))
 
-          this.outerVisible = true
+          this.outerVisible = false
         } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
           // 国内外药物标签注释，国内外临床注释
           console.log(this.tableData_twentyThree);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyThree))
 
-          this.outerVisible_twentyThree = true
+          this.outerVisible_twentyThree = false
         } else if (sub === 31 || sub === 32) {
           // 国内外专利注释
           console.log(this.tableData_eighteen);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eighteen))
 
-          this.outerVisible_eighteen = true
+          this.outerVisible_eighteen = false
         } else if (sub === 39) {
           // 药物基因参与通路描述
           console.log(this.tableData_four);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_four))
 
-          this.outerVisible_four = true
+          this.outerVisible_four = false
         } else if (sub === 40) {
           // 药物基因组成部分
           console.log(this.tableData_eleven);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eleven))
 
-          this.outerVisible_eleven = true
+          this.outerVisible_eleven = false
         } else if (sub === 41) {
           // 药物基因相关通路
           console.log(this.tableData_six);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_six))
 
-          this.outerVisible_six = true
+          this.outerVisible_six = false
         } else if (sub === 55) {
           // 药物医保目录查询
           console.log(this.tableData_eight);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eight))
 
-          this.outerVisible_eight = true
+          this.outerVisible_eight = false
         } else if (sub === 56) {
           // 药物相互作用
           console.log(this.tableData_nine);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_nine))
 
-          this.outerVisible_nine = true
+          this.outerVisible_nine = false
         } else if (sub === 23) {
           // 药物基因位点用药建议
           console.log(this.tableData_ten);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_ten))
-
-          this.outerVisible_ten = true
+          this.outerVisible_ten = false
         } else if (sub === 24) {
           // 药物基因用药建议
           console.log(this.tableData_twelve);
           this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twelve))
 
-          this.outerVisible_twelve = true
+          this.outerVisible_twelve = false
         }
-      this.innerVisible = false
-      // 这部分应该是保存提交你添加的内容tasklist
-      // console.log(JSON.stringify(this.tableData_five))
-      // console.log(JSON.stringify(this.tableData))
+        // 这部分应该是保存提交你添加的内容tasklist
+        // console.log(JSON.stringify(this.tableData_five))
+        // console.log(JSON.stringify(this.tableData))
       Save(task).then(res=>{
+        this.innerVisible = false
+        this.flag = flag+1
         console.log(res);
       })
     },
@@ -4488,7 +4630,6 @@ export default {
           // console.log(this.test_model)
           // console.log( this.tableData_seven[this.taskRowIndex])
           this.tableData_seven[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-
           console.log(this.tableData_seven)
         } else if (sub === 57) {
           // 药物商品名            commonUserGenePathwaysContentPage
@@ -4570,22 +4711,21 @@ export default {
           this.tableData_eight[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 56) {
           // 药物相互作用
-          console.log(this.tableData_nine);
+          // console.log(this.tableData_nine);
           this.tableData_nine[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 23) {
           // 药物基因位点用药建议
-          console.log(this.tableData_ten);
+          // console.log(this.tableData_ten);
           this.tableData_ten[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 24) {
           // 药物基因用药建议
-          console.log(this.tableData_twelve);
+          // console.log(this.tableData_twelve);
           this.tableData_twelve[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         }
-
       this.innerVisible = false
     },
-    bianji1(rowId,rowIndex) {
-      //编辑数据的下标
+    bianji1(rowId, rowIndex) {
+      // 编辑数据的下标
       this.taskRowIndex = rowIndex
       // 内层弹窗
       this.innerVisible = true
@@ -4626,7 +4766,7 @@ export default {
       this.test_models = []
       this.test_model = []
       this.taskNameMap.clear()
-
+      console.log(this.flag);
       if (
         subCategoryId === 1 ||
         subCategoryId === 2 ||
@@ -4644,7 +4784,6 @@ export default {
         subCategoryId === 50 ||
         subCategoryId === 51
       ) {
-        
         this.tasklist = []
         getGene() // 获取位点基本信息里面得options
           .then(res => {
@@ -4683,7 +4822,7 @@ export default {
             // console.log(obj[i]) // 具体获取到那一个输入框的值
             this.test_model[this.taskNameMap.get(i)] = obj[i]
           }
-          console.log(this.test_model)
+          // console.log(this.test_model)
           this.two_dialog = res.templateContent // 二层弹窗结构
           this.two_msg = res.taskMessage.literNoteStr // 二层弹窗数据
           this.taskname = res.name // 将点击数据名称赋值到input框中
@@ -4701,17 +4840,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?[]:taskMessage)
           this.tableData_seven = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4732,17 +4871,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4768,17 +4907,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4807,17 +4946,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_thirteen = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4838,17 +4977,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_eighteens = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4869,17 +5008,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_nineteen = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4900,17 +5039,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_seven = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4931,17 +5070,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twenty = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4962,17 +5101,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twentyOne = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -4993,17 +5132,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twentyTwo = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5032,18 +5171,18 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_three = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          console.log(this.tableData_three);
+          // console.log(this.tableData_three);
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5069,17 +5208,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twentyThree = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5100,17 +5239,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
+          // console.log(taskMessage)
            taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_eighteen = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5131,17 +5270,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          // console.log(taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_four = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5162,17 +5301,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          // console.log(taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_eleven = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5193,17 +5332,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          // console.log(taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_six = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5224,17 +5363,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          // console.log(taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_eight = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5255,17 +5394,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          // console.log(taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_nine = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5286,17 +5425,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          // console.log(taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_ten = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5317,17 +5456,17 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-          console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
-          console.log(taskMessage)
-           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          // console.log(taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twelve = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
           if (taskMessage != null && taskMessage != '') {
             taskMessage.forEach((item, index) => {
-              console.log(item)
-              console.log(index)
+              // console.log(item)
+              // console.log(index)
               if (item.literNoteStr != '') {
                 this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
                 this.test_model[this.taskNameMap.get(index)] = obj[index]
@@ -5360,7 +5499,7 @@ export default {
         }
         taskHall(data)
           .then(res => {
-            // console.log(res)
+            console.log(res)
             this.taskhall = res.list
             this.name = res.list[0].name
             this.subCategoryId = res.list[0].subCategoryId
@@ -5375,6 +5514,18 @@ export default {
           })
       }
     },
+    // 任务列表数据分页 1
+    handleSizeChange(val) {
+      // console.log(`每页 ${val} 条`)
+      this.pageSize = val // 动态改变
+      this.getTaskList() // 重新获取数据列表
+    },
+    handleCurrentChange(val) {
+      // console.log(`当前页: ${val}`)
+      this.currentPage = val // 动态改变
+      this.getTaskList() // 重新获取数据列表
+    },
+    // 任务列表数据分页 2
     // zsktest() {},
     // 上传文献
     submitUpload() {
@@ -5537,15 +5688,18 @@ export default {
     },
     addLine_ten() {
       // 添加行数
-      var newValue = {id:'',
-          literNoteStr:'',
+      var newValue = {
+        id: '',
+        genePorId:'',
         medicationType: '',
         evidenceLevel: '',
         race: '',
         raceDetails: '',
+        literNoteStr:'',
         phenotypes: '',
-        genotype: '',
+        genotypeEnglish: '',
         porMedicationSuggestionEnglish: '',
+        genotypeChinese: '',
         porMedicationSuggestionChinese: ''
       }
       // 添加新的行数
@@ -5659,7 +5813,7 @@ export default {
       }
       // 添加新的行数
       this.tableData_nineteen.push(newValue)
-      console.log(this.tableData_nineteen);
+      // console.log(this.tableData_nineteen);
     },
     addLine_twenty() {
       // 添加行数
@@ -5869,18 +6023,7 @@ export default {
         })
       }
     },
-    // 任务列表数据分页 1
-    handleSizeChange(val) {
-      // console.log(`每页 ${val} 条`)
-      this.pageSize = val // 动态改变
-      this.getTaskList() // 重新获取数据列表
-    },
-    handleCurrentChange(val) {
-      // console.log(`当前页: ${val}`)
-      this.currentPage = val // 动态改变
-      this.getTaskList() // 重新获取数据列表
-    },
-    // 任务列表数据分页 2
+    
     // 搜索框
     handleIconClick(ev) {
       console.log(this.input)
@@ -5929,7 +6072,8 @@ export default {
     YShelf,
     YButton,
     YHeader,
-    YFooter
+    YFooter,
+    quillEditor
   }
 }
 </script>

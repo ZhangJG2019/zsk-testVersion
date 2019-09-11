@@ -13,7 +13,6 @@ import './assets/icon/font_jiyinguanlian/iconfont.css'
 import $ from 'jquery'
 import axios from 'axios'
 // 富文本编辑器
-import VueUeditorWrap from 'vue-ueditor-wrap' // ES6 Module
 // 富文本编辑器
 
 Vue.prototype.axios = axios
@@ -58,16 +57,18 @@ import {
 } from '/utils/storage'
 import VueContentPlaceholders from 'vue-content-placeholders'
 
-const whiteList = ['/home', '/drug', '/gene', '/getajax', '/login', '/register', '/search', '/taskhall', '/forgetpwd'] // 不需要登陆的页面
-
+const whiteList = ['/taskhall', '/home', '/drug', '/gene', '/getajax', '/login', '/register', '/search', '/forgetpwd'] // 不需要登陆的页面
+//
 router.beforeEach(function (to, from, next) {
-  if (getStore('token')) {
+  let ticket = getStore('token')
+  if (ticket) {
     userInfo().then(res => {
+      debugger
       if (res && res.data) {
         store.commit('RECORD_USERINFO', {
           info: res.data.user
         })
-        if (to.path === '/login') { //  跳转到
+        if (to.path === 'http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump') { //  跳转到
           next({
             path: '/'
           })
@@ -77,7 +78,9 @@ router.beforeEach(function (to, from, next) {
         if (whiteList.indexOf(to.path) !== -1) { // 白名单,如果在白名单中，就免登录
           next()
         } else { // 如果不在白名单中， 就跳转到登录页面
-          next('/login')
+          // next('/http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump')
+          // next('/http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump')
+          window.location.href = 'http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump'
         }
       }
     })
@@ -85,7 +88,8 @@ router.beforeEach(function (to, from, next) {
     if (whiteList.indexOf(to.path) !== -1) { // 白名单,如果在白名单中，就免登录
       next()
     } else { // 如果不在白名单中， 就跳转到登录页面
-      next('/login')
+      // next('http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump')
+      window.location.href = 'http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump'
     }
   }
 })
@@ -144,7 +148,6 @@ Vue.use(VueLazyload, {
   // attempt: 1
 })
 
-Vue.component('vue-ueditor-wrap', VueUeditorWrap) // 注册富文本编辑器
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({

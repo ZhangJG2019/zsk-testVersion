@@ -91,5 +91,9 @@ module.exports = {
       "windows.jQuery": "jquery",
     })
 
-  ]
+  ],
+  // 富文本编辑器
+  externals: {
+    "CKEDITOR": "window.CKEDITOR"
+  },
 }

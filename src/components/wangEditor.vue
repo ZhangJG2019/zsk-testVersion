@@ -11,7 +11,7 @@
 import E from 'wangeditor'
 export default {
   name: 'Editorbar',
-  data() {
+  data () {
     return {
       editor: null,
       info_: null
@@ -32,28 +32,28 @@ export default {
     }
   },
   watch: {
-    isClear(val) {
+    isClear (val) {
       // 触发清除文本域内容
       if (val) {
         this.editor.txt.clear()
         this.info_ = null
       }
     },
-    value(val) {
+    value (val) {
       // 使用 v-model 时，设置初始值
       this.editor.txt.html(val)
     }
   },
-  mounted() {
+  mounted () {
     this.seteditor()
   },
   methods: {
-    seteditor() {
+    seteditor () {
       this.editor = new E(this.$refs.toolbar, this.$refs.editor)
 
       this.editor.customConfig.uploadImgShowBase64 = true // base 64 存储图片
-      this.editor.customConfig.uploadImgServer = '' // 配置服务器端地址
-      this.editor.customConfig.uploadImgHeaders = {} // 自定义 header
+      this.editor.customConfig.uploadImgServer = ''// 配置服务器端地址
+      this.editor.customConfig.uploadImgHeaders = {      }// 自定义 header
       this.editor.customConfig.uploadFileName = '' // 后端接受上传文件的参数名
       this.editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024 // 将图片大小限制为 2M
       this.editor.customConfig.uploadImgMaxLength = 6 // 限制一次最多上传 3 张图片
@@ -100,7 +100,7 @@ export default {
           // 图片上传成功，插入图片的回调
         }
       }
-      this.editor.customConfig.onchange = html => {
+      this.editor.customConfig.onchange = (html) => {
         this.info_ = html // 绑定当前逐渐地值
         this.$emit('change', this.info_) // 将内容同步到父组件中
       }

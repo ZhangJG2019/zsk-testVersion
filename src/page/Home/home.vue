@@ -13,13 +13,9 @@
               <ul class="left_ul left_content">
                 <li v-for="(item, key) in topNews" :key="key">
                   <span>{{ date | formatDate }}</span>
-                  <a
-                    @click="See(item.articleLinkUrl)"
-                    v-text="item.articleTitle"
-                  >
-                  </a>
+                  <a @click="See(item.linkUrl)" v-text="item.title"> </a>
                 </li>
-                <li class="static_null" style="display:none">
+                <li class="static_null zuixin" style="display:none">
                   <a>暂无好消息，请耐心等待~</a>
                 </li>
               </ul>
@@ -32,12 +28,9 @@
               <ul id="newlog" class="left_content">
                 <li v-for="(item, key) in newContent" :key="key">
                   <span v-text="key + 1" class="new_content "></span>
-                  <a
-                    @click="See(item.articleLinkUrl)"
-                    v-text="item.articleTitle"
-                  ></a>
+                  <a @click="See(item.linkUrl)" v-text="item.title"></a>
                 </li>
-                <li class="static_null" style="display:none">
+                <li class="static_null yanjiu" style="display:none">
                   <a>暂无好消息，请耐心等待~</a>
                 </li>
               </ul>
@@ -160,12 +153,9 @@
               <ul class="right_content left_content">
                 <li v-for="(item, key) in notice.slice(5)" :key="key">
                   <span v-text="key + 1"></span>
-                  <a
-                    @click="See(item.articleLinkUrl)"
-                    v-text="item.articleTitle"
-                  ></a>
+                  <a @click="See(item.linkUrl)" v-text="item.title"></a>
                 </li>
-                <li class="static_null" style="display:none">
+                <li class="static_null gg" style="display:none">
                   <a>暂无好消息，请耐心等待~</a>
                 </li>
               </ul>
@@ -298,7 +288,7 @@
 </template>
 <script>
 import YShelf from '/components/shelf'
-import { sendmsg } from '/api/index.js'
+import { sendmsg, userInfo } from '/api/index.js'
 import 'element-ui'
 import 'jquery'
 import axios from 'axios'
@@ -324,6 +314,7 @@ export default {
     this.getNewContent()
     this.getNotice()
     this.getNum()
+    this.getname()
   },
   data() {
     return {
@@ -363,6 +354,12 @@ export default {
     }
   },
   methods: {
+    getname() {
+      userInfo().then(res => {
+        debugger
+        console.log(res)
+      })
+    },
     patent() {},
     clinicalTrials() {},
     clinicalNotes() {},
@@ -448,7 +445,6 @@ export default {
       axios.defaults.withCredentials = true
       axios.defaults.headers.common['Authentication-Token'] =
         window.localStorage.token
-
       axios({
         method: 'get',
         url: url,
@@ -461,18 +457,19 @@ export default {
         if (this.topNews.length > 0) {
           this.columnLinkUrl = res.data[0].columnLinkUrl
         } else {
-          this.showdiv()
+          let zuixin = '.zuixin'
+          this.showdiv(zuixin)
         }
       })
     },
     // 当公告、最新事件、最新研究内容没有数据时显示提示
-    showdiv() {
-      if ($('.static_null').css('display') === 'none') {
+    showdiv(e) {
+      if ($(e).css('display') === 'none') {
         // 如果show是隐藏的
-        $('.static_null').css('display', 'block') // show的display属性设置为block（显示）
+        $(e).css('display', 'block') // show的display属性设置为block（显示）
       } else {
         // 如果show是显示的
-        $('.static_null').css('display', 'none') // show的display属性设置为none（隐藏）
+        $(e).css('display', 'none') // show的display属性设置为none（隐藏）
       }
     },
     // 最新研究内容
@@ -490,6 +487,8 @@ export default {
         if (this.newContent.length > 0) {
           this.columnLinkUrl = res.data[0].columnLinkUrl
         } else {
+          let yanjiu = '.yanjiu'
+          this.showdiv(yanjiu)
         }
       })
     },
@@ -498,7 +497,6 @@ export default {
       var gonggao = '公告'
       axios.defaults.withCredentials = true
       var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-      // var url = 'static/data/home_notice.json'
       axios({
         method: 'get',
         url: url
@@ -506,10 +504,10 @@ export default {
         // 把获得好的最新事件 赋予 给notice成员
         this.notice = res.data
         if (this.notice.length > 0) {
-          // console.log(this.columnLinkUrl)
-          // console.log(res.data)
           this.columnLinkUrl = res.data[0].columnLinkUrl
         } else {
+          let gg = '.gg'
+          this.showdiv(gg)
         }
       })
     },

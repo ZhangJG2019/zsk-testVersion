@@ -25,7 +25,8 @@
               >
               </el-autocomplete>
             </div>
-            <div class="nav-aside" ref="aside" :class="{ fixed: st }">
+            <!-- <div class="nav-aside" ref="aside" :class="{ fixed: st }"> -->
+            <div class="nav-aside" ref="aside" :class="{ fixed: false }">
               <div class="user pr">
                 <!-- <router-link to="#/taskhall">个人中心</router-link> -->
                 <a
@@ -62,7 +63,7 @@
           </div>
         </div>
       </header>
-      <slot name="nav">
+      <!-- <slot name="nav">
         <div class="nav-sub" :class="{ fixed: st }">
           <div class="nav-sub-bg"></div>
           <div class="nav-sub-wrapper" :class="{ fixed: st }">
@@ -93,11 +94,10 @@
                   >
                 </li>
               </ul>
-              <div></div>
             </div>
           </div>
         </div>
-      </slot>
+      </slot> -->
     </div>
   </div>
 </template>
