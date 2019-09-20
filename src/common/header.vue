@@ -101,7 +101,7 @@ import YButton from '/components/YButton'
 import { mapMutations, mapState } from 'vuex'
 import { loginOut, getQuickSearch } from '/api/index'
 import { getStore, removeStore } from '/utils/storage'
-import 'element-ui/lib/theme-default/index.css'
+import 'element-ui/lib/theme-chalk/index.css'
 export default {
   data() {
     return {
@@ -113,7 +113,7 @@ export default {
       positionL: 0,
       positionT: 0,
       timerCartShow: null, // 定时隐藏购物车
-      userinput: null, //用户输入的参数
+      userinput: null, // 用户输入的参数
       choosePage: -1,
       searchResults: [],
       timeout: null,
@@ -156,7 +156,7 @@ export default {
             key: this.userinput
           }
         })
-        //func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
+        // func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
         this.$emit('sousuo', this.userinput)
       } else {
         this.$router.push({
@@ -165,7 +165,7 @@ export default {
             key: this.userinput
           }
         })
-        //func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
+        // func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
         this.$emit('sousuo', this.userinput)
       }
     },
