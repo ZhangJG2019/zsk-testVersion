@@ -209,9 +209,6 @@ export default {
       userLogin(data)
         .then(res => {
           // console.log(res)
-          // console.log(res.data)
-          // console.log(res.data.user)
-          // console.log(res.data.user.activeId)
           if (res.data !== null && res.data.user !== null) {
             setStore('token', res.data.token)
             setStore('userId', res.data.user.id)

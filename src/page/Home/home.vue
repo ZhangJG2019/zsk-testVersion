@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="login">
     <div class="activity-panel">
       <ul class="box">
         <!-- 左侧内容区域  start-->
@@ -12,7 +12,7 @@
               </h2>
               <ul class="left_ul left_content">
                 <li v-for="(item, key) in topNews" :key="key">
-                  <span>{{ date | formatDate }}</span>
+                  <span>{{ item.publishTime | formatDate }}</span>
                   <a @click="See(item.linkUrl)" v-text="item.title"> </a>
                 </li>
                 <li class="static_null zuixin" style="display:none">
@@ -55,7 +55,7 @@
                   <img src="../../../static/images/jiyin.png" alt="" />
                   <a href="" class="title">基因</a>
                   <!-- <a class="num">123</a> -->
-                  <a class="num" v-text="genenum">123</a>
+                  <a class="num" v-text="genenum"></a>
                 </li>
                 <!-- <li class="center_content"> -->
                 <li
@@ -66,7 +66,7 @@
                   <img src="../../../static/images/xianguanyaowu.png" alt="" />
                   <a href="" class="title">药物</a>
                   <!-- <a class="num">456</a> -->
-                  <a class="num" v-text="drugnum">456</a>
+                  <a class="num" v-text="drugnum"></a>
                 </li>
                 <li
                   class="center_content"
@@ -77,7 +77,7 @@
                   <img src="../../../static/images/yaowujiyindui.png" alt="" />
                   <a href="" class="title">药物基因对</a>
                   <!-- <a class="num">789</a> -->
-                  <a class="num" v-text="drugGenePairnum">789</a>
+                  <a class="num" v-text="drugGenePairnum"></a>
                 </li>
                 <li
                   class="center_content"
@@ -88,7 +88,7 @@
                   <img src="../../../static/images/quanweizhinan.png" alt="" />
                   <a href="" class="title">权威指南</a>
                   <!-- <a class="num">987</a> -->
-                  <a class="num" v-text="authoritynum">987</a>
+                  <a class="num" v-text="authoritynum"></a>
                 </li>
                 <li
                   class="center_content"
@@ -99,7 +99,7 @@
                   <img src="../../../static/images/yaowubiaoqian.png" alt="" />
                   <a href="" class="title">药物标签</a>
                   <!-- <a class="num">654</a> -->
-                  <a class="num" v-text="drugLabelsnum">654</a>
+                  <a class="num" v-text="drugLabelsnum"></a>
                 </li>
                 <li
                   class="center_content"
@@ -110,7 +110,7 @@
                   <img src="../../../static/images/linchuangzhushi.png" />
                   <a href="" class="title">临床注释</a>
                   <!-- <a class="num">321</a> -->
-                  <a class="num" v-text="clinicalNotesnum">321</a>
+                  <a class="num" v-text="clinicalNotesnum"></a>
                 </li>
                 <li
                   class="center_content"
@@ -124,7 +124,7 @@
                   />
                   <a href="" class="title">临床实验</a>
                   <!-- <a class="num">1314</a> -->
-                  <a class="num" v-text="clinicalTrialsnum">1314</a>
+                  <a class="num" v-text="clinicalTrialsnum"></a>
                 </li>
                 <li
                   class="center_content"
@@ -135,7 +135,7 @@
                   <img src="../../../static/images/zhuanli.png" alt="" />
                   <a href="" class="title">专利</a>
                   <!-- <a class="num">521</a> -->
-                  <a class="num" v-text="patentnum">521</a>
+                  <a class="num" v-text="patentnum"></a>
                 </li>
               </ul>
             </div>
@@ -240,27 +240,27 @@
       <ul class=" guide_ul">
         <li style="background-color:#35be9b;">
           <!-- <li> -->
-          <router-link to="####">
+          <router-link to="/taskUser">
             <i class="iconfont icon-yonghuguanli"></i>
             <p>知识库用户</p>
           </router-link>
         </li>
         <li style="background-color:#8bc255;">
           <!-- <li> -->
-          <router-link to="####">
+          <router-link to="/download">
             <i class="iconfont icon-xiazai"></i>
             <p>下载</p>
           </router-link>
         </li>
         <li style="background-color:#56bde3;">
           <!-- <li> -->
-          <router-link to="####">
+          <router-link to="/help">
             <i class="iconfont icon-bangzhu"></i>
             <p>帮助</p>
           </router-link>
         </li>
         <!-- <li> -->
-        <li style="background-color:#f78228;">
+        <li style="background-color:#f78228;" @click="tanchaung">
           <router-link to="/taskhall">
             <i class="iconfont icon-job"></i>
             <p>任务大厅</p>
@@ -292,19 +292,23 @@ import { sendmsg, userInfo } from '/api/index.js'
 import 'element-ui'
 import 'jquery'
 import axios from 'axios'
+import { getStore, setStore } from '/utils/storage.js'
+import store from '../../store/index.js'
 // 时间补位函数 1
-var padDate = function(value) {
-  return value < 10 ? '0' + value : value
-}
+// var padDate = function(value) {
+//   return value < 10 ? '0' + value : value
+// }
 // 事件补位函数 2
 // 格式化时间函数 1
 var formatDate = function(value) {
   // 这里的value就是需要过滤的数据
-  var date = new Date(value)
-  var year = date.getFullYear()
-  var month = padDate(date.getMonth() + 1)
-  var day = padDate(date.getDate())
-  return year + '-' + month + '-' + day
+  // var date = new Date(value)
+  // var year = date.getFullYear()
+  // var month = padDate(date.getMonth() + 1)
+  // var day = padDate(date.getDate())
+  // return year + '-' + month + '-' + day
+  let a = value.split(' ')
+  return a[0]
 }
 // 格式化时间函数 2
 export default {
@@ -353,24 +357,36 @@ export default {
       notice: []
     }
   },
+  computed: {
+    count() {
+      return this.$store.state.login
+    }
+  },
   methods: {
     getname() {
       userInfo().then(res => {
-        debugger
-        console.log(res)
+        // console.log(res.data.user)
+        let menuCode = new Set()
+        let user = res.data.user
+        let role = user.roleVo
+        if (role !== null) {
+          role.permissionVoList.map(item =>
+            item.menuList.map(it => menuCode.add(it.code))
+          )
+        }
+        // console.log(menuCode)
+        user.roleVo = menuCode
+        store.commit('RECORD_USERINFO', {
+          info: user
+        })
+        setStore('userInfo', user)
       })
     },
-    patent() {},
-    clinicalTrials() {},
-    clinicalNotes() {},
-    drugLabels() {},
-    authority() {},
-    drugGenePair() {},
     // 发送留言
     sentemail(sizeForm) {
       this.$refs[sizeForm].validate(valid => {
         if (valid) {
-          console.log(this.$refs[sizeForm])
+          // console.log(this.$refs[sizeForm])
           let data = new FormData()
           data.append('email', this.sizeForm.email)
           data.append('msgcontent', this.sizeForm.msgcontent)
@@ -390,11 +406,11 @@ export default {
               }
             })
             .catch(res => {
-              console.log(111111111111)
-              this.$message({
-                message: res.message,
-                type: 'error'
-              })
+              // console.log(111111111111)
+              // this.$message({
+              //   message: res.message,
+              //   type: 'error'
+              // })
             })
         } else {
           this.$message({
@@ -417,31 +433,78 @@ export default {
         path: '/drug'
       })
     },
-    // 获取各分类标签数量
+    // 药物基因对
+    drugGenePair() {
+      this.$router.push({
+        path: '/drugGenePair'
+      })
+    },
+    // 权威指南
+    authority() {
+      this.$router.push({
+        path: '/authority'
+      })
+    },
+    // 药物标签
+    drugLabels() {
+      this.$router.push({
+        path: '/drugLabels'
+      })
+    },
+    // 临床注释
+    clinicalNotes() {
+      this.$router.push({
+        path: '/clinicalNotes'
+      })
+    },
+    // 临床实验
+    clinicalTrials() {
+      this.$router.push({
+        path: '/clinicalTrials'
+      })
+    },
+    // 专利
+    patent() {
+      this.$router.push({
+        path: '/patent'
+      })
+    },
+    // 获取首页中间八大模块数据数量
     getNum() {
-      var url = 'static/data/home_center.json'
+      var url1 = '/apis/taskApi/countAllNum'
       axios({
         method: 'get',
-        url: url
+        url: url1
+      }).then(res => {
+        // console.log(res)
+        let a = JSON.parse(res.data)
+        // console.log(res.data)
+        for (let i in a) {
+          // console.log(i)
+          if (i === '8') {
+            this.patentnum = a[i]
+          } else if (i === '1') {
+            this.drugGenePairnum = a[i]
+          } else if (i === '2') {
+            this.drugnum = a[i]
+          } else if (i === '3') {
+            this.genenum = a[i]
+          } else if (i === '4') {
+            this.authoritynum = a[i]
+          } else if (i === '5') {
+            this.drugLabelsnum = a[i]
+          } else if (i === '6') {
+            this.clinicalNotesnum = a[i]
+          } else if (i === '7') {
+            this.clinicalTrialsnum = a[i]
+          }
+        }
       })
-        .then(res => {
-          // console.log(res)
-          // console.log(res.data[0].genenum)
-          this.genenum = res.data[0].genenum
-          this.drugnum = res.data[0].drugnum
-          this.drugGenePairnum = res.data[0].drugGenePairnum
-          this.authoritynum = res.data[0].authoritynum
-          this.drugLabelsnum = res.data[0].drugLabelsnum
-          this.clinicalNotesnum = res.data[0].clinicalNotesnum
-          this.clinicalTrialsnum = res.data[0].clinicalTrialsnum
-          this.patentnum = res.data[0].patentnum
-        })
-        .catch(console.log(111111111111))
     },
     // 最新事件
     getTopNews() {
-      var topNew = '最新事件'
-      var url = '/apis/cms/api/getColumnNewList?title=' + topNew
+      // var topNew = '最新事件'
+      // var url = '/apis/cms/api/getColumnNewList?title=' + topNew
       axios.defaults.withCredentials = true
       axios.defaults.headers.common['Authentication-Token'] =
         window.localStorage.token
@@ -454,8 +517,21 @@ export default {
         // console.log(res.data[0].columnLinkUrl)
         // 把获得好的最新事件 赋予topNews 给成员
         this.topNews = res.data
+        // console.log(res.data.publishTime)
+        // console.log(curTime)
         if (this.topNews.length > 0) {
           this.columnLinkUrl = res.data[0].columnLinkUrl
+          // console.log(this.columnLinkUrl)
+          let url = this.columnLinkUrl.split('/html/')
+          // console.log(url)
+          let u = url[1].split('/')
+          // console.log(u)
+          let a = u[0]
+          // console.log(a)
+          if (a === '') {
+            a = u[1]
+          }
+          this.columnLinkUrl = url[0] + '/' + a + '/index.html'
         } else {
           let zuixin = '.zuixin'
           this.showdiv(zuixin)
@@ -474,9 +550,9 @@ export default {
     },
     // 最新研究内容
     getNewContent() {
-      var newContent = '最新研究内容'
-      axios.defaults.withCredentials = true
-      var url = '/apis/cms/api/getColumnNewList?title=' + newContent
+      // var newContent = '最新研究内容'
+      // axios.defaults.withCredentials = true
+      // var url = '/apis/cms/api/getColumnNewList?title=' + newContent
       // var url = 'static/data/home_newContent.json'
       axios({
         method: 'get',
@@ -494,13 +570,14 @@ export default {
     },
     // 公告
     getNotice() {
-      var gonggao = '公告'
-      axios.defaults.withCredentials = true
-      var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
+      // var gonggao = '公告'
+      // axios.defaults.withCredentials = true
+      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
       axios({
         method: 'get',
         url: url
       }).then(res => {
+        // console.log(res)
         // 把获得好的最新事件 赋予 给notice成员
         this.notice = res.data
         if (this.notice.length > 0) {
@@ -514,6 +591,22 @@ export default {
     // cms页面跳转
     See(e) {
       window.location.href = '' + e
+    },
+    tanchaung() {
+      let userInfo = getStore('userInfo')
+      // let userInfo = 'zsk'
+      if (userInfo !== null && userInfo !== '') {
+        // window.location.href = 'http://47.105.75.254/#/taskhall'
+        window.location.href = 'http://localhost:1111/#/taskhall'
+        //  path: '/taskall'
+      } else {
+        // debugger
+        // alert(111111111)
+        this.$message({
+          message: '请登录后查看',
+          type: 'warning'
+        })
+      }
     }
   },
   mounted() {
@@ -647,6 +740,7 @@ export default {
     )
     // 业务划分区域页面跳转 1
     $('.guide_ul li').click(function() {
+      // debugger
       $('a', this)[0].click()
     })
   },
@@ -756,11 +850,11 @@ export default {
   box-sizing: border-box;
   margin-right: 5px;
 }
-#newlog li:nth-child(1) span,
-#newlog li:nth-child(2) span,
-#newlog li:nth-child(3) span {
-  background-color: orange;
-}
+// #newlog li:nth-child(1) span,
+// #newlog li:nth-child(2) span,
+// #newlog li:nth-child(3) span {
+//   background-color: orange;
+// }
 .side_left ul li {
   width: 300px;
   box-sizing: border-box;

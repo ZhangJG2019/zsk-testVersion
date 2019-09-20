@@ -23,3 +23,11 @@ export const getSearch = (params) => {
 export const reLoad = (params) => {
   return http.fetchGet('/apis/taskApi/reload', params)
 }
+// 任务大厅--放弃任务
+export const giveUpTask = (params) => {
+  return http.fetchPost('/apis/task/giveUpTask', params)
+}
+// 任务大厅点击领取按钮修改状态
+export const receiveTask = (params) => {
+  return http.fetchPost('/apis/task/updateFlag', params)
+}

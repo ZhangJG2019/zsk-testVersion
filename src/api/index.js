@@ -23,7 +23,8 @@ export const loginOut = (params) => {
 }
 // 用户信息
 export const userInfo = () => {
-  return http.fetchGet('/front/getUserInfo')
+  // return http.fetchGet('/front/getUserInfo')
+  return http.fetchGet('../../static/data/user.json')
 }
 
 // 注册账号
@@ -59,3 +60,16 @@ export const recommend = (params) => {
 // export const getToken = (params) => {
 //   return http.fetchPost('/apis/', params)
 // }
+// 首页--下载
+export const Download = (params) => {
+  // return http.fetchGet('/apis/document/download?id=', params)
+  return http.fetchGet('/apis/taskApi/download?id=' + params)
+}
+// header搜索框
+export const getSearch = (params) => {
+  return http.fetchGet('/apis/taskApi/queryAllResult', params)
+}
+// 快速搜索
+export const getQuickSearch = (params) => {
+  return http.fetchGet('/front/quickSearch', params)
+}

@@ -68,7 +68,7 @@ app.use(staticPath, express.static('./static'))
 
 // var uri = 'http://192.168.1.40:8099'
 var uri = 'http://localhost:' + port
-// var uri = 'http://127.0.0.1:' + port
+// var uri = 'http://47.105.75.254:' + port
 
 var _resolve
 var readyPromise = new Promise(resolve => {

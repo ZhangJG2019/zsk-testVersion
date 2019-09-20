@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <div class="nav">
+    <!-- <div class="nav">
       <div class="w">
         <a
           href="javascript:;"
@@ -44,7 +44,7 @@
           >时间从高到低</a
         >
       </div>
-    </div>
+    </div> -->
 
     <div
       v-loading="loading"
@@ -60,7 +60,6 @@
             :msg="item"
           ></mall-goods>
         </div>
-
         <el-pagination
           v-if="!noResult && !error"
           @size-change="handleSizeChange"
@@ -77,7 +76,7 @@
         <div class="no-data">
           <img src="/static/images/no-search.png" />
           <br />
-          抱歉！没有为您找到相关的商品
+          抱歉！没有为您找到相关的信息
         </div>
         <section class="section">
           <y-shelf :title="recommendPanel.name">
@@ -113,8 +112,7 @@
   </div>
 </template>
 <script>
-import { getSearch } from '/api/goods.js'
-import { recommend } from '/api/index.js'
+import { recommend, getSearch } from '/api/index.js'
 import YButton from '/components/YButton'
 import YShelf from '/components/shelf'
 import YHeader from '/common/header'

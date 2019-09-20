@@ -3,7 +3,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 // import axios from 'axios'
-import store from './store/'
+import store from './store'
 import VueLazyload from 'vue-lazyload'
 import infiniteScroll from 'vue-infinite-scroll'
 import VueCookie from 'vue-cookie'
@@ -11,14 +11,14 @@ import VueResource from 'vue-resource'
 import './assets/icon/font-yewuhuafen/iconfont.css'
 import './assets/icon/font_jiyinguanlian/iconfont.css'
 import $ from 'jquery'
-import axios from 'axios'
+// import axios from 'axios'
 // 富文本编辑器
 // 富文本编辑器
 
-Vue.prototype.axios = axios
-import {
-  userInfo
-} from './api'
+// Vue.prototype.axios = axios
+// import {
+//   userInfo
+// } from './api'
 import {
   Tabs,
   TabPane,
@@ -56,51 +56,6 @@ import {
   getStore
 } from '/utils/storage'
 import VueContentPlaceholders from 'vue-content-placeholders'
-
-const whiteList = ['/taskhall', '/home', '/drug', '/gene', '/getajax', '/login', '/register', '/search', '/forgetpwd'] // 不需要登陆的页面
-//
-router.beforeEach(function (to, from, next) {
-  let ticket = getStore('token')
-  if (ticket) {
-    userInfo().then(res => {
-      debugger
-      if (res && res.data) {
-        store.commit('RECORD_USERINFO', {
-          info: res.data.user
-        })
-        if (to.path === 'http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump') { //  跳转到
-          next({
-            path: '/'
-          })
-        }
-        next()
-      } else {
-        if (whiteList.indexOf(to.path) !== -1) { // 白名单,如果在白名单中，就免登录
-          next()
-        } else { // 如果不在白名单中， 就跳转到登录页面
-          // next('/http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump')
-          // next('/http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump')
-          window.location.href = 'http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump'
-        }
-      }
-    })
-  } else {
-    if (whiteList.indexOf(to.path) !== -1) { // 白名单,如果在白名单中，就免登录
-      next()
-    } else { // 如果不在白名单中， 就跳转到登录页面
-      // next('http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump')
-      window.location.href = 'http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump'
-    }
-  }
-})
-
-// axios.interceptors.request.use(
-//   function (config) {
-//     let token = window.localStorage.getItem('token')
-//     config.headers.Authorization = token
-//     return config
-//   }
-// )
 
 Vue.use(VueContentPlaceholders)
 Vue.use(Tabs)
@@ -140,13 +95,39 @@ Vue.use(VueResource)
 Vue.prototype.$loading = Loading.service
 Vue.prototype.$notify = Notification
 Vue.prototype.$message = Message
-
 Vue.use(VueLazyload, {
   // preLoad: 1.3,
   // error: 'dist/error.png',
   loading: '/static/images/load.gif'
   // attempt: 1
 })
+
+const whiteList = ['/searchContent', '/queryAllResult', '/authority', '/clinicalNotes', '/clinicalTrials', '/drugGenePair', '/drugLabels', '/patent', '/taskUser', '/help', '/download', '/taskhall', '/home', '/drug', '/gene', '/getajax', '/login', '/register', '/forgetpwd'] // 不需要登陆的页面
+//
+router.beforeEach(function (to, from, next) {
+  // userInfo().then(res => {
+  let userInfo = getStore('userInfo')
+  // store.commit('RECORD_USERINFO', {
+  //   info: res.result
+  // })
+  if (whiteList.indexOf(to.path) !== -1) { // 白名单,如果在白名单中，就免登录
+    next()
+  } else {
+    if (userInfo !== null && userInfo !== '') {
+      next({
+        path: '/taskall'
+      })
+    } else {
+      // debugger
+      // alert(111111111)
+      // this.$message.error({
+      //   message: '请登录后查看',
+      //   type: 'error'
+      // })
+    }
+  }
+})
+// })
 
 Vue.config.productionTip = false
 /* eslint-disable no-new */

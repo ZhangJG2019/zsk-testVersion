@@ -1,60 +1,57 @@
 /* eslint-disable no-debugger */
 <template>
   <div class="taskhall">
-    <y-header>
+    <y-header @sousuo="getNotice">
       <div slot="nav"></div>
     </y-header>
     <el-card class="box-card" style="width:76.5rem; margin:0 auto;">
       <div class="tablecontent">
         <div class="content_title">
           <el-row>
+            <!-- <el-row style="margin-top:30px;"> -->
             <el-col :span="24" style="margin-bottom:20px;">
               <el-breadcrumb separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{ path: '/' }" style="font-size:15px;"
                   >首页</el-breadcrumb-item
                 >
                 <el-breadcrumb-item style="font-size:15px;"
-                  >药物</el-breadcrumb-item
+                  >搜索结果</el-breadcrumb-item
                 >
               </el-breadcrumb>
             </el-col>
-            <el-col :span="24"
-              ><p
-                style="font-size: 2.5625rem;font-family:microsoft yahei;margin-bottom:1.25rem;font-weight:100;"
-              >
-                药物(drug)
-              </p>
-
-              <p style="text-indent:2em;font-size:1.1rem;">
-                药物是用以预防、治疗及诊断疾病的物质。在理论上，药物是指凡能影响机体器官生理功能及细胞代谢活动的化学物质都属于药物的范畴，也包括避孕药。
-              </p></el-col
-            >
-          </el-row>
-          <el-row style="margin-top:30px;">
             <!-- 左侧菜单栏 -->
             <el-col :span="6">
               <ul class="leftmenu">
-                <li class="left_type">类别</li>
+                <li class="left_type">按类型过滤</li>
+                <li class="left_type" style="font-size:15px;">实体类型</li>
                 <li v-for="(item, key) in keytitle" :key="key">
                   <el-checkbox
                     name="check10"
                     class="checkboxs"
-                    @change="handleCheckedTypesChange(item.id)"
-                    ><span
-                      :id="item.id"
+                    @change="handleCheckedTypesChange(item.code)"
+                  >
+                    <span
+                      :id="item.code"
                       class="left_title"
                       v-text="item.name"
                     ></span>
-                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span
-                    >)</el-checkbox
-                  >
+                    &nbsp;&nbsp; (
+                    <span
+                      v-text="
+                        map.get(item.code) === undefined
+                          ? 0
+                          : map.get(item.code)
+                      "
+                    ></span>
+                    )
+                  </el-checkbox>
                 </li>
               </ul>
             </el-col>
             <!-- 右侧内容区 -->
             <el-col :span="18">
               <!-- 过滤输入框和数据总数 -->
-              <div style="font-size:18px;margin-bottom:40px;">
+              <!-- <div style="font-size:18px;margin-bottom:40px;">
                 过滤&nbsp;:<el-input
                   style="width:300px;text-indent: 2.3em;"
                   v-model="filter_input"
@@ -63,7 +60,7 @@
                 <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
                   <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
                 </p>
-              </div>
+              </div> -->
               <!-- 下方具体数据展示列表 -->
               <ul class="gene_list">
                 <li
@@ -71,7 +68,7 @@
                   :key="key"
                   style="cursor:pointer;"
                 >
-                  <div class="right_left" style="float:left; ">
+                  <div class="right_left" style="float:left; padding-top:32px;">
                     <span
                       class="iconfont icon-jiyinsuanfa"
                       style="font-size:50px;"
@@ -85,18 +82,29 @@
                       class="left_content"
                       style="float:left; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;width:600px;"
                     >
-                      <span style="color:#8b94a6;font-size:14px;">途径</span>
-                      <br />
-                      <span class="right_title" v-text="item.name"> </span>
+                      <!-- <span style="color:#8b94a6;font-size:14px;">途径</span> -->
+                      <span
+                        class="right_title"
+                        v-text="item.name"
+                        style="font-size: 1.2rem;"
+                      >
+                      </span>
                       <br />
                       <span
                         class="right_title"
                         style="font-style:italic"
-                        v-text="item.type"
+                        v-text="item.typeName"
                       >
                       </span>
                       <br />
-                      <span class="right_title" v-text="item.introduce"> </span>
+                      <!-- <p class="right_title">
+                        <ul class="search_title" style="height:20px">
+                          <li style="width:140px;text-align:center">临床指南注释(120)</li>
+                          <li style="width:140px;text-align:center">药物标签注释(40)</li>
+                          <li style="width:140px;text-align:center">临床注释(50)</li>
+                          <li style="width:140px;text-align:center">变异注释(30)</li>
+                        </ul>
+                      </p> -->
                     </div>
                     <img
                       flaot="right"
@@ -112,7 +120,7 @@
         </div>
       </div>
     </el-card>
-    <y-footer></y-footer>
+    <!-- <y-footer></y-footer> -->
   </div>
 </template>
 <script>
@@ -128,6 +136,7 @@ export default {
 
   data() {
     return {
+      searchKey: 'gene', // 子组件Yheader传过来的搜索关键字
       getGene: [], // 获取列表所有具体数据存放的数组，点击复选框，发ajax重新请求所对应的新数据
       geneList: [],
       totalNum: 0, // 复选框数据（括号里面的数字）的总数
@@ -139,40 +148,78 @@ export default {
     }
   },
   created() {
-    this.getNotice()
     this.getNoticeTitle()
+    // this.searchWord()
+    this.getNotice()
   },
   mounted() {},
   methods: {
-    // 所有基因数据列表获取
+    // 接收子组件header传过来的搜索关键字，发送ajax
     getNotice() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-      var url = 'static/data/getGene.json'
+      this.map.clear()
+      let searchKey = $('input[icon="search"]').val()
+      if (typeof searchKey === 'undefined' || searchKey == null) {
+        searchKey = ''
+      }
+      var url = 'apis/taskApi/queryAllResult?name=' + searchKey
       axios({
         method: 'get',
         url: url
       }).then(res => {
         // 把获得好的数据 赋予 给getGene成员
-        this.getGene = res.data
-        this.geneList = this.getGene
-        this.totalNum = this.getGene.length
-        // console.log(res)
-        for (let i = 0; i < this.getGene.length; i++) {
-          this.map.set(
-            this.getGene[i].typeId,
-            this.map.get(this.getGene[i].typeId) == null
-              ? 1
-              : this.map.get(this.getGene[i].typeId) + 1
-          )
+        if (res.data.length !== []) {
+          this.getGene = JSON.parse(res.data)
+          this.geneList = this.getGene
+          console.log(this.geneList)
+          this.totalNum = this.geneList.length
+
+          console.log(res)
+          for (let i = 0; i < this.geneList.length; i++) {
+            this.map.set(
+              this.geneList[i].type,
+              this.map.get(this.geneList[i].type) == null
+                ? 1
+                : this.map.get(this.geneList[i].type) + 1
+            )
+          }
+          console.log(this.map.get('project'))
+        } else {
+          this.$message({
+            message: '未搜索到相关信息',
+            type: 'warning'
+          })
         }
       })
     },
+    // 默认查询所有基因数据列表获取
+    // searchWord() {
+    //   // var gonggao = '公告'
+    //   // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
+    //   var url = 'static/data/getGene.json'
+    //   axios({
+    //     method: 'get',
+    //     url: url
+    //   }).then(res => {
+    //     // 把获得好的数据 赋予 给getGene成员
+    //     this.getGene = res.data
+    //     this.geneList = this.getGene
+    //     this.totalNum = this.getGene.length
+    //     // console.log(res)
+    //     for (let i = 0; i < this.getGene.length; i++) {
+    //       this.map.set(
+    //         this.getGene[i].id,
+    //         this.map.get(this.getGene[i].id) == null
+    //           ? 1
+    //           : this.map.get(this.getGene[i].id) + 1
+    //       )
+    //     }
+    //   })
+    // },
     // 基因数据左侧标题获取
     getNoticeTitle() {
       // var gonggao = '公告'
       // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-      var url = 'static/data/getGenetitle2.json'
+      var url = 'static/data/getGenetitle.json'
       axios({
         method: 'get',
         url: url
@@ -183,12 +230,12 @@ export default {
       })
     },
     // 点击基因数据标题获取对应列表数据
-    handleCheckedTypesChange(id) {
+    handleCheckedTypesChange(code) {
       this.geneList = []
-      if (this.ids.indexOf(id + ',') === -1) {
-        this.ids += id + ','
+      if (this.ids.indexOf(code + ',') === -1) {
+        this.ids += code + ','
       } else {
-        this.ids = this.ids.replace(id + ',', '')
+        this.ids = this.ids.replace(code + ',', '')
       }
       console.log(this.ids)
       if (this.ids === '') {
@@ -196,23 +243,11 @@ export default {
         return
       }
       for (let i = 0; i < this.getGene.length; i++) {
-        let typeId = this.getGene[i].typeId + ','
-        if (this.ids.indexOf(typeId) !== -1) {
+        let id = this.getGene[i].type + ','
+        if (this.ids.indexOf(id) !== -1) {
           this.geneList.push(this.getGene[i])
         }
       }
-      // var url = 'static/data/getGene.json'
-      // axios({ methods: 'get', url: url }).then(res => {
-      //   // console.log(res.data)
-      //   for (let i = 0; i < this.getGene.length; i++) {
-      //     this.map.set(
-      //       this.getGene[i].typeId,
-      //       this.map.get(this.getGene[i].typeId) == null
-      //         ? 1
-      //         : this.map.get(this.getGene[i].typeId) + 1
-      //     )
-      //   }
-      // })
     }
   },
   components: {
@@ -224,6 +259,14 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
+.right_title .search_title li {
+  float: left;
+  background-color: #eee;
+  margin-left: 5px;
+}
+.right_title .search_title li:hover {
+  background-color: #ddd;
+}
 .gene_list li:hover {
   // background-color: #f9f9fa;
   background-color: red;
@@ -244,6 +287,9 @@ export default {
   float: right;
   margin: 1rem 1.25rem 0 0;
 }
+.right_right:hover {
+  background-color: #e3effc;
+}
 .right_right img {
   width: 3.125rem;
   height: 3.8125rem;
@@ -252,11 +298,11 @@ export default {
   margin-bottom: 20px;
 }
 .right_title {
+  padding-left: 1.4rem;
   font-size: 1rem;
   line-height: 1.5;
   font-weight: 300;
 }
-
 .left_type {
   font-size: 20px;
 }

@@ -1,6 +1,6 @@
 <template>
   <!-- <div class="checkout"> -->
-  <div class="taskhalls">
+  <div class="login">
     <y-header> <div slot="nav"></div></y-header>
     <div class="activity-panel">
       <ul class="box">
@@ -76,6 +76,7 @@
                   :key="key"
                   :id="item.subCategoryId"
                   @current-change="handleCurrentChange"
+                  :flag="this.flag"
                 >
                   <img
                     src="../../../static/images/liwu.png"
@@ -103,14 +104,14 @@
                   <el-button
                     :id="item.id"
                     type="button"
-                    @click="bianji(item.subCategoryId, item.id, item.flag)"
+                    @click="bianji(item.subCategoryId, item.id)"
                     v-if="(userInfo.id == item.commonUser && item.flag == 1) ||
                     (userInfo.id == item.inspector && item.flag == 3) ||
                     (userInfo.id == item.editor && item.flag == 5) ||
                     (userInfo.id == item.expert && item.flag == 7) ||
                     (roles.has('task_admin') && item.flag == 10)"
                     v-text="btntxt" 
-                  >编辑任务
+                  >
                   </el-button>
                 </li>
                 <!-- 任务大厅具体列表数据展示 2-->
@@ -145,41 +146,31 @@
             <!-- 帮助指南 -->
             <div class=" news " style="width:326px;">
               <h2>
-                <!-- <strong @click="See(articleLinkUrl_help)"><strong>帮助指南</strong></a> -->
-                <a ><strong>帮助指南</strong></a>
+                <a @click="See(columnLinkUrl)"><strong>帮助指南</strong></a>
               </h2>
               <ul class="left_ul left_content">
-                <!-- <li v-for="(item, key) in topNews" :key="key">
+                <li v-for="(item, key) in topNews" :key="key">
                   <span v-text="item.id"></span>
                   <a
                     @click="See(item.articleLinkUrl)"
                     v-text="item.articleTitle"
                   >
                   </a>
-                </li> -->
-                <!-- <li class="static_null zuixin1" style="display:none"> -->
-                <li class="static_null zuixin1">
-                  <a>暂无好消息，请耐心等待~</a>
                 </li>
               </ul>
             </div>
             <!-- 常见问题 -->
             <div class=" news" style="width:326px;margin-top:18px">
               <h2>
-                <!-- <strong @click="See(columnLinkUrl)"><strong>常见问题</strong></a> -->
-                <a ><strong>常见问题</strong></a>
+                <a @click="See(columnLinkUrl)"><strong>常见问题</strong></a>
               </h2>
               <ul id="newlog" class="left_content">
-                <!-- <li v-for="(item, key) in newContent" :key="key">
+                <li v-for="(item, key) in newContent" :key="key">
                   <span v-text="item.id" class="new_content "></span>
                   <a
                     @click="See(item.articleLinkUrl)"
                     v-text="item.articleTitle"
                   ></a>
-                </li> -->
-                <!-- <li class="static_null zuixin" style="display:none"> -->
-                <li class="static_null zuixin">
-                  <a>暂无好消息，请耐心等待~</a>
                 </li>
               </ul>
             </div>
@@ -211,8 +202,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-        <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -224,17 +214,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -282,23 +264,19 @@
         >
         <el-button
           type="success"
-          @click="save(1)"
+          @click="save(this.flag)"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >提 交</el-button
         >
         <el-button
           type="danger"
-          @click="save(2)"
-          v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
+          @click="nosave(this.flag)"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >不通过</el-button
         >
         <el-button
          type="warning"
-          @click="giveUp()"
+          @click="giveUp(this.flag)"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >放弃任务</el-button
         >
@@ -421,24 +399,19 @@
           >
           <el-button
             type="success"
-            @click="save(1)"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >提 交</el-button
           >
           <el-button
             type="danger"
-            @click="save(2)"
-            v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                      (roles.has('task_inspector') && this.flag == 2) ||
-                      (roles.has('task_editor') && this.flag == 4) ||
-                      (roles.has('task_expert') && this.flag == 6)"
+            @click="nosave(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >不通过</el-button
           >
           <el-button
           type="warning"
-            @click="giveUp()"
-           
+            @click="giveUp(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >放弃任务</el-button
           >
@@ -547,30 +520,25 @@
         <div slot="footer" class="dialog-footer">
           <el-button
           type="primary"
-           @click="outerVisible = false"
+            @click="outerVisible = false"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >取 消</el-button
           >
           <el-button
             type="success"
-            @click="save(1)"
+            @click="save(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >提 交</el-button
           >
           <el-button
             type="danger"
-            @click="save(2)"
-            v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                      (roles.has('task_inspector') && this.flag == 2) ||
-                      (roles.has('task_editor') && this.flag == 4) ||
-                      (roles.has('task_expert') && this.flag == 6)"
+            @click="nosave(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >不通过</el-button
           >
           <el-button
           type="warning"
-            @click="giveUp()"
-           
+            @click="giveUp(this.flag)"
             style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
             >放弃任务</el-button
           >
@@ -590,8 +558,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-        <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -604,17 +571,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -656,7 +615,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button
         type="primary"
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -760,37 +719,32 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-        <div slot="footer" class="dialog-footer">
-          <el-button
-          type="primary"
-            @click="outerVisible_twentyThree = false"
-            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-            >取 消</el-button
-          >
-         <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-           
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
-        </div>
+          <div slot="footer" class="dialog-footer">
+            <el-button
+            type="primary"
+              @click="outerVisible_twentyThree = false"
+              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+              >取 消</el-button
+            >
+            <el-button
+              type="success"
+              @click="save(this.flag)"
+              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+              >提 交</el-button
+            >
+            <el-button
+              type="danger"
+              @click="nosave(this.flag)"
+              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+              >不通过</el-button
+            >
+            <el-button
+            type="warning"
+              @click="giveUp(this.flag)"
+              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+              >放弃任务</el-button
+            >
+          </div>
       </el-dialog>
     </div>
     <!-- 内层弹窗 开始-->
@@ -806,8 +760,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-        <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -820,17 +773,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-           v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -872,7 +817,7 @@
        <div slot="footer" class="dialog-footer">
         <el-button
         type="primary"
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -1013,36 +958,49 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-        <div slot="footer" class="dialog-footer">
+         <div slot="footer" class="dialog-footer">
             <el-button
             type="primary"
-              @click="outerVisible_fiveteen = false"
+              @click="outerVisible_twentyThree = false"
               style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
               >取 消</el-button
             >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
+            <el-button
+              type="success"
+              @click="save(this.flag)"
+              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+              >提 交</el-button
+            >
+            <el-button
+              type="danger"
+              @click="nosave(this.flag)"
+              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+              >不通过</el-button
+            >
+            <el-button
+            type="warning"
+              @click="giveUp(this.flag)"
+              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+              >放弃任务</el-button
+            >
+          </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_fiveteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
           >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+          <el-button
+            type="primary"
+            @click="(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_fiveteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -1059,8 +1017,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-        <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -1073,17 +1030,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -1124,7 +1073,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -1257,36 +1206,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_sixteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_sixteen = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-            <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-         
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_sixteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -1303,8 +1239,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-       <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -1317,17 +1252,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -1368,7 +1295,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -1509,36 +1436,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
-            type="primary"
-              @click="outerVisible_eighteen = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
+        <div slot="footer" class="dialog-footer">
           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-        
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="outerVisible_eighteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
+            type="primary"
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_eighteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -1555,8 +1469,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-      <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -1569,17 +1482,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -1620,7 +1525,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -1768,36 +1673,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_nineteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_nineteen = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-      
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确定</el-button
+          >
+          <el-button
+            @click="outerVisible_nineteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -1814,8 +1706,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-       <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -1828,17 +1719,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -1879,7 +1762,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -2035,35 +1918,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
-            type="primary"
-              @click="outerVisible_seven  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
+        <div slot="footer" class="dialog-footer">
           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="outerVisible_seven = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
+            type="primary"
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_seven = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -2080,8 +1951,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-       <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -2094,17 +1964,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-           v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -2145,7 +2007,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -2287,35 +2149,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_eighteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_eighteen  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_eighteen = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -2332,8 +2182,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-      <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -2346,17 +2195,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-           v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -2397,7 +2238,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -2568,36 +2409,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_twenty = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_twenty  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_twenty = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -2723,36 +2551,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_twentyOne = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_twentyOne   = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-            <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-         
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_twentyOne = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -2891,36 +2706,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_twentyTwo = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_twentyTwo  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-           
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_twentyTwo = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -3027,36 +2829,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_four = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_four  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-           
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_four = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -3073,8 +2862,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-      <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -3087,17 +2875,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -3138,7 +2918,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -3253,36 +3033,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_eleven = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_eleven  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-         
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_eleven = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -3299,8 +3066,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-      <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -3313,17 +3079,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-         v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -3364,7 +3122,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -3456,36 +3214,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_six = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_six  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_six = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -3602,36 +3347,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_seven1 = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_seven1  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_seven1 = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -3648,8 +3380,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-        <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -3662,17 +3393,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-           v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -3713,7 +3436,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -3891,36 +3614,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-          <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_eight = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_eight  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-            <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-           
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_eight = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -4008,36 +3718,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_nine = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_nine  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-            <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_nine = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -4188,36 +3885,23 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-         <div slot="footer" class="dialog-footer">
-            <el-button
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="outerVisible_ten = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_ten  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-           <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-           
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_ten = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -4303,35 +3987,22 @@
           </el-tab-pane>
         </el-tabs>
         <div slot="footer" class="dialog-footer">
-            <el-button
+          <el-button
+            @click="outerVisible_twelve = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >取 消</el-button
+          >
+          <el-button
             type="primary"
-              @click="outerVisible_twelve  = false"
-              style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-              >取 消</el-button
-            >
-            <el-button
-          type="success"
-          @click="save(1)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >提 交</el-button
-        >
-        <el-button
-          type="danger"
-          @click="save(2)"
-           v-if="(roles.has('task_common_user') && this.flag == 0) ||
-                    (roles.has('task_inspector') && this.flag == 2) ||
-                    (roles.has('task_editor') && this.flag == 4) ||
-                    (roles.has('task_expert') && this.flag == 6)"
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >不通过</el-button
-        >
-        <el-button
-         type="warning"
-          @click="giveUp()"
-          
-          style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
-          >放弃任务</el-button
-        >
+            @click="save(this.flag)"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >确 定</el-button
+          >
+          <el-button
+            @click="outerVisible_twelve = false"
+            style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
+            >放弃任务</el-button
+          >
         </div>
       </el-dialog>
     </div>
@@ -4348,8 +4019,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-       <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
-        <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
+        <span style="float:left;width:100px;" v-text="item.name"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -4362,17 +4032,9 @@
         </el-date-picker>
         <el-input
           class="readonly"
-          style="width:83%;display:none;"
-          v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.id === 'id'"
-          
-          :id="item.id"
-        ></el-input>
-         <el-input
-          class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
-          v-if="item.type.indexOf('_input') >= 0 && item.id !== 'id'"
+          v-if="item.type.indexOf('_input') >= 0"
           :id="item.id"
         ></el-input>
         <el-input
@@ -4413,7 +4075,7 @@
       </li>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="innerVisible = false"
+          @click="innerVisible_one = false"
           style="margin:3px 0 0 10px; width:90px;height:40px;font-size:16px;vertical-align:middle;"
           >取 消</el-button
         >
@@ -4434,7 +4096,7 @@ import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-import { taskHall, getGene, getSearch, Save, searchOptions, receiveTask, giveUpTask } from '/api/taskhall.js'
+import { taskHall, getGene, getSearch, Save, searchOptions } from '/api/taskhall.js'
 import { getStore } from '/utils/storage.js'
 import { quillEditor } from 'vue-quill-editor' // 调用编辑器
 import 'quill/dist/quill.core.css'
@@ -4454,7 +4116,6 @@ export default {
   },
   data() {
     return {
-      articleLinkUrl_help:'',
       Gene_EN:[],   // 基因型（英文）
       bianyiGene:[], // 变异位点下拉列表
       // 富文本编辑器
@@ -4491,7 +4152,7 @@ export default {
       wpList_secarch: [],  // 用户选中的options 
       // 顶部筛选
       two_dialog: [], // 第二层弹窗结构
-      // two_msg: [], // 第二层弹窗数据
+      two_msg: [], // 第二层弹窗数据
       test_model: [],
       // 弹窗 1
       geneList: [], // 基因名称下拉列表// 获取gene下拉列表数据
@@ -4505,16 +4166,40 @@ export default {
       input2: '',
       input_three: '',
       tableData: [
-       
+        {id:'',
+        // eslint-disable-next-line indent
+        // eslint-disable-next-line key-spacing
+        // eslint-disable-next-line indent
+        // eslint-disable-next-line key-spacing
+        // eslint-disable-next-line indent
+        literNoteStr:'',
+          drugGenericName: '',
+          caozuo: '',
+          approvalNumber: '',
+          specifications: '',
+          drugTradeName: '',
+          originPlace: ''
+        }
       ],
       tableData_three: [
-        
+        {id:'',
+          pmid: '',
+          name: '',
+          literNoteStr: '',
+          accessoryId: ''
+        }
       ],
       tableData_four: [
-       
+        {id:'',
+          pathways: '',
+          relatedPathways: '',
+          publication: '',
+          authors: '',
+          caozuo: ''
+        }
       ],
       tableData_five: [
-        { id: null,
+        {id:'',
           pathways: '',
           drugs: '',
           genes: '',
@@ -4522,31 +4207,86 @@ export default {
         }
       ],
       tableData_six: [
-       
+        {id:'',
+          pathways: '',
+           literNoteStr:'',
+          relatedPathways: ''
+        }
       ],
       tableData_seven: [
-        
+        {
+          id:'',
+          pmid: '',
+          name: '',
+          literNoteStr: '',
+          accessoryId: '',
+          drugInstruction_picture: ''
+        }
       ],
       tableData_eight: [
-        
+        {id:'',
+         literNoteStr:'',
+          medicalInsuranceArea: '',
+          number: '',
+          drugName: '',
+          drugForm: '',
+          drugClassification: '',
+          medicalInsuranceCategory: '',
+          supplementaryInformation: '',
+          changes: '',
+          remarks: ''
+        }
       ],
       tableData_nine: [
-       
+        {id:'',
+          name: '',
+           literNoteStr:'',
+          interactiveDrugs: '',
+          effectiveness: ''
+        }
       ],
       tableData_ten: [
-       
+        { id: '',
+          genePorId:'',
+          medicationType: '',
+          evidenceLevel: '',
+          race: '',
+          raceDetails: '',
+          literNoteStr:'',
+          phenotypes: '',
+          genotypeEnglish: '',
+          porMedicationSuggestionEnglish: '',
+          genotypeChinese: '',
+          porMedicationSuggestionChinese: ''
+        }
       ],
       tableData_eleven: [
-        
+        {id:'',
+          pathways: '',
+          drugs: '',
+           literNoteStr:'',
+          genes: '',
+          diseases: ''
+        }
       ],
       tableData_twelve: [
-      
+        {id:'',
+         literNoteStr:'',
+          conclusion: ''
+        }
       ],
       tableData_thirteen: [
-        
+        {
+          id:'',
+          pmid: '',
+          name: '',
+          literNoteStr: '',
+          accessoryId: '',
+          currentTaskComment: ''
+        }
       ],
       tableData_fourteen: [
-        { id: null,
+        {id:'',
           pmid: '',
           name: '',
           literNoteStr: '',
@@ -4555,7 +4295,7 @@ export default {
       ],
       tableData_fiveteen: [
         {
-          id: null,
+          id:'',
           pmid: '',
           name: '',
           literNoteStr:'',
@@ -4564,7 +4304,7 @@ export default {
         }
       ],
       tableData_sixteen: [
-        { id: null,
+        {id:'',
           name: '',
           literNoteStr: '',
           accessoryId: '',
@@ -4572,29 +4312,79 @@ export default {
         }
       ],
       tableData_seventeen: [
-        {id: null,
+        {id:'',
           name: '',
           literNoteStr: '',
           accessoryId: ''
         }
       ],
       tableData_eighteen: [
-       
+        {id:'',
+          pmid: '',
+          name: '',
+          literNoteStr: '',
+          accessoryId: '',
+          drugInstruction_picture: '',
+          currentTaskComment: ''
+        }
       ],
       tableData_nineteen: [
-        
+        {id:'',
+          pmid: '',
+          name: '',
+          literNoteStr: '',
+          accessoryId: '',
+          currentTaskComment: ''
+        }
       ],
-      tableData_twenty: [ // 1
-       
+      tableData_twenty: [
+        {id:'',
+          literNoteStr:'',
+          dataSource: '',
+          year: '',
+          project: '',
+          area: '',
+          receiveLaboratory: '',
+          sex: '',
+          ageGroup: '',
+          sampleType: '',
+          porResultId: '',
+          testAmount: '',
+          currentTaskComment: ''
+        }
       ],
       tableData_twentyOne: [
-        
+        {id:'',
+          literNoteStr:'',
+          dataSource: '',
+          project: '',
+          fatherRace: '',
+          race: '',
+          area: '',
+          porResultId: '',
+          testAmount: '',
+          currentTaskComment: ''
+        }
       ],
       tableData_twentyTwo: [
-        
+        {id:'',
+          literNoteStr:'',
+          dataSource: '',
+          project: '',
+          sex: '',
+          ageGroup: '',
+          nation: '',
+          nativePlace: '',
+          currentTaskComment: ''
+        }
       ],
       tableData_twentyThree: [
-       
+        {id:'',
+          pmid: '',
+          name: '',
+          literNoteStr: '',
+          accessoryId: ''
+        }
       ],
       dialogTableVisible: false,
       dialogFormVisible1: false,
@@ -4711,25 +4501,30 @@ export default {
       userInfo:'',
       roles: new Set()
     }
+  }, 
+  mounted() {
+    // this.selected(0)
+    // this.selected_options()
   },
   methods: {
-    // 弹窗中确定通过按钮
-    save(num) {
+    // 放弃任务
+    giveUp() {
+      this.flag = flag-1
+    },
+    // 不通过按钮
+    nosave() {
+      this.flag = flag-2
+    },
+    // 弹窗中确定提交（通过）按钮
+    save(flag) {
       let sub = this.subCategoryId
       let task = {
-        id: this.id + '',
-        name: this.taskname
-        }
-      let f = ''
-      if(num === 1){
-        f = this.flag + 1
-      }
-      else if(num === 2){
-        f = this.flag - 2
-        // task["currentTaskComment"] = ""
-      }
-      task["flag"] = f
-      if (sub === 1 ||
+          id: this.id,
+          flag: this.flag,
+          currentTaskComment: " ",
+          name: this.taskname
+          }
+        if (sub === 1 ||
           sub === 2 ||
           sub === 3 ||
           sub === 4 ||
@@ -4743,171 +4538,163 @@ export default {
           sub === 48 ||
           sub === 49 ||
           sub === 50 ||
-          sub === 51) {
-        let taskMessage = {}
-        for (let key of this.taskNameMap.keys()) {
-          let a = this.test_model[this.taskNameMap.get(key)]
-          if(a==''){
-            a = null
-          }
-          this.$set(taskMessage, key, a)
+          sub === 51){
+            let taskMessage = {}
+            for(let key of this.taskNameMap.keys()){
+              this.$set(taskMessage,key,this.test_model[this.taskNameMap.get(key)])
+            }
+            this.$set(task,"taskMessage",JSON.stringify(taskMessage))
+            this.innerVisible_one = false
+        }else if (sub === 44) {
+          this.$set(task,"taskMessage",JSON.stringify(this.tableData_seven))
+          // 说明书信息整理
+          console.log(this.tableData_seven)
+          this.outerVisible_seven1 = false
+        } else if (sub === 57) {
+          // 药物商品名            commonUserGenePathwaysContentPage
+          this.$set(task,"taskMessage",JSON.stringify(this.dialogFormVisible2))
+          console.log(this.tableData);
+          this.dialogFormVisible2 = false
+        } else if (
+          sub === 29 ||
+          sub === 30 ||
+          sub === 17 ||
+          sub === 18
+        ) {
+          // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_sixteen))
+          console.log(this.tableData_sixteen);
+          this.outerVisible_sixteen = false
+        } else if (
+          sub === 26 ||
+          sub === 13 ||
+          sub === 14 ||
+          sub === 21 ||
+          sub === 22 ||
+          sub === 43 ||
+          sub === 53
+        ) {
+          // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
+          console.log(this.tableData_thirteen)
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_fiveteen))
+          this.outerVisible_fiveteen = false
+        } else if (sub === 33 || sub === 34) {
+          // 国内外专利注释文献的上传
+          console.log(this.tableData_eighteen)
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eighteen))
+          this.outerVisible_eighteen = false
+        } else if (sub === 45) {
+          // 说明书原文上传
+          console.log(this.tableData_nineteen)
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_nineteen))
+          this.outerVisible_nineteen = false
+        } else if (sub === 46) {
+          // 说明书包装图片
+          this.$set(task,"taskMessage",JSON.stringify(this.tableData_seven))
+           console.log(this.tableData_seven)
+          this.outerVisible_seven = false
+        } else if (sub === 35) {
+          // 基因位点频率信息分布（中国）
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twenty))
+          console.log(this.tableData_twenty);
+          this.outerVisible_twenty = false
+        } else if (sub === 36) {
+          // 基因位点频率信息分布（世界）
+          console.log(this.tableData_twentyOne);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyOne))
+
+          this.outerVisible_twentyOne = false
+        } else if (sub === 37) {
+          // 基因位点频率信息分布（住院病案首页数据统计）
+          console.log(this.tableData_twentyTwo);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyTwo))
+
+          this.outerVisible_twentyTwo = false
+        } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
+          // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
+          console.log(this.tableData_three);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible))
+
+          this.outerVisible = false
+        } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
+          // 国内外药物标签注释，国内外临床注释
+          console.log(this.tableData_twentyThree);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twentyThree))
+
+          this.outerVisible_twentyThree = false
+        } else if (sub === 31 || sub === 32) {
+          // 国内外专利注释
+          console.log(this.tableData_eighteen);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eighteen))
+
+          this.outerVisible_eighteen = false
+        } else if (sub === 39) {
+          // 药物基因参与通路描述
+          console.log(this.tableData_four);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_four))
+
+          this.outerVisible_four = false
+        } else if (sub === 40) {
+          // 药物基因组成部分
+          console.log(this.tableData_eleven);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eleven))
+
+          this.outerVisible_eleven = false
+        } else if (sub === 41) {
+          // 药物基因相关通路
+          console.log(this.tableData_six);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_six))
+
+          this.outerVisible_six = false
+        } else if (sub === 55) {
+          // 药物医保目录查询
+          console.log(this.tableData_eight);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_eight))
+
+          this.outerVisible_eight = false
+        } else if (sub === 56) {
+          // 药物相互作用
+          console.log(this.tableData_nine);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_nine))
+
+          this.outerVisible_nine = false
+        } else if (sub === 23) {
+          // 药物基因位点用药建议
+          console.log(this.tableData_ten);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_ten))
+          this.outerVisible_ten = false
+        } else if (sub === 24) {
+          // 药物基因用药建议
+          console.log(this.tableData_twelve);
+          this.$set(task,"taskMessage",JSON.stringify(this.outerVisible_twelve))
+
+          this.outerVisible_twelve = false
         }
-        this.$set(task, "taskMessage", JSON.stringify(taskMessage))
-        this.innerVisible_one = false
-      } else if (sub === 44) {
-         let a = this.test_model[this.taskNameMap.get(key)]
-          if(a==''){
-            a = null
-          }
-        this.$set(task, "taskMessage", JSON.stringify(this.tableData_seven))
-        // 说明书信息整理
-        // console.log(this.tableData_seven)
-        this.outerVisible_seven1 = false
-      } else if (sub === 57) {
-        // 药物商品名            commonUserGenePathwaysContentPage
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData))
-        // console.log(this.tableData)
-        this.dialogFormVisible2 = false
-      } else if (
-        sub === 29 ||
-        sub === 30 ||
-        sub === 17 ||
-        sub === 18
-      ) {
-        // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
-        this.$set(task , "taskMessage",JSON.stringify(this.tableData_sixteen))
-        // console.log(this.tableData_sixteen);
-        this.outerVisible_sixteen = false
-      } else if (
-        sub === 26 ||
-        sub === 13 ||
-        sub === 14 ||
-        sub === 21 ||
-        sub === 22 ||
-        sub === 43 ||
-        sub === 53
-      ) {
-        // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
-        // console.log(this.tableData_thirteen)
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_thirteen))
-        this.outerVisible_fiveteen = false
-      } else if (sub === 33 || sub === 34) {
-        // 国内外专利注释文献的上传
-        // console.log(this.tableData_eighteen)
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_eighteen))
-        this.outerVisible_eighteen = false
-      } else if (sub === 45) {
-        // 说明书原文上传
-        // console.log(this.tableData_nineteen)
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_nineteen))
-        this.outerVisible_nineteen = false
-      } else if (sub === 46) {
-        // 说明书包装图片
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_seven))
-        // console.log(this.tableData_seven)
-        this.outerVisible_seven = false
-      } else if (sub === 35) {
-        // 基因位点频率信息分布（中国）
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_twenty))
-        // console.log(this.tableData_twenty);
-        this.outerVisible_twenty = false
-      } else if (sub === 36) {
-        // 基因位点频率信息分布（世界）
-        // console.log(this.tableData_twentyOne);
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_twentyOne))
-        this.outerVisible_twentyOne = false
-      } else if (sub === 37) {
-        // 基因位点频率信息分布（住院病案首页数据统计）
-        // console.log(this.tableData_twentyTwo);
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_twentyTwo))
-        this.outerVisible_twentyTwo = false
-      } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
-        // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
-        // console.log(this.tableData_three);
-        this.$set(task , "taskMessage" , JSON.stringify(this.tableData_three))
-        this.outerVisible = false
-      } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
-        // 国内外药物标签注释，国内外临床注释
-        // console.log(this.tableData_twentyThree)
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_twentyThree))
-        this.outerVisible_twentyThree = false
-      } else if (sub === 31 || sub === 32) {
-        // 国内外专利注释
-        // console.log(this.tableData_eighteen);
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_eighteen))
-        this.outerVisible_eighteen = false
-      } else if (sub === 39) {
-        // 药物基因参与通路描述
-        // console.log(this.tableData_four);
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_four))
-        this.outerVisible_four = false
-      } else if (sub === 40) {
-        // 药物基因组成部分
-        // console.log(this.tableData_eleven);
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_eleven))
-        this.outerVisible_eleven = false
-      } else if (sub === 41) {
-        // 药物基因相关通路
-        // console.log(this.tableData_six);
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_six))
-        this.outerVisible_six = false
-      } else if (sub === 55) {
-        // 药物医保目录查询
-        // console.log(this.tableData_eight)
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_eight))
-        this.outerVisible_eight = false
-      } else if (sub === 56) {
-        // 药物相互作用
-        // console.log(this.tableData_nine)
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_nine))
-        this.outerVisible_nine = false
-      } else if (sub === 23) {
-        // 药物基因位点用药建议
-        // console.log(this.tableData_ten)
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_ten))
-        this.outerVisible_ten = false
-      } else if (sub === 24) {
-        // 药物基因用药建议
-        // console.log(this.tableData_twelve)
-        this.$set(task,"taskMessage",JSON.stringify(this.tableData_twelve))
-        this.outerVisible_twelve = false
-      }
         // 这部分应该是保存提交你添加的内容tasklist
         // console.log(JSON.stringify(this.tableData_five))
         // console.log(JSON.stringify(this.tableData))
-      Save(task).then( res=>{
+      Save(task).then(res=>{
         this.innerVisible = false
-        this.getTaskList()
-        // this.flag = flag + 1
-        // this.$message({
-        //   message: name + '任务操作成功',
-        //   type: 'success'
-        // })
-        // console.log(res)
+        this.flag = flag+1
+        console.log(res);
       })
     },
     save2() {
         let sub = this.subCategoryId
-        let task = {}
-        // console.log('taskNameMap:'+this.taskNameMap+',test_model:'+this.test_model)
-        for(let key of this.taskNameMap.keys()){
-          let value = this.test_model[this.taskNameMap.get(key)]
-          if(key == 'id' && (value == null || value == '')){
-            value = null
+          let task = {}
+          for(let key of this.taskNameMap.keys()){
+          this.$set(task,key,this.test_model[this.taskNameMap.get(key)])
           }
-          task[key] = value
-          // this.$set(task , key,this.test_model[this.taskNameMap.get(key)])
-        }
         if (sub === 44) {
           // 说明书信息整理
           // console.log(this.test_model)
           // console.log( this.tableData_seven[this.taskRowIndex])
           this.tableData_seven[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_seven)
+          console.log(this.tableData_seven)
         } else if (sub === 57) {
           // 药物商品名            commonUserGenePathwaysContentPage
           this.tableData[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData)
+          console.log(this.tableData);
         } else if (
           sub === 29 ||
           sub === 30 ||
@@ -4916,7 +4703,7 @@ export default {
         ) {
           // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
           this.tableData_sixteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_sixteen);
+          console.log(this.tableData_sixteen);
         } else if (
           sub === 26 ||
           sub === 13 ||
@@ -4928,59 +4715,59 @@ export default {
         ) {
           // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
           this.tableData_thirteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_thirteen)
+          console.log(this.tableData_thirteen)
         } else if (sub === 33 || sub === 34) {
           // 国内外专利注释文献的上传
           this.tableData_eighteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_eighteen)
+          console.log(this.tableData_eighteen)
         } else if (sub === 45) {
           // 说明书原文上传
           this.tableData_nineteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_nineteen)
+          console.log(this.tableData_nineteen)
         } else if (sub === 46) {
           // 说明书包装图片
           this.tableData_seven[this.taskRowIndex].literNoteStr = JSON.stringify(task)
 
-          //  console.log(this.tableData_seven)
+           console.log(this.tableData_seven)
         } else if (sub === 35) {
           // 基因位点频率信息分布（中国）
           this.tableData_twenty[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_twenty);
+          console.log(this.tableData_twenty);
         } else if (sub === 36) {
           // 基因位点频率信息分布（世界）
           this.tableData_twentyOne[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_twentyOne);
+          console.log(this.tableData_twentyOne);
         } else if (sub === 37) {
           // 基因位点频率信息分布（住院病案首页数据统计）
-          // console.log(this.tableData_twentyTwo);
+          console.log(this.tableData_twentyTwo);
           this.tableData_twentyTwo[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
           // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
           this.tableData_three[this.taskRowIndex].literNoteStr = JSON.stringify(task)
-          // console.log(this.tableData_three);
+          console.log(this.tableData_three);
         } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
           // 国内外药物标签注释，国内外临床注释
-          // console.log(this.tableData_twentyThree);
+          console.log(this.tableData_twentyThree);
           this.tableData_twentyThree[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 31 || sub === 32) {
           // 国内外专利注释
-          // console.log(this.tableData_eighteen);
+          console.log(this.tableData_eighteen);
           this.tableData_eighteen[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 39) {
           // 药物基因参与通路描述
-          // console.log(this.tableData_four);
+          console.log(this.tableData_four);
           this.tableData_four[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 40) {
           // 药物基因组成部分
-          // console.log(this.tableData_eleven);
+          console.log(this.tableData_eleven);
           this.tableData_eleven[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 41) {
           // 药物基因相关通路
-          // console.log(this.tableData_six);
+          console.log(this.tableData_six);
           this.tableData_six[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 55) {
           // 药物医保目录查询
-          // console.log(this.tableData_eight);
+          console.log(this.tableData_eight);
           this.tableData_eight[this.taskRowIndex].literNoteStr = JSON.stringify(task)
         } else if (sub === 56) {
           // 药物相互作用
@@ -4997,7 +4784,43 @@ export default {
         }
       this.innerVisible = false
     },
-    bianji1(rowId, rowIndex) { //一层弹窗中【编辑】 fg来自于该条数据内的flag
+    onEditorReady(editor) {},
+    forId(index) {
+				return "forid_" +index
+    },
+    selected(count) {
+      this.wpList_secarch = []
+      this.wpList_options = []
+      // console.log(count)
+      if ( count == null || count == '') {
+        this.index = 0
+      }else {
+      this.index = count
+      }
+      searchOptions(this.index).then( res => {
+        // this.wpList_options = []
+        // this.wpList_secarch = []
+        let options = JSON.parse(res)
+        this.wpList_options = options
+        let ids = this.wpList_options.map(item => item.id)
+        ids = ids.join(",")
+        this.searchField = 'subCategoryId'
+        this.searchString = ids
+        this.searchOper = 'In'
+        // console.log(ids)
+        this.getTaskList()
+      })
+    },
+    selected_options() {
+      if(this.wpList_secarch.length !== 0){
+        let ids  = this.wpList_secarch.join(",")
+        this.searchString = "subCategoryId"
+        this.searchOper = 'In'
+        // console.log(ids)
+        this.getTaskList()
+      }
+    },
+    bianji1(rowId, rowIndex) {
       // 编辑数据的下标
       this.taskRowIndex = rowIndex
       // 内层弹窗
@@ -5005,8 +4828,6 @@ export default {
       this.tasklist = []
       this.taskNameMap.clear()
       this.test_models = []
-      this.test_model = []
-
       let data3 = JSON.parse(this.two_dialog)
       // console.log(data3)
       for (var key3 in data3) {
@@ -5029,175 +4850,19 @@ export default {
         // console.log(this.test_models) // 键名["rsId", "geneId", "source", "haploidType"]
       }
       // 获取返回的res.taskMessage数据{id: 48, geneId: 25, name: "CYP2D6*5(del)", rsId: "", haploidType: "",}
-      // let literNote = this.literNoteStrMap.get(rowId)
-      let sub = this.subCategoryId
-       let literNote = ''
-      if (sub === 44) {
-        if(this.tableData_seven[this.taskRowIndex].literNoteStr !== null){
-          literNote = JSON.parse(this.tableData_seven[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 57) {
-        if(this.tableData[this.taskRowIndex].literNoteStr!==null){
-
-          literNote = JSON.parse(this.tableData[this.taskRowIndex].literNoteStr)
-        }
-        // 药物商品名            commonUserGenePathwaysContentPage
-      } else if (
-        sub === 29 ||
-        sub === 30 ||
-        sub === 17 ||
-        sub === 18
-      ) {
-        if(this.tableData_sixteen[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote =  JSON.parse(this.tableData_sixteen[this.taskRowIndex].literNoteStr)
-        }
-        // 国内外药物标签文献的上传(文献名称，3tab)、国内外临床注释文献的上传
-      } else if (
-        sub === 26 ||
-        sub === 13 ||
-        sub === 14 ||
-        sub === 21 ||
-        sub === 22 ||
-        sub === 43 ||
-        sub === 53
-      ) {
-        if(this.tableData_thirteen[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_thirteen[this.taskRowIndex].literNoteStr)
-        }
-        // 国内外指南文献的上传（PMID，3tab）、国内外药物基因文献的上传、pharmGKB参考文献的上传、基因通路的参考文献上传、文献资料上传
-        // console.log(this.tableData_thirteen)
-      } else if (sub === 33 || sub === 34) {
-        // 国内外专利注释文献的上传
-        // console.log(this.tableData_eighteen)
-        if(this.tableData_eighteen[this.taskRowIndex].literNoteStr!==null){
-          literNote = JSON.parse(this.tableData_eighteen[this.taskRowIndex].literNoteStr)
-          
-        }
-      } else if (sub === 45) {
-        // 说明书原文上传
-        // console.log(this.tableData_nineteen)
-        if(this.tableData_nineteen[this.taskRowIndex].literNoteStr!==null){
-          literNote = JSON.parse(this.tableData_nineteen[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 46) {
-        // 说明书包装图片
-        if(this.tableData_seven[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_seven[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 35) {
-        // 基因位点频率信息分布（中国）
-        if(this.tableData_twenty[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_twenty[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 36) {
-        // 基因位点频率信息分布（世界）
-        // console.log(this.tableData_twentyOne);
-        if(this.tableData_twentyOne[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_twentyOne[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 37) {
-        // 基因位点频率信息分布（住院病案首页数据统计）
-        // console.log(this.tableData_twentyTwo);
-        if(this.tableData_twentyTwo[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_twentyTwo[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 11 || sub === 12 || sub === 19 || sub === 20 || sub === 25 || sub === 42 || sub === 52) {
-        // 国内外指南注释，国内外药物基因文献的分解， pharmGKB参考文献的分解，基因通路的参考文献提取整理，文献资料整理
-        // console.log(this.tableData_three);
-        if(this.tableData_three[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote =  JSON.parse(this.tableData_three[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 27 || sub === 28 || sub === 15 || sub === 16) {
-        // 国内外药物标签注释，国内外临床注释
-        // console.log(this.tableData_twentyThree)
-        if(this.tableData_twentyThree[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_twentyThree[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 31 || sub === 32) {
-        // 国内外专利注释
-        // console.log(this.tableData_eighteen);
-        if(this.tableData_eighteen[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_eighteen[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 39) {
-        // 药物基因参与通路描述
-        // console.log(this.tableData_four);
-        if(this.tableData_four[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_four[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 40) {
-        // 药物基因组成部分
-        // console.log(this.tableData_eleven);
-        if(this.tableData_eleven[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_eleven[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 41) {
-        // 药物基因相关通路
-        // console.log(this.tableData_six);
-        if(this.tableData_six[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_six[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 55) {
-        // 药物医保目录查询
-        // console.log(this.tableData_eight)
-        if(this.tableData_eight[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_eight[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 56) {
-        // 药物相互作用
-        // console.log(this.tableData_nine)
-        if(this.tableData_nine[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_nine[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 23) {
-        // 药物基因位点用药建议
-        // console.log(this.tableData_ten)
-        if(this.tableData_ten[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_ten[this.taskRowIndex].literNoteStr)
-        }
-      } else if (sub === 24) {
-        // 药物基因用药建议
-        // console.log(this.tableData_twelve)
-        if(this.tableData_twelve[this.taskRowIndex].literNoteStr!==null){
-          
-          literNote = JSON.parse(this.tableData_twelve[this.taskRowIndex].literNoteStr)
-        }
-      }
-     
+      let literNote = this.literNoteStrMap.get(rowId)
       if (literNote !== '') {
         for (let i in literNote) {
           // console.log(obj[i]) // 具体获取到那一个输入框的值
-          let value = literNote[i]
-          if(value = null){
-            value == ''
-          }
-          this.test_model[this.taskNameMap.get(i)] = value
+          this.test_model[this.taskNameMap.get(i)] = literNote[i]
         }
       }
     },
-    bianji(subCategoryId, id, fg) { //任务大厅页面中编辑任务
+    bianji(subCategoryId, id) {
       this.test_models = []
       this.test_model = []
-      this.flag = fg
-      this.id = id  // 列表数据id
       this.taskNameMap.clear()
-      this.tasklist = []
-      // console.log(this.flag)
+      console.log(this.flag);
       if (
         subCategoryId === 1 ||
         subCategoryId === 2 ||
@@ -5215,12 +4880,13 @@ export default {
         subCategoryId === 50 ||
         subCategoryId === 51
       ) {
+        this.tasklist = []
         getGene() // 获取位点基本信息里面得options
           .then(res => {
             this.geneList = res
-            // console.log(this.geneList)
           })
         let data = new FormData()
+        this.id = id  //列表数据id
         data.append('id', id)
         getSearch(data).then(res => {
           let data2 = JSON.parse(res.templateContent) // 根据获取到的字段名动态生成title和输入框
@@ -5251,8 +4917,8 @@ export default {
             this.test_model[this.taskNameMap.get(i)] = obj[i]
           }
           // console.log(this.test_model)
-          // this.two_dialog = res.templateContent // 二层弹窗结构
-          // this.two_msg = res.taskMessage.literNoteStr // 二层弹窗数据
+          this.two_dialog = res.templateContent // 二层弹窗结构
+          this.two_msg = res.taskMessage.literNoteStr // 二层弹窗数据
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.innerVisible_one = true
         })
@@ -5273,17 +4939,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let a = [{
-            id: null,
-            pmid: '',
-            name: '',
-            literNoteStr:'',
-            accessoryId: ''
-            // drugInstruction_picture: ''
-          }]
-          taskMessage = ( taskMessage == null ? a :taskMessage)
+           taskMessage=(taskMessage== null?[]:taskMessage)
           this.tableData_seven = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          this.outerVisible_seven1 = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_seven1 = true
         })
       } else if (subCategoryId === 57) {
         // 药物商品名            commonUserGenePathwaysContentPage
@@ -5302,17 +4970,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let b = [ { id: null,
-            drugGenericName: '',
-            approvalNumber: '',
-            specifications: '',
-            drugTradeName: '',
-            originPlace: '',
-          }]
-          taskMessage = (taskMessage == null ? b : taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-         
-          this.dialogFormVisible2 = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.dialogFormVisible2 = true
         })
       } else if (
         subCategoryId === 29 ||
@@ -5336,16 +5006,18 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let c = [ { id: null,
-            drugGenericName: '',
-            approvalNumber: '',
-            specifications: '',
-            drugTradeName: '',
-            originPlace: ''
-          }]
-          taskMessage=(taskMessage== null? c :taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
         this.outerVisible_sixteen = true
         })
       } else if (
@@ -5373,18 +5045,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let d = [{
-            id: null,
-            pmid: '',
-            name: '',
-            literNoteStr: '',
-            accessoryId: '',
-            currentTaskComment: ''
-          }]
-          taskMessage=(taskMessage== null? d :taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_thirteen = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_fiveteen = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_fiveteen = true
         })
       } else if (subCategoryId === 33 || subCategoryId === 34) {
         // 国内外专利注释文献的上传
@@ -5403,17 +5076,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let e = [{ id: null,
-            name: '',
-            pmid: '',
-            accessoryId: '',
-            literNoteStr:'',
-            noteId:null
-          }]
-          taskMessage=(taskMessage== null? e :taskMessage)
-          this.tableData_eighteen = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_eighteen = true
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
+          this.tableData_eighteens = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_eighteen = true
         })
       } else if (subCategoryId === 45) {
         // 说明书原文上传
@@ -5432,17 +5107,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let f  = [{ id: null,
-            pmid: '',
-            name: '',
-            literNoteStr: '',
-            accessoryId: '',
-            currentTaskComment: ''
-          }]
-          taskMessage=(taskMessage== null? f :taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_nineteen = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-         
-          this.outerVisible_nineteen = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_nineteen = true
         })
       } else if (subCategoryId === 46) {
         // 说明书包装图片
@@ -5461,18 +5138,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let g = [{
-            id: null,
-            pmid: '',
-            name: '',
-            literNoteStr:'',
-            accessoryId: ''
-            // drugInstruction_picture: ''
-          }]
-          taskMessage=(taskMessage== null?g:taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_seven = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_seven = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_seven = true
         })
       } else if (subCategoryId === 35) {
         // 基因位点频率信息分布（中国）
@@ -5491,22 +5169,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let h = [ { id: null,
-            dataSource: '',
-            year: '',
-            project: '',
-            area: '',
-            receiveLaboratory: '',
-            sex: '',
-            ageGroup: '',
-            sampleType: '',
-            porResultId: '',
-            testAmount: ''
-          }]
-          taskMessage=(taskMessage== null?h:taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twenty = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-         
-          this.outerVisible_twenty = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_twenty = true
         })
       } else if (subCategoryId === 36) {
         // 基因位点频率信息分布（世界）
@@ -5525,21 +5200,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let i = [{ id: null,
-            literNoteStr: '',
-            dataSource: '',
-            project: '',
-            fatherRace: '',
-            race: '',
-            area: '',
-            porResultId: '',
-            testAmount: '',
-            // currentTaskComment: ''
-          }]
-          taskMessage=(taskMessage== null?i:taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twentyOne = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-         
-          this.outerVisible_twentyOne = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_twentyOne = true
         })
       } else if (subCategoryId === 37) {
         // 基因位点频率信息分布（住院病案首页数据统计）
@@ -5558,20 +5231,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let j = [{ id: null,
-            literNoteStr:'',
-            dataSource: '',
-            project: '',
-            sex: '',
-            ageGroup: '',
-            nation: '',
-            nativePlace: '',
-            // currentTaskComment: ''
-          }] 
-          taskMessage=(taskMessage== null?j:taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twentyTwo = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_twentyTwo = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_twentyTwo = true
         })
       } else if (
         subCategoryId === 11 ||
@@ -5598,18 +5270,20 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let k = [{
-            id: null,
-            name: '',
-            pmid: '',
-            literNoteStr:'',
-            accessoryId: '',
-            noteId:null
-          }]
-          taskMessage=(taskMessage== null?k:taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_three = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-         
-          this.outerVisible = true
+          // console.log(this.tableData_three);
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible = true
         })
       } else if (
         subCategoryId === 27 ||
@@ -5633,17 +5307,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let l = [ { id: null,
-            pmid: '',
-            name: '',
-            literNoteStr: '',
-            accessoryId: '',
-            noteId:null
-          }] 
-          taskMessage=(taskMessage== null?l:taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twentyThree = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_twentyThree = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_twentyThree = true
         })
       } else if (subCategoryId === 31 || subCategoryId === 32) {
         // 国内外专利注释
@@ -5657,22 +5333,24 @@ export default {
         let data = new FormData()
         data.append('id', id)
         getSearch(data).then(res => {
-            // console.log(res)
+          // console.log(res)
           this.taskname = res.name // 将点击数据名称赋值到input框中
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let m =  [{ id: null,
-            name: '',
-            pmid: '',
-            accessoryId: '',
-            literNoteStr:'',
-            noteId:null
-          }]
-          taskMessage = (taskMessage == null ? m : taskMessage)
+           taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_eighteen = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          // }
-          this.outerVisible_eighteen = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_eighteen = true
         })
       } else if (subCategoryId === 39) {
         // 药物基因参与通路描述
@@ -5691,16 +5369,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let n = [ { id: null,
-            pathways: '',
-            relatedPathways: '',
-            publication: '',
-            authors: ''
-          }] 
-          taskMessage=(taskMessage== null?n:taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_four = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-         
-          this.outerVisible_four = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_four = true
         })
       } else if (subCategoryId === 40) {
         // 药物基因组成部分
@@ -5719,17 +5400,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let o = [{ id: null,
-            pathways: '',
-            drugs: '',
-            literNoteStr:'',
-            genes: '',
-            diseases: ''
-          }]
-          taskMessage=(taskMessage== null? o :taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_eleven = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_eleven = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_eleven = true
         })
       } else if (subCategoryId === 41) {
         // 药物基因相关通路
@@ -5748,14 +5431,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let p = [ {id: null,
-            pathways: '',
-            relatedPathways: ''
-          }]
-          taskMessage=(taskMessage== null?p:taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_six = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-         
-          this.outerVisible_six = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_six = true
         })
       } else if (subCategoryId === 55) {
         // 药物医保目录查询
@@ -5774,20 +5462,18 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let q = [{id: null,
-            medicalInsuranceArea: '',
-            number: '',
-            drugName: '',
-            drugForm: '',
-            drugClassification: '',
-            medicalInsuranceCategory: '',
-            supplementaryInformation: '',
-            changes: '',
-            remarks: ''
-          }]
-          taskMessage=(taskMessage== null?q:taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_eight = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
         this.outerVisible_eight = true
         })
       } else if (subCategoryId === 56) {
@@ -5807,15 +5493,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let r= [ { id: null,
-            name: '',
-            interactiveDrugs: '',
-            effectiveness: ''
-          }]
-          taskMessage=(taskMessage== null?r:taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_nine = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_nine = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_nine = true
         })
       } else if (subCategoryId === 23) {
         // 药物基因位点用药建议
@@ -5834,23 +5524,19 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let s = [ { id: null,
-            genePorId:'',
-            medicationType: '',
-            evidenceLevel: '',
-            race: '',
-            raceDetails: '',
-            literNoteStr:'',
-            phenotypes: '',
-            genotypeEnglish: '',
-            porMedicationSuggestionEnglish: '',
-            genotypeChinese: '',
-            porMedicationSuggestionChinese: ''
-          }]
-          taskMessage=(taskMessage== null?s:taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_ten = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_ten = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_ten = true
         })
       } else if (subCategoryId === 24) {
         // 药物基因用药建议
@@ -5869,94 +5555,34 @@ export default {
           this.two_dialog = res.templateContent // 二层弹窗结构
           let taskMessage = JSON.parse(res.taskMessage) // 二层弹窗数据
           // console.log(taskMessage)
-          let t= [  { id: null,
-            literNoteStr:'',
-            conclusion: ''
-          }]
-          taskMessage=(taskMessage== null?t:taskMessage)
+          taskMessage=(taskMessage== null?this.tableData_three:taskMessage)
           this.tableData_twelve = taskMessage // 将获取到的数据放到对应数组中去，然后由对应弹窗中的:data进行双向数据绑定
-          
-          this.outerVisible_twelve = true
+          if (taskMessage !== null && taskMessage !== '') {
+            taskMessage.forEach((item, index) => {
+              // console.log(item)
+              // console.log(index)
+              if (item.literNoteStr !== '') {
+                this.literNoteStrMap.set(item.id, JSON.parse(item.literNoteStr))
+                this.test_model[this.taskNameMap.get(index)] = obj[index]
+              }
+            })
+          }
+        this.outerVisible_twelve = true
         })
-      }
-    },
-    // 领取任务
-    lingqu(id, flag, name) {
-      let data = new FormData()
-      data.append('id', id)
-      data.append('flag', flag + 1)
-      data.append('name', name)
-      receiveTask(data).then( res =>{
-        this.getTaskList()
-        // console.log('')
-        this.$message({
-          message: name + '任务领取成功',
-          type: 'success'
-        })
-      })
-    },
-    // 放弃任务（ok）
-    giveUp() {
-      let data = new FormData()
-      data.append('id', this.id)
-      data.append('flag', this.flag - 1)
-      data.append('name', this.taskname)
-      giveUpTask(data).then(res => {
-        this.getTaskList()
-        this.$message({
-          message: this.taskname + '任务操作成功',
-          type: 'success'
-        })
-      })
-    },
-    // 不通过按钮与通过按钮共用一个方法，仅仅传入参数不一样
-    onEditorReady(editor) {},
-    forId(index) {
-				return "forid_" +index
-    },
-    selected(count) {
-      this.wpList_secarch = []
-      this.wpList_options = []
-      // console.log(count)
-      if (count == null || count == '') {
-        this.index = 0
-      } else {
-        this.index = count
-      }
-      searchOptions(this.index).then(res => {
-        // this.wpList_options = []
-        // this.wpList_secarch = []
-        let options = JSON.parse(res)
-        this.wpList_options = options
-        let ids = this.wpList_options.map(item => item.id)
-        ids = ids.join(",")
-        this.searchField = 'subCategoryId'
-        this.searchString = ids
-        this.searchOper = 'In'
-        this.getTaskList()
-      })
-    },
-    selected_options() {
-      if(this.wpList_secarch.length !== 0){
-        let ids  = this.wpList_secarch.join(",")
-        this.searchField = 'subCategoryId'
-        this.searchString = ids
-        this.searchOper = 'In'
-        this.getTaskList()
       }
     },
     // 获取任务大厅数据列表
     getTaskList() {
-      if(this.userInfo == null || this.userInfo == ''){
+      if (this.userInfo == null || this.userInfo == '') {
         this.userInfo = getStore('userInfo')
-        // console.log(this.userInfo.roleVo)
+        console.log(this.userInfo.roleVo)
         this.userInfo = JSON.parse(this.userInfo)
-        // console.log(this.userInfo.roleVo)
+        console.log(this.userInfo.roleVo)
         // this.userInfo.roleVo.forEach(value => this.roles.add(value))
-        for(let item of this.userInfo.roleVo){
+        for (let item of this.userInfo.roleVo) {
           this.roles.add(item)
         }
-        // console.log(this.roles)
+        console.log(this.roles)
       }
       this.taskhall = []
       if (this.flag1) {
@@ -5969,7 +5595,7 @@ export default {
           'convert(t.`create_time` USING gbk) COLLATE gbk_chinese_ci'
         )
         data.append('orderType', 'asc')
-        if(this.searchString == '') {
+        if (this.searchString === '') {
           data.append('search', 'false')
         } else {
           data.append('search', 'true')
@@ -5979,7 +5605,7 @@ export default {
         }
         taskHall(data)
           .then(res => {
-            // console.log(res)
+            console.log(res)
             this.taskhall = res.list
             this.name = res.list[0].name
             this.subCategoryId = res.list[0].subCategoryId
@@ -5987,6 +5613,7 @@ export default {
             this.total = res.total
             this.currentPage = res.pageNum
             this.flag1 = true  // 限制频繁点击分页
+            this.flag = res.list[0].flag // 判断操作员状态
           })
           .catch(res => {
             this.flag1 = true
@@ -6005,7 +5632,6 @@ export default {
       this.getTaskList() // 重新获取数据列表
     },
     // 任务列表数据分页 2
-    // zsktest() {},
     // 上传文献
     submitUpload() {
       let list = document.getElementsByClassName(
@@ -6065,46 +5691,47 @@ export default {
     },
     addLine_two() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         drugGenericName: '',
         drugTradeName: '',
         approvalNumber: '',
         specifications: '',
-        originPlace: ''
+        originPlace: '',
+        caozuo: ''
       }
       // 添加新的行数
       this.tableData.push(newValue)
     },
     addLine_three() {
       // 添加行数
-      var newValue = {
-        id: null,
-        name: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
-        literNoteStr:'',
+        name: '',
         accessoryId: '',
-        noteId:null
+        caozuo: ''
       }
       // 添加新的行数
       this.tableData_three.push(newValue)
     },
     addLine_four() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         relatedPathways: '',
         publication: '',
-        authors: ''
+        authors: '',
+        caozuo: ''
       }
       // 添加新的行数
       this.tableData_four.push(newValue)
     },
     addLine_five() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         drugs: '',
         genes: '',
@@ -6115,8 +5742,8 @@ export default {
     },
     addLine_six() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         relatedPathways: ''
       }
@@ -6125,21 +5752,21 @@ export default {
     },
     addLine_seven() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
-        literNoteStr:'',
-        accessoryId: ''
-        // drugInstruction_picture: ''
+        liter_content: '',
+        accessoryId: '',
+        drugInstruction_picture: ''
       }
       // 添加新的行数
       this.tableData_seven.push(newValue)
     },
     addLine_eight() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         medicalInsuranceArea: '',
         number: '',
         drugName: '',
@@ -6153,10 +5780,10 @@ export default {
       // 添加新的行数
       this.tableData_eight.push(newValue)
     },
-    addLine_nine() {   // 1
+    addLine_nine() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         name: '',
         interactiveDrugs: '',
         effectiveness: ''
@@ -6168,12 +5795,12 @@ export default {
       // 添加行数
       var newValue = {
         id: '',
-        genePorid: null,
+        genePorId:'',
         medicationType: '',
         evidenceLevel: '',
         race: '',
         raceDetails: '',
-        literNoteStr: '',
+        literNoteStr:'',
         phenotypes: '',
         genotypeEnglish: '',
         porMedicationSuggestionEnglish: '',
@@ -6185,9 +5812,8 @@ export default {
     },
     addLine_eleven() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         pathways: '',
         drugs: '',
         genes: '',
@@ -6198,9 +5824,8 @@ export default {
     },
     addLine_twelve() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         conclusion: ''
       }
       // 添加新的行数
@@ -6208,11 +5833,11 @@ export default {
     },
     addLine_thirteen() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
+        liter_content: '',
         accessoryId: '',
         currentTaskComment: ''
       }
@@ -6221,11 +5846,11 @@ export default {
     },
     addLine_fourteen() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
+        liter_content: '',
         accessoryId: ''
       }
       // 添加新的行数
@@ -6233,11 +5858,11 @@ export default {
     },
     addLine_fiveteen() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
+        liter_content: '',
         accessoryId: '',
         currentTaskComment: ''
       }
@@ -6246,10 +5871,10 @@ export default {
     },
     addLine_sixteen() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         name: '',
+        liter_content: '',
         accessoryId: '',
         currentTaskComment: ''
       }
@@ -6258,37 +5883,37 @@ export default {
     },
     addLine_seventeen() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         name: '',
+        liter_content: '',
         accessoryId: ''
       }
       // 添加新的行数
       this.tableData_seventeen.push(newValue)
     },
-    addLine_eighteen() { // 2
+    addLine_eighteen() {
       // 添加行数
-      var newValue = {
-        id: null,
-        name: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
+        name: '',
+        liter_content: '',
         accessoryId: '',
-        literNoteStr: '',
-        noteId: null
+        currentTaskComment: ''
       }
       // 添加新的行数
       this.tableData_eighteen.push(newValue)
     },
     addLine_nineteen() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr: '',
+      var newValue = {id:'',
+          literNoteStr:'',
         pmid: '',
         name: '',
+        liter_content: '',
         accessoryId: '',
-        // drugInstruction_picture: '',
+        drugInstruction_picture: '',
         currentTaskComment: ''
       }
       // 添加新的行数
@@ -6297,8 +5922,8 @@ export default {
     },
     addLine_twenty() {
       // 添加行数
-      var newValue = {
-        id: null,
+      var newValue = {id:'',
+          literNoteStr:'',
         dataSource: '',
         year: '',
         project: '',
@@ -6308,16 +5933,16 @@ export default {
         ageGroup: '',
         sampleType: '',
         porResultId: '',
-        testAmount: ''
+        testAmount: '',
+        currentTaskComment: ''
       }
       // 添加新的行数
       this.tableData_twenty.push(newValue)
     },
     addLine_twentyOne() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr:'',
+      var newValue = {id:'',
+          literNoteStr:'',
         dataSource: '',
         project: '',
         fatherRace: '',
@@ -6325,35 +5950,34 @@ export default {
         area: '',
         porResultId: '',
         testAmount: '',
-        // currentTaskComment: ''
+        currentTaskComment: ''
       }
       // 添加新的行数
       this.tableData_twentyOne.push(newValue)
     },
     addLine_twentyTwo() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr:'',
+      var newValue = {id:'',
+          literNoteStr:'',
         dataSource: '',
         project: '',
         sex: '',
         ageGroup: '',
         nation: '',
         nativePlace: '',
+        currentTaskComment: ''
       }
       // 添加新的行数
       this.tableData_twentyTwo.push(newValue)
     },
     addLine_twentyThree() {
       // 添加行数
-      var newValue = {
-        id: null,
-        literNoteStr:'',
+      var newValue = {id:'',
+          literNoteStr:'',
+        pmid: '',
         name: '',
         liter_content: '',
-        accessoryId: '',
-        noteId:null
+        accessoryId: ''
       }
       // 添加新的行数
       this.tableData_twentyThree.push(newValue)
@@ -6420,61 +6044,61 @@ export default {
     },
     // 删除行13
     handleDelete_thirteen(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_thirteen.splice(index, 1)
     },
     // 删除行12
     handleDelete_twelve(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_twelve.splice(index, 1)
     },
     // 删除行11
     handleDelete_eleven(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_eleven.splice(index, 1)
     },
     // 删除行10
     handleDelete_ten(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_ten.splice(index, 1)
     },
     // 删除行9
     handleDelete_nine(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_nine.splice(index, 1)
     },
     // 删除行8
     handleDelete_eight(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_eight.splice(index, 1)
     },
     // 删除行7
     handleDelete_seven(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_seven.splice(index, 1)
     },
     // 删除行6
     handleDelete_six(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_six.splice(index, 1)
     },
     // 删除行5
     handleDelete_five(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_five.splice(index, 1)
     },
     // 删除行4
     handleDelete_four(index) {
-      // console.log(index)
+      console.log(index)
       // 删除行数
       this.tableData_four.splice(index, 1)
     },
@@ -6489,10 +6113,24 @@ export default {
       // console.log(index)
       // 删除行数
       this.tableData.splice(index, 1)
-    },  
+    },
+
+    lingqu(id, flag, name) {
+      let data = new FormData()
+        data.append('id', id)
+        data.append('flag', flag+1)
+        data.append('name', name)
+        receiveTask(data).then(res=>{
+          this.getTaskList()
+          this.$message({
+            message: name+'任务领取成功',
+            type: 'success'
+          })
+        })
+    },
     // 搜索框
     handleIconClick() {
-      // console.log(this.input)
+      console.log(this.input)
       if(this.input == '' || this.input == null ){
         this.searchString = ''
         this.getTaskList()
@@ -6505,22 +6143,18 @@ export default {
     },
     // 帮助指南
     getHelp() {
+      // var topNew = '最新事件'
       // var url = '/apis/cms/api/getColumnNewList?title=' + topNew
       var url = 'static/data/home_gethelp.json'
       axios({
         method: 'get',
         url: url
       }).then(res => {
-        console.log(res)
-        console.log(res.data[0].columnTitle)
-        // 把获得好的帮助指南 赋予topNews 给成员
+        // console.log(res)
+        // console.log(res.data[0].columnTitle)
+        // 把获得好的最新事件 赋予topNews 给成员
         this.topNews = res.data
-        if (this.topNews.length > 0) {
-          this.articleLinkUrl_help = res.data[0].columnLinkUrl
-        } else {
-          let zuixin = '.zuixin1'
-          this.showdiv(zuixin)
-        }
+        this.columnLinkUrl = res.data[0].columnLinkUrl
       })
     },
     // 常见问题
@@ -6532,14 +6166,9 @@ export default {
         method: 'get',
         url: url
       }).then(res => {
-        // 把获得好的常见问题 赋予 给NewContent成员
+        // 把获得好的最新事件 赋予 给NewContent成员
         this.newContent = res.data
-        if (this.newContent.length > 0) {
-          this.columnLinkUrl = res.data[0].columnLinkUrl
-        } else {
-          let zuixin = '.zuixin'
-          this.showdiv(zuixin)
-        }
+        this.columnLinkUrl = res.data[0].columnLinkUrl
       })
     },
     // cms页面跳转
@@ -6553,6 +6182,11 @@ export default {
     YHeader,
     YFooter,
     quillEditor
+  },
+  computed: {
+    count() {
+      return this.$store.state.login
+    }
   }
 }
 </script>

@@ -21,6 +21,7 @@
                 :fetch-suggestions="querySearchAsync"
                 @select="handleSelect"
                 :on-icon-click="handleIconClick"
+                @keydown.enter.native="handleIconClick"
               >
               </el-input>
             </div>
@@ -103,6 +104,18 @@ import { loginOut, getQuickSearch } from '/api/index'
 import { getStore, removeStore } from '/utils/storage'
 import 'element-ui/lib/theme-default/index.css'
 export default {
+  mounted() {
+    let a = getStore('userInfo')
+    this.userName = JSON.parse(a)
+    this.token = getStore('token')
+    this.navFixed()
+    this.getPage()
+    window.addEventListener('scroll', this.navFixed)
+    window.addEventListener('resize', this.navFixed)
+    if (typeof this.$route.query.key !== undefined) {
+      this.userinput = this.$route.query.key
+    }
+  },
   data() {
     return {
       user: {},
@@ -307,18 +320,6 @@ export default {
   },
   components: {
     YButton
-  },
-  mounted() {
-    let a = getStore('userInfo')
-    this.userName = JSON.parse(a)
-    this.token = getStore('token')
-    this.navFixed()
-    this.getPage()
-    window.addEventListener('scroll', this.navFixed)
-    window.addEventListener('resize', this.navFixed)
-    if (typeof this.$route.query.key !== undefined) {
-      this.userinput = this.$route.query.key
-    }
   }
 }
 </script>
