@@ -49,6 +49,7 @@
               </ul>
             </el-col>
             <!-- 右侧内容区 -->
+
             <el-col :span="18">
               <!-- 过滤输入框和数据总数 -->
               <!-- <div style="font-size:18px;margin-bottom:40px;">
@@ -86,7 +87,8 @@
                       <span
                         class="right_title"
                         v-text="item.name"
-                        style="font-size: 1.2rem;"
+                        style="font-size: 1.2rem;color:red;"
+                        @click="getContent(item.id, item.name, item.typeName)"
                       >
                       </span>
                       <br />
@@ -97,14 +99,6 @@
                       >
                       </span>
                       <br />
-                      <!-- <p class="right_title">
-                        <ul class="search_title" style="height:20px">
-                          <li style="width:140px;text-align:center">临床指南注释(120)</li>
-                          <li style="width:140px;text-align:center">药物标签注释(40)</li>
-                          <li style="width:140px;text-align:center">临床注释(50)</li>
-                          <li style="width:140px;text-align:center">变异注释(30)</li>
-                        </ul>
-                      </p> -->
                     </div>
                     <img
                       flaot="right"
@@ -133,7 +127,6 @@ import 'element-ui'
 import axios from 'axios'
 export default {
   // 生命周期函数
-
   data() {
     return {
       searchKey: 'gene', // 子组件Yheader传过来的搜索关键字
@@ -154,6 +147,32 @@ export default {
   },
   mounted() {},
   methods: {
+    // 点击标题跳转到对应
+    getContent(id, name, typeName) {
+      console.log(id)
+      console.log(name)
+      console.log(typeName)
+      var url = 'apis/taskApi/queryAllResult?id=' + id + '&name=' + name
+      axios({
+        method: 'get',
+        url: url
+      }).then(res => {
+        console.log(11111)
+        if (typeName === '药物基因对') {
+          this.$router.push({
+            path: '/searchDruGenePair'
+          })
+        } else if (typeName === '基因') {
+          this.$router.push({
+            path: '/searchContent'
+          })
+        } else if (typeName === '药物') {
+          this.$router.push({
+            path: '/searchDrug'
+          })
+        }
+      })
+    },
     // 接收子组件header传过来的搜索关键字，发送ajax
     getNotice() {
       this.map.clear()
@@ -172,8 +191,7 @@ export default {
           this.geneList = this.getGene
           console.log(this.geneList)
           this.totalNum = this.geneList.length
-
-          console.log(res)
+          // console.log(res)
           for (let i = 0; i < this.geneList.length; i++) {
             this.map.set(
               this.geneList[i].type,
@@ -182,7 +200,7 @@ export default {
                 : this.map.get(this.geneList[i].type) + 1
             )
           }
-          console.log(this.map.get('project'))
+          // console.log(this.map.get('project')) // 8
         } else {
           this.$message({
             message: '未搜索到相关信息',
@@ -191,34 +209,10 @@ export default {
         }
       })
     },
-    // 默认查询所有基因数据列表获取
-    // searchWord() {
-    //   // var gonggao = '公告'
-    //   // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-    //   var url = 'static/data/getGene.json'
-    //   axios({
-    //     method: 'get',
-    //     url: url
-    //   }).then(res => {
-    //     // 把获得好的数据 赋予 给getGene成员
-    //     this.getGene = res.data
-    //     this.geneList = this.getGene
-    //     this.totalNum = this.getGene.length
-    //     // console.log(res)
-    //     for (let i = 0; i < this.getGene.length; i++) {
-    //       this.map.set(
-    //         this.getGene[i].id,
-    //         this.map.get(this.getGene[i].id) == null
-    //           ? 1
-    //           : this.map.get(this.getGene[i].id) + 1
-    //       )
-    //     }
-    //   })
-    // },
     // 基因数据左侧标题获取
     getNoticeTitle() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
+      // var biaoti = '标题'
+      // var url = '/apis/cms/api/getColumnNewList?title=' + biaoti
       var url = 'static/data/getGenetitle.json'
       axios({
         method: 'get',
@@ -237,7 +231,7 @@ export default {
       } else {
         this.ids = this.ids.replace(code + ',', '')
       }
-      console.log(this.ids)
+      console.log(this.ids) // project,gene,drug,===用户点的某一个筛选条件
       if (this.ids === '') {
         this.geneList = this.getGene
         return

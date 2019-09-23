@@ -307,7 +307,7 @@ var formatDate = function(value) {
   // var month = padDate(date.getMonth() + 1)
   // var day = padDate(date.getDate())
   // return year + '-' + month + '-' + day
-  let a = value.split(' ')
+  let a = value.split('')
   return a[0]
 }
 // 格式化时间函数 2
@@ -505,6 +505,7 @@ export default {
     getTopNews() {
       // var topNew = '最新事件'
       // var url = '/apis/cms/api/getColumnNewList?title=' + topNew
+      var url = 'static/data/home_topNews.json'
       axios.defaults.withCredentials = true
       axios.defaults.headers.common['Authentication-Token'] =
         window.localStorage.token
@@ -553,7 +554,7 @@ export default {
       // var newContent = '最新研究内容'
       // axios.defaults.withCredentials = true
       // var url = '/apis/cms/api/getColumnNewList?title=' + newContent
-      // var url = 'static/data/home_newContent.json'
+      var url = 'static/data/home_newContent.json'
       axios({
         method: 'get',
         url: url
@@ -573,6 +574,7 @@ export default {
       // var gonggao = '公告'
       // axios.defaults.withCredentials = true
       // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
+      var url = 'static/data/home_notice.json'
       axios({
         method: 'get',
         url: url

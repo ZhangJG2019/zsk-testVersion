@@ -1,6 +1,6 @@
 /* eslint-disable no-debugger */
 import Vue from 'vue'
-import App from './App'
+import 'element-ui/lib/theme-chalk/index.css'
 import router from './router'
 // import axios from 'axios'
 import store from './store'
@@ -52,7 +52,7 @@ import {
   Upload,
   TimePicker
 } from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import App from './App'
 import {
   getStore
 } from '/utils/storage'
@@ -103,7 +103,7 @@ Vue.use(VueLazyload, {
   // attempt: 1
 })
 
-const whiteList = ['/searchContent', '/queryAllResult', '/authority', '/clinicalNotes', '/clinicalTrials', '/drugGenePair', '/drugLabels', '/patent', '/taskUser', '/help', '/download', '/taskhall', '/home', '/drug', '/gene', '/getajax', '/login', '/register', '/forgetpwd'] // 不需要登陆的页面
+const whiteList = ['/searchDrug', '/searchDruGenePair', '/searchContent', '/queryAllResult', '/authority', '/clinicalNotes', '/clinicalTrials', '/drugGenePair', '/drugLabels', '/patent', '/taskUser', '/help', '/download', '/taskhall', '/home', '/drug', '/gene', '/getajax', '/login', '/register', '/forgetpwd'] // 不需要登陆的页面
 //
 router.beforeEach(function (to, from, next) {
   // userInfo().then(res => {

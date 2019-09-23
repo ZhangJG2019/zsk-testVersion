@@ -12,10 +12,11 @@
             style="width:70px;height:70px;margin:15px 0 0 20px;opacity:0.4;"
             alt=""
           />
-          <!-- <span v-text="searchName">ACE抑制剂途径，药效学 </span> -->
+          <!-- <span style="font-size:30px;margin-left:10px;font-weight:200;line-height:100px;height:100px;vertical-align: top;" v-text="searchName">ABT-751
+ </span> -->
           <span
             style="font-size:30px;margin-left:10px;font-weight:200;line-height:100px;height:100px;vertical-align: top;"
-            >ACE抑制剂途径，药效学
+            >奥美拉唑-CYP2C19
           </span>
         </div>
       </div>
@@ -28,19 +29,45 @@
           <el-tab-pane label="总结">
             <el-col :span="24" style="padding-left:15px;">
               <!-- <span v-text="searchName">名称&代码 </span> -->
-              <p style="font-size:25px;font-weight:500;">名称&代码</p>
+              <p style="font-size:25px;font-weight:500;">药物基本信息</p>
               <br />
               <p>
-                <span style="font-size:18px;font-weight:200;">基因ID: </span>
                 <br />
-                <span style="font-size:18px;font-weight:200;">1557 </span>
+                <span style="font-size:18px;font-weight:500;"
+                  >药物中文名称:
+                </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >奥美拉唑-CYP2C19
+                </span>
+                <br />
+                <span style="font-size:18px;font-weight:500;"
+                  >药物英文名称:
+                </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >omeprazole-CYP2C19
+                </span>
+                <br />
+                <span style="font-size:18px;font-weight:500;"
+                  >药物ATC编码:
+                </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >A02BC01.1557
+                </span>
               </p>
               <br />
               <p style="margin-bottom:30px;">
-                <span style="font-size:18px;font-weight:200;">别名: </span>
+                <span style="font-size:25px;font-weight:500;">项目描述: </span>
                 <br />
-                <span style="font-size:18px;font-weight:200;">
-                  CPCJ, CYP2C, CYPIIC17, CYPIIC19, P450C2C, P450IIC19
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                >
+                  PPIs均通过肝药酶CYP2C19代谢，而CYP2C19酶活性受其编码基因的基因型影响。CYP2C19基因型可引起PPIs药代学和药效学差异，携带CYP2C19*2，*3基因型患者对质子泵抑制剂的代谢减弱，药物在体内作用时间延长，从而影响PPIs治疗方案对胃食管反流病与幽门螺杆菌感染的治愈率和根除率，对临床治疗有重要的现实意义。近年研究发现通过CYP2C19基因分型对幽门螺旋杆菌感染患者进行分组治疗有效率显著增高。因此美国食品药品监督管理局（FDA）推荐在进行PPIs治疗方案前应考虑对患者进行CYP2C19基因检测。
                 </span>
                 <br />
               </p>

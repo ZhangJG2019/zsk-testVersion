@@ -12,10 +12,11 @@
             style="width:70px;height:70px;margin:15px 0 0 20px;opacity:0.4;"
             alt=""
           />
-          <!-- <span v-text="searchName">ACE抑制剂途径，药效学 </span> -->
+          <!-- <span style="font-size:30px;margin-left:10px;font-weight:200;line-height:100px;height:100px;vertical-align: top;" v-text="searchName">ABT-751
+ </span> -->
           <span
             style="font-size:30px;margin-left:10px;font-weight:200;line-height:100px;height:100px;vertical-align: top;"
-            >ACE抑制剂途径，药效学
+            >ABT-751
           </span>
         </div>
       </div>
@@ -28,23 +29,80 @@
           <el-tab-pane label="总结">
             <el-col :span="24" style="padding-left:15px;">
               <!-- <span v-text="searchName">名称&代码 </span> -->
-              <p style="font-size:25px;font-weight:500;">名称&代码</p>
+              <p style="font-size:25px;font-weight:500;">药物基本信息</p>
               <br />
               <p>
-                <span style="font-size:18px;font-weight:200;">基因ID: </span>
+                <span style="font-size:18px;font-weight:500;">药物I:</span>
                 <br />
-                <span style="font-size:18px;font-weight:200;">1557 </span>
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >消化道及代谢 </span
+                ><br />
+                <span style="font-size:18px;font-weight:500;">药物II类: </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >治疗与胃酸分泌相关疾病的药物
+                </span>
+                <br />
+                <span style="font-size:18px;font-weight:500;">药物III类: </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >消化道溃疡和胃食管返流病治疗药物
+                </span>
+                <br />
+                <span style="font-size:18px;font-weight:500;">药物VI类: </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >质子泵抑制药
+                </span>
+                <br />
+                <span style="font-size:18px;font-weight:500;"
+                  >药物中文名称:
+                </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >奥美拉唑
+                </span>
+                <br />
+                <span style="font-size:18px;font-weight:500;"
+                  >药物英文名称:
+                </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >omeprazole
+                </span>
+                <br />
+                <span style="font-size:18px;font-weight:500;"
+                  >药物ATC编码:
+                </span>
+                <br />
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                  >A02BC01
+                </span>
               </p>
               <br />
               <p style="margin-bottom:30px;">
-                <span style="font-size:18px;font-weight:200;">别名: </span>
+                <span style="font-size:25px;font-weight:500;"
+                  >药物商品名:
+                </span>
                 <br />
-                <span style="font-size:18px;font-weight:200;">
-                  CPCJ, CYP2C, CYPIIC17, CYPIIC19, P450C2C, P450IIC19
+                <span
+                  style="font-size:15px;height:20px;line-height:30px;font-weight:100;"
+                >
+                  奥美拉唑肠溶胶囊, 艾司奥美拉唑镁肠溶片, 奥美拉唑钠肠溶片,
+                  奥美拉唑肠溶片, 注射用奥美拉唑钠, 注射用奥美拉唑钠(静脉滴注),
+                  奥美拉唑镁肠溶片, 注射用艾司奥美拉唑钠, 艾司奥美拉唑肠溶胶囊
                 </span>
                 <br />
               </p>
               <br />
+
               <el-row style="margin:10px 0 60px 0;">
                 <el-col :span="7">
                   <div class="gq-category" data-section="Literature">

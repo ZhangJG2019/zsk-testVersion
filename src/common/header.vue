@@ -20,8 +20,10 @@
                 :maxlength="100"
                 :fetch-suggestions="querySearchAsync"
                 @select="handleSelect"
-                :on-icon-click="handleIconClick"
+                @keydown.enter.native="handleIconClick"
+                @change="handleIconClick"
               >
+                <i slot="suffix" class="el-input__icon el-icon-search"></i>
               </el-input>
             </div>
             <!-- <div class="nav-aside" ref="aside" :class="{ fixed: st }"> -->

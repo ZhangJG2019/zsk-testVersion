@@ -8,6 +8,7 @@
       <div class="tablecontent">
         <div class="content_title">
           <el-row>
+            <!-- <el-row style="margin-top:30px;"> -->
             <el-col :span="24" style="margin-bottom:20px;">
               <el-breadcrumb separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{ path: '/' }" style="font-size:15px;"
@@ -18,8 +19,6 @@
                 >
               </el-breadcrumb>
             </el-col>
-          </el-row>
-          <el-row style="margin-top:30px;">
             <!-- 左侧菜单栏 -->
             <el-col :span="6">
               <ul class="leftmenu">
@@ -30,18 +29,27 @@
                     name="check10"
                     class="checkboxs"
                     @change="handleCheckedTypesChange(item.code)"
-                    ><span
+                  >
+                    <span
                       :id="item.code"
                       class="left_title"
                       v-text="item.name"
                     ></span>
-                    &nbsp;&nbsp;(<span v-text="map.get(item.code)"></span
-                    >)</el-checkbox
-                  >
+                    &nbsp;&nbsp; (
+                    <span
+                      v-text="
+                        map.get(item.code) === undefined
+                          ? 0
+                          : map.get(item.code)
+                      "
+                    ></span>
+                    )
+                  </el-checkbox>
                 </li>
               </ul>
             </el-col>
             <!-- 右侧内容区 -->
+
             <el-col :span="18">
               <!-- 过滤输入框和数据总数 -->
               <!-- <div style="font-size:18px;margin-bottom:40px;">
@@ -76,8 +84,13 @@
                       style="float:left; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;width:600px;"
                     >
                       <!-- <span style="color:#8b94a6;font-size:14px;">途径</span> -->
-                      <br />
-                      <span class="right_title" v-text="item.name"> </span>
+                      <span
+                        class="right_title"
+                        v-text="item.name"
+                        style="font-size: 1.2rem;color:red;"
+                        @click="getContent"
+                      >
+                      </span>
                       <br />
                       <span
                         class="right_title"
@@ -86,7 +99,6 @@
                       >
                       </span>
                       <br />
-                      <span class="right_title" v-text="item.introduce"> </span>
                     </div>
                     <img
                       flaot="right"
@@ -102,7 +114,7 @@
         </div>
       </div>
     </el-card>
-    <y-footer></y-footer>
+    <!-- <y-footer></y-footer> -->
   </div>
 </template>
 <script>
@@ -115,7 +127,6 @@ import 'element-ui'
 import axios from 'axios'
 export default {
   // 生命周期函数
-
   data() {
     return {
       searchKey: 'gene', // 子组件Yheader传过来的搜索关键字
@@ -132,12 +143,19 @@ export default {
   created() {
     this.getNoticeTitle()
     // this.searchWord()
-    // this.getNotice()
+    this.getNotice()
   },
   mounted() {},
   methods: {
-    //接收子组件header传过来的搜索关键字，发送ajax
-    getNotice(searchKey) {
+    // 点击标题跳转到对应
+    getContent() {},
+    // 接收子组件header传过来的搜索关键字，发送ajax
+    getNotice() {
+      this.map.clear()
+      let searchKey = $('input[icon="search"]').val()
+      if (typeof searchKey === 'undefined' || searchKey == null) {
+        searchKey = ''
+      }
       var url = 'apis/taskApi/queryAllResult?name=' + searchKey
       axios({
         method: 'get',
@@ -147,10 +165,9 @@ export default {
         if (res.data.length !== []) {
           this.getGene = JSON.parse(res.data)
           this.geneList = this.getGene
-          console.log(this.geneList)
+          // console.log(this.geneList)
           this.totalNum = this.geneList.length
-
-          // console.log(res)
+          console.log(res)
           for (let i = 0; i < this.geneList.length; i++) {
             this.map.set(
               this.geneList[i].type,
@@ -159,6 +176,7 @@ export default {
                 : this.map.get(this.geneList[i].type) + 1
             )
           }
+          // console.log(this.map.get('project'))
         } else {
           this.$message({
             message: '未搜索到相关信息',
@@ -213,7 +231,7 @@ export default {
       } else {
         this.ids = this.ids.replace(code + ',', '')
       }
-      console.log(this.ids)
+      console.log(this.ids) // project,gene,drug,===用户点的某一个筛选条件
       if (this.ids === '') {
         this.geneList = this.getGene
         return
@@ -224,18 +242,6 @@ export default {
           this.geneList.push(this.getGene[i])
         }
       }
-      // var url = 'static/data/getGene.json'
-      // axios({ methods: 'get', url: url }).then(res => {
-      //   // console.log(res.data)
-      //   for (let i = 0; i < this.getGene.length; i++) {
-      //     this.map.set(
-      //       this.getGene[i].id,
-      //       this.map.get(this.getGene[i].id) == null
-      //         ? 1
-      //         : this.map.get(this.getGene[i].id) + 1
-      //     )
-      //   }
-      // })
     }
   },
   components: {
@@ -247,6 +253,14 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
+.right_title .search_title li {
+  float: left;
+  background-color: #eee;
+  margin-left: 5px;
+}
+.right_title .search_title li:hover {
+  background-color: #ddd;
+}
 .gene_list li:hover {
   // background-color: #f9f9fa;
   background-color: red;
@@ -267,6 +281,9 @@ export default {
   float: right;
   margin: 1rem 1.25rem 0 0;
 }
+.right_right:hover {
+  background-color: #e3effc;
+}
 .right_right img {
   width: 3.125rem;
   height: 3.8125rem;
@@ -275,11 +292,11 @@ export default {
   margin-bottom: 20px;
 }
 .right_title {
+  padding-left: 1.4rem;
   font-size: 1rem;
   line-height: 1.5;
   font-weight: 300;
 }
-
 .left_type {
   font-size: 20px;
 }

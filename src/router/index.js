@@ -21,7 +21,9 @@ const user = () => import('/page/User/user.vue')
 const information = () => import('/page/User/children/information.vue')
 const taskhall = () => import('/page/Taskhall/taskhall.vue')
 const QueryAllResult = () => import('/page/Search/queryAllResult.vue')
-const SearchContent = () => import('/page/Search/searchContent.vue')
+const SearchContent = () => import('/page/Search/searchContent.vue') // jiyin
+const SearchDruGenePair = () => import('/page/Search/searchDruGenePair.vue') // yaowujiyindui
+const SearchDrug = () => import('/page/Search/searchDrug.vue') // yaowu
 const RefreshSearch = () => import('/page/Refresh/refreshsearch.vue')
 const RefreshGoods = () => import('/page/Refresh/refreshgoods.vue')
 
@@ -97,6 +99,16 @@ export default new Router({
     path: '/drug',
     name: 'drug',
     component: Drug
+  },
+  {
+    path: '/searchDruGenePair',
+    name: 'searchDruGenePair',
+    component: SearchDruGenePair
+  },
+  {
+    path: '/searchDrug',
+    name: 'searchDrug',
+    component: SearchDrug
   },
   {
     path: '/login',
