@@ -57,7 +57,9 @@ export default {
   },
   methods: {
     tab(e) {
-      this.$router.push({ path: '/user/' + e.path })
+      let routeData = this.$router.resolve({ path: '/user/' + e.path })
+      window.open(routeData.href, '_blank')
+      // this.$router.push({ path: '/user/' + e.path })
     }
   },
   created() {

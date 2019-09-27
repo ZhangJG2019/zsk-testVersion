@@ -5918,7 +5918,7 @@ export default {
       this.wpList_secarch = []
       this.wpList_options = []
       // console.log(count)
-      if (count == null || count == '') {
+      if (count === null || count === '') {
         this.index = 0
       } else {
         this.index = count
@@ -5938,7 +5938,7 @@ export default {
     },
     selected_options() {
       if(this.wpList_secarch.length !== 0){
-        let ids  = this.wpList_secarch.join(",")
+        let ids = this.wpList_secarch.join(",")
         this.searchField = 'subCategoryId'
         this.searchString = ids
         this.searchOper = 'In'

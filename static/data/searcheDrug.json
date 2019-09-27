@@ -1,0 +1,28 @@
+[
+ {
+  "drugName": "奥美拉唑",
+  "drug1":"消化道及代谢",
+  "drug2":"治疗与胃酸分泌相关疾病的药物",
+  "drug3":"消化道溃疡和胃食管返流病治疗药物",
+  "drug4":"质子泵抑制药",
+  "englishName":"omeprazole",
+  "atcCode":"A02BC01",
+  "clinicalGuidelines":"350",
+  "CGforeignnum":"300",
+  "CGchina":"50",
+  "drugTitle":"500",
+  "DTforeignnum":"400",
+  "DTchina":"100",
+  "clinicalTest":"100",
+  "CTforeignnum":"70",
+  "CTchina":"30",
+  "clinicalAnnotation":"750",
+  "CAnum":"750",
+  "pathways":"50",
+  "PWforeignnum":"30",
+  "PWchina":"20",
+  "patent":"50",
+  "PTforeignnum":"0",
+  "PTchina":"50"
+  }
+]

@@ -111,6 +111,11 @@ export default new Router({
     component: SearchDrug
   },
   {
+    path: '/searchContent',
+    name: 'searchContent',
+    component: SearchContent
+  },
+  {
     path: '/login',
     name: 'login',
     component: Login
@@ -130,11 +135,7 @@ export default new Router({
     name: 'refreshsearch',
     component: RefreshSearch
   },
-  {
-    path: '/searchContent',
-    name: 'searchContent',
-    component: SearchContent
-  },
+
   {
     path: '/order',
     name: 'order',

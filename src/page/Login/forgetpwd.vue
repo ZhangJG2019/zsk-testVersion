@@ -211,16 +211,22 @@ export default {
                     message: res.message,
                     type: 'success'
                   })
-                  return this.$router.push({
-                    path: '/login'
-                  })
+                  let routeData = this.$router.resolve({ path: '/login' })
+                  let a = window.open(routeData.href, '_blank')
+                  return a
+                  // return this.$router.push({
+                  //   path: '/login'
+                  // })
                 } else {
                   // console.log('RES=其他' + res)
                   this.$message.error(res.message)
                   this.ruleForm.verifyCode = ''
-                  return this.$router.push({
-                    path: '/register'
-                  })
+                  let routeData = this.$router.resolve({ path: '/register' })
+                  let a = window.open(routeData.href, '_blank')
+                  return a
+                  // return this.$router.push({
+                  //   path: '/register'
+                  // })
                 }
               })
               .catch(res => {

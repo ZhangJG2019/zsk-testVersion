@@ -152,23 +152,25 @@ export default {
     // 查询信息
     handleIconClick(ev) {
       if (this.$route.path === '/queryAllResult') {
-        this.$router.push({
+        let routeData = this.$router.resolve({
           path: '/queryAllResult',
           query: {
             key: this.userinput
           }
         })
+        window.open(routeData.href, '_blank')
         // func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
-        this.$emit('sousuo', this.userinput)
+        // this.$emit('sousuo', this.userinput)
       } else {
-        this.$router.push({
+        let routeData = this.$router.resolve({
           path: '/queryAllResult',
           query: {
             key: this.userinput
           }
         })
+        window.open(routeData.href, '_blank')
         // func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
-        this.$emit('sousuo', this.userinput)
+        // this.$emit('sousuo', this.userinput)
       }
     },
     showError(m) {

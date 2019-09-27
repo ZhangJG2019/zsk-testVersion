@@ -3,17 +3,33 @@
     <div class="container">
       <div class="footer">
         <p class="links">
-          <a href="http://www.3gbio.com.cn/html/about/intro/">关于公司</a> |
-          <a href="http://www.3gbio.com.cn/html/privacy/">隐私条款</a> |
-          <a href="http://www.3gbio.com.cn/html/Legal-Notices/">法律声明</a> |
-          <a href="http://www.3gbio.com.cn/html/mail/">企业邮箱</a> |
-          <a href="https://www.cnzz.com/stat/website.php?web_id=4698979"
+          <a target="_blank" href="http://www.3gbio.com.cn/html/about/intro/"
+            >关于公司</a
+          >
+          |
+          <a target="_blank" href="http://www.3gbio.com.cn/html/privacy/"
+            >隐私条款</a
+          >
+          |
+          <a target="_blank" href="http://www.3gbio.com.cn/html/Legal-Notices/"
+            >法律声明</a
+          >
+          |
+          <a target="_blank" href="http://www.3gbio.com.cn/html/mail/"
+            >企业邮箱</a
+          >
+          |
+          <a
+            target="_blank"
+            href="https://www.cnzz.com/stat/website.php?web_id=4698979"
             >站长统计</a
           >
           |
         </p>
         <p class="copyright">
-          <a href="http://www.miibeian.gov.cn/">湘ICP备18007563号-1</a>
+          <a target="_blank" href="http://www.miibeian.gov.cn/"
+            >湘ICP备18007563号-1</a
+          >
           长沙三济生物科技有限公司 copyright 2012 © 版权所有
         </p>
       </div>

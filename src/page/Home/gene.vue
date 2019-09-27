@@ -10,106 +10,53 @@
           <el-row>
             <el-col :span="24" style="margin-bottom:20px;">
               <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/' }" style="font-size:15px;"
-                  >首页</el-breadcrumb-item
-                >
-                <el-breadcrumb-item style="font-size:15px;"
-                  >基因</el-breadcrumb-item
-                >
+                <el-breadcrumb-item :to="{ path: '/' }" style="font-size:15px;">
+                  首页
+                </el-breadcrumb-item>
+                <el-breadcrumb-item style="font-size:15px;">
+                  基因
+                </el-breadcrumb-item>
               </el-breadcrumb>
             </el-col>
-            <el-col :span="24"
-              ><p
+            <el-col :span="24">
+              <p
                 style="font-size: 2.5625rem;font-family:microsoft yahei;margin-bottom:1.25rem;font-weight:100;"
               >
                 基因(gene)
               </p>
               <p style="text-indent:2em;font-size:1.1rem;">
-                基因（遗传因子）是产生一条多肽链或功能RNA所需的全部核苷酸序列。基因支持着生命的基本构造和性能。储存着生命的种族、血型、孕育、生长、凋亡等过程的全部信息。环境和遗传的互相依赖，演绎着生命的繁衍、细胞分裂和蛋白质合成等重要生理过程。生物体的生、长、衰、病、老、死等一切生命现象都与基因有关。它也是决定生命健康的内在因素。因此，基因具有双重属性：物质性（存在方式）和信息性（根本属性）。
+                暂无介绍~
               </p>
-              <br />
-              <p style="text-indent:2em;font-size:1.1rem;">
-                带有遗传讯息的DNA片段称为基因，其他的DNA序列，有些直接以自身构造发挥作用，有些则参与调控遗传讯息的表现。组成简单生命最少要265到350个基因。（这涉及到了基因工作组的力量，人类的基因工作组与果蝇的基本相似）
-              </p></el-col
-            >
+            </el-col>
           </el-row>
           <el-row style="margin-top:30px;">
-            <!-- 左侧菜单栏 -->
-            <el-col :span="6">
-              <ul class="leftmenu">
-                <li class="left_type">类别</li>
-                <li v-for="(item, key) in keytitle" :key="key">
-                  <el-checkbox
-                    name="check10"
-                    class="checkboxs"
-                    @change="handleCheckedTypesChange(item.id)"
-                    ><span
-                      :id="item.id"
-                      class="left_title"
-                      v-text="item.name"
-                    ></span>
-                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span
-                    >)</el-checkbox
-                  >
-                </li>
-              </ul>
-            </el-col>
             <!-- 右侧内容区 -->
-            <el-col :span="18">
-              <!-- 过滤输入框和数据总数 -->
-              <div style="font-size:18px;margin-bottom:40px;">
-                过滤&nbsp;:<el-input
-                  style="width:300px;text-indent: 2.3em;"
-                  v-model="filter_input"
+            <el-col :span="24">
+              <!-- 过滤输入框 -->
+              <div style="font-size:18px;margin: 0 auto;width:600px;">
+                <el-input
+                  style="width:600px;"
                   placeholder="请输入内容"
-                ></el-input>
-                <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
-                  <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
-                </p>
-              </div>
-              <!-- 下方具体数据展示列表 -->
-              <ul class="gene_list">
-                <li
-                  v-for="(item, key) in geneList"
-                  :key="key"
-                  style="cursor:pointer;"
+                  class="input-with-select"
+                  v-model="userinput"
+                  :minlength="1"
+                  :maxlength="100"
+                  @select="handleSelect"
+                  :on-icon-click="handleIconClick"
+                  @keydown.enter.native="handleIconClick"
                 >
-                  <div class="right_left" style="float:left; ">
-                    <span
-                      class="iconfont icon-jiyinsuanfa"
-                      style="font-size:50px;"
-                    ></span>
-                  </div>
-                  <div
-                    class="right_right"
-                    style="float:left;margin-left:1.75rem;width:90%;border-bottom:1px solid #eee;padding:20px 0;cursor:pointer;"
+                  <el-select
+                    style="width:130px;"
+                    v-model="select"
+                    slot="prepend"
+                    placeholder="请选择"
                   >
-                    <div
-                      class="left_content"
-                      style="float:left; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;width:600px;"
-                    >
-                      <span style="color:#8b94a6;font-size:14px;">途径</span>
-                      <br />
-                      <span class="right_title" v-text="item.name"> </span>
-                      <br />
-                      <span
-                        class="right_title"
-                        style="font-style:italic"
-                        v-text="item.type"
-                      >
-                      </span>
-                      <br />
-                      <span class="right_title" v-text="item.introduce"> </span>
-                    </div>
-                    <img
-                      flaot="right"
-                      class="right_img"
-                      src="../../../static/images/PA165986279-100px.png"
-                      alt=""
-                    />
-                  </div>
-                </li>
-              </ul>
+                    <el-option label="全部" value="1"></el-option>
+                    <el-option label="具体的基因" value="2"></el-option>
+                  </el-select>
+                </el-input>
+              </div>
+              <!-- 下方具体数据展示表格 -->
             </el-col>
           </el-row>
         </div>
@@ -123,99 +70,35 @@ import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-// import $ from 'jquery'
 import 'element-ui'
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   // 生命周期函数
-
   data() {
     return {
+      userinput: '', // 搜索关键字
+      select: '',
       getGene: [], // 获取列表所有具体数据存放的数组，点击复选框，发ajax重新请求所对应的新数据
       geneList: [],
       totalNum: 0, // 复选框数据（括号里面的数字）的总数
       keytitle: [],
       type: '',
-      filter_input: '',
       map: new Map(),
       ids: ''
     }
   },
-  created() {
-    this.getNotice()
-    this.getNoticeTitle()
-  },
-  mounted() {},
+  created() {},
   methods: {
-    // 所有基因数据列表获取
-    getNotice() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-      var url = 'static/data/getGene.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.getGene = res.data
-        this.geneList = this.getGene
-        this.totalNum = this.getGene.length
-        // console.log(res)
-        for (let i = 0; i < this.getGene.length; i++) {
-          this.map.set(
-            this.getGene[i].typeId,
-            this.map.get(this.getGene[i].typeId) == null
-              ? 1
-              : this.map.get(this.getGene[i].typeId) + 1
-          )
-        }
-      })
+    // 给基因频率动态生成列添加id
+    forId(index) {
+      return 'forid_' + index
     },
-    // 基因数据左侧标题获取
-    getNoticeTitle() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-      var url = 'static/data/getGenetitle2.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.keytitle = res.data
-        // console.log(res)
-      })
+    // 搜索
+    handleIconClick(ev) {
+      console.log(222)
     },
-    // 点击基因数据标题获取对应列表数据
-    handleCheckedTypesChange(id) {
-      this.geneList = []
-      if (this.ids.indexOf(id + ',') === -1) {
-        this.ids += id + ','
-      } else {
-        this.ids = this.ids.replace(id + ',', '')
-      }
-      console.log(this.ids)
-      if (this.ids === '') {
-        this.geneList = this.getGene
-        return
-      }
-      for (let i = 0; i < this.getGene.length; i++) {
-        let typeId = this.getGene[i].typeId + ','
-        if (this.ids.indexOf(typeId) !== -1) {
-          this.geneList.push(this.getGene[i])
-        }
-      }
-      // var url = 'static/data/getGene.json'
-      // axios({ methods: 'get', url: url }).then(res => {
-      //   // console.log(res.data)
-      //   for (let i = 0; i < this.getGene.length; i++) {
-      //     this.map.set(
-      //       this.getGene[i].typeId,
-      //       this.map.get(this.getGene[i].typeId) == null
-      //         ? 1
-      //         : this.map.get(this.getGene[i].typeId) + 1
-      //     )
-      //   }
-      // })
+    handleSelect(item) {
+      this.userinput = item.value
     }
   },
   components: {
@@ -227,6 +110,9 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
+.el-select .el-input {
+  width: 130px;
+}
 .gene_list li:hover {
   // background-color: #f9f9fa;
   background-color: red;

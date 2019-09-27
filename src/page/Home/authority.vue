@@ -24,12 +24,12 @@
               >
                 权威指南(authority)
               </p>
-              <p style="text-indent:2em;font-size:1.1rem;">
+              <!-- <p style="text-indent:2em;font-size:1.1rem;">
                 基因（遗传因子）是产生一条多肽链或功能RNA所需的全部核苷酸序列。基因支持着生命的基本构造和性能。储存着生命的种族、血型、孕育、生长、凋亡等过程的全部信息。环境和遗传的互相依赖，演绎着生命的繁衍、细胞分裂和蛋白质合成等重要生理过程。生物体的生、长、衰、病、老、死等一切生命现象都与基因有关。它也是决定生命健康的内在因素。因此，基因具有双重属性：物质性（存在方式）和信息性（根本属性）。
               </p>
-              <br />
+              <br /> -->
               <p style="text-indent:2em;font-size:1.1rem;">
-                带有遗传讯息的DNA片段称为基因，其他的DNA序列，有些直接以自身构造发挥作用，有些则参与调控遗传讯息的表现。组成简单生命最少要265到350个基因。（这涉及到了基因工作组的力量，人类的基因工作组与果蝇的基本相似）
+                暂无介绍~
               </p></el-col
             >
           </el-row>
@@ -48,9 +48,8 @@
                       class="left_title"
                       v-text="item.name"
                     ></span>
-                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span
-                    >)</el-checkbox
-                  >
+                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span>)
+                  </el-checkbox>
                 </li>
               </ul>
             </el-col>
@@ -58,14 +57,14 @@
             <el-col :span="18">
               <!-- 过滤输入框和数据总数 -->
               <div style="font-size:18px;margin-bottom:40px;">
-                过滤&nbsp;:<el-input
+                <el-input
                   style="width:300px;text-indent: 2.3em;"
                   v-model="filter_input"
                   placeholder="请输入内容"
                 ></el-input>
-                <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
+                <!-- <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
                   <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
-                </p>
+                </p> -->
               </div>
               <!-- 下方具体数据展示列表 -->
               <ul class="gene_list">
@@ -173,8 +172,6 @@ export default {
     },
     // 基因数据左侧标题获取
     getNoticeTitle() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
       var url = 'static/data/getGenetitle2.json'
       axios({
         method: 'get',

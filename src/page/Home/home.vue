@@ -240,31 +240,33 @@
       <ul class=" guide_ul">
         <li style="background-color:#35be9b;">
           <!-- <li> -->
-          <router-link to="/taskUser">
+          <router-link to="/taskUser" target="_blank">
             <i class="iconfont icon-yonghuguanli"></i>
             <p>知识库用户</p>
           </router-link>
         </li>
         <li style="background-color:#8bc255;">
           <!-- <li> -->
-          <router-link to="/download">
+          <router-link to="/download" target="_blank">
             <i class="iconfont icon-xiazai"></i>
             <p>下载</p>
           </router-link>
         </li>
         <li style="background-color:#56bde3;">
           <!-- <li> -->
-          <router-link to="/help">
+          <router-link to="/help" target="_blank">
             <i class="iconfont icon-bangzhu"></i>
             <p>帮助</p>
           </router-link>
         </li>
         <!-- <li> -->
-        <li style="background-color:#f78228;" @click="tanchaung">
-          <router-link to="/taskhall">
+        <li style="background-color:#f78228;">
+          <!-- <li style="background-color:#f78228;"> -->
+          <!-- <a to="/taskhall" target="_blank"> -->
+          <a>
             <i class="iconfont icon-job"></i>
             <p>任务大厅</p>
-          </router-link>
+          </a>
           <!-- <a href="http://47.105.75.254/index" target="_blank"> -->
           <!-- <a href="http://47.105.75.254/index"> -->
           <!-- <a href="http://192.168.1.162/index" target="_blank">
@@ -298,7 +300,7 @@ import store from '../../store/index.js'
 // var padDate = function(value) {
 //   return value < 10 ? '0' + value : value
 // }
-// 事件补位函数 2
+// 时间补位函数 2
 // 格式化时间函数 1
 var formatDate = function(value) {
   // 这里的value就是需要过滤的数据
@@ -307,16 +309,16 @@ var formatDate = function(value) {
   // var month = padDate(date.getMonth() + 1)
   // var day = padDate(date.getDate())
   // return year + '-' + month + '-' + day
-  let a = value.split('')
-  return a[0]
+  // let a = value.split('')
+  // return a[0]
 }
 // 格式化时间函数 2
 export default {
   // 生命周期函数
   created() {
-    this.getTopNews()
-    this.getNewContent()
-    this.getNotice()
+    // this.getTopNews()
+    // this.getNewContent()
+    // this.getNotice()
     this.getNum()
     this.getname()
   },
@@ -363,23 +365,54 @@ export default {
     }
   },
   methods: {
+    // 任务大厅栏目条转
+    tanchaung() {
+      let userInfo = getStore('userInfo')
+      // if (userInfo !== null && userInfo !== '') {
+      if (userInfo !== undefined) {
+        window.location.href = 'http://47.105.75.254/#/taskhall'
+        // window.open('http://localhost:1111/#/taskhall')
+        //  path: '/taskall'
+      } else {
+        // debugger
+        // alert(111111111)
+        this.$message({
+          message: '请登录后查看',
+          type: 'warning'
+        })
+      }
+    },
+    // 获取用户信息
     getname() {
       userInfo().then(res => {
+        console.log(res[0].data.user)
         // console.log(res.data.user)
         let menuCode = new Set()
-        let user = res.data.user
-        let role = user.roleVo
-        if (role !== null) {
-          role.permissionVoList.map(item =>
-            item.menuList.map(it => menuCode.add(it.code))
-          )
+        // if (res.data !== '' && res.data !== null && res.data !== undefined) {
+        if (
+          res[0].data.user !== '' &&
+          res[0].data.user !== null &&
+          res[0].data.user !== undefined
+        ) {
+          let user = res[0].data.user
+          let role = user.roleVo
+          if (role !== null) {
+            role.permissionVoList.map(item =>
+              item.menuList.map(it => menuCode.add(it.code))
+            )
+          }
+          user.roleVo = menuCode
+          store.commit('RECORD_USERINFO', {
+            info: user
+          })
+          setStore('userInfo', user)
+        } else {
+          this.$message({
+            message: '用户信息未获取到',
+            type: 'error'
+          })
         }
         // console.log(menuCode)
-        user.roleVo = menuCode
-        store.commit('RECORD_USERINFO', {
-          info: user
-        })
-        setStore('userInfo', user)
       })
     },
     // 发送留言
@@ -423,51 +456,43 @@ export default {
     },
     // 基因
     gene() {
-      this.$router.push({
-        path: '/gene'
-      })
+      let routeData = this.$router.resolve({ path: '/gene' })
+      window.open(routeData.href, '_blank')
     },
     // 药物
     drug() {
-      this.$router.push({
-        path: '/drug'
-      })
+      let routeData = this.$router.resolve({ path: '/drug' })
+      window.open(routeData.href, '_blank')
     },
     // 药物基因对
     drugGenePair() {
-      this.$router.push({
-        path: '/drugGenePair'
-      })
+      let routeData = this.$router.resolve({ path: '/drugGenePair' })
+      window.open(routeData.href, '_blank')
     },
     // 权威指南
     authority() {
-      this.$router.push({
-        path: '/authority'
-      })
+      let routeData = this.$router.resolve({ path: '/authority' })
+      window.open(routeData.href, '_blank')
     },
     // 药物标签
     drugLabels() {
-      this.$router.push({
-        path: '/drugLabels'
-      })
+      let routeData = this.$router.resolve({ path: '/drugLabels' })
+      window.open(routeData.href, '_blank')
     },
     // 临床注释
     clinicalNotes() {
-      this.$router.push({
-        path: '/clinicalNotes'
-      })
+      let routeData = this.$router.resolve({ path: '/clinicalNotes' })
+      window.open(routeData.href, '_blank')
     },
     // 临床实验
     clinicalTrials() {
-      this.$router.push({
-        path: '/clinicalTrials'
-      })
+      let routeData = this.$router.resolve({ path: '/clinicalTrials' })
+      window.open(routeData.href, '_blank')
     },
     // 专利
     patent() {
-      this.$router.push({
-        path: '/patent'
-      })
+      let routeData = this.$router.resolve({ path: '/patent' })
+      window.open(routeData.href, '_blank')
     },
     // 获取首页中间八大模块数据数量
     getNum() {
@@ -524,7 +549,7 @@ export default {
           this.columnLinkUrl = res.data[0].columnLinkUrl
           // console.log(this.columnLinkUrl)
           let url = this.columnLinkUrl.split('/html/')
-          // console.log(url)
+          console.log(url)
           let u = url[1].split('/')
           // console.log(u)
           let a = u[0]
@@ -592,23 +617,8 @@ export default {
     },
     // cms页面跳转
     See(e) {
-      window.location.href = '' + e
-    },
-    tanchaung() {
-      let userInfo = getStore('userInfo')
-      // let userInfo = 'zsk'
-      if (userInfo !== null && userInfo !== '') {
-        // window.location.href = 'http://47.105.75.254/#/taskhall'
-        window.location.href = 'http://localhost:1111/#/taskhall'
-        //  path: '/taskall'
-      } else {
-        // debugger
-        // alert(111111111)
-        this.$message({
-          message: '请登录后查看',
-          type: 'warning'
-        })
-      }
+      window.open = '' + e
+      // window.location.href = '' + e
     }
   },
   mounted() {

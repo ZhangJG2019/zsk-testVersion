@@ -24,9 +24,8 @@
               >
                 药物(drug)
               </p>
-
               <p style="text-indent:2em;font-size:1.1rem;">
-                药物是用以预防、治疗及诊断疾病的物质。在理论上，药物是指凡能影响机体器官生理功能及细胞代谢活动的化学物质都属于药物的范畴，也包括避孕药。
+                暂无介绍~
               </p></el-col
             >
           </el-row>
@@ -45,9 +44,8 @@
                       class="left_title"
                       v-text="item.name"
                     ></span>
-                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span
-                    >)</el-checkbox
-                  >
+                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span>)
+                  </el-checkbox>
                 </li>
               </ul>
             </el-col>
@@ -55,14 +53,14 @@
             <el-col :span="18">
               <!-- 过滤输入框和数据总数 -->
               <div style="font-size:18px;margin-bottom:40px;">
-                过滤&nbsp;:<el-input
+                <el-input
                   style="width:300px;text-indent: 2.3em;"
                   v-model="filter_input"
                   placeholder="请输入内容"
                 ></el-input>
-                <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
+                <!-- <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
                   <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
-                </p>
+                </p> -->
               </div>
               <!-- 下方具体数据展示列表 -->
               <ul class="gene_list">
@@ -170,8 +168,6 @@ export default {
     },
     // 基因数据左侧标题获取
     getNoticeTitle() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
       var url = 'static/data/getGenetitle2.json'
       axios({
         method: 'get',

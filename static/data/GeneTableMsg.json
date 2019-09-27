@@ -1,0 +1,54 @@
+{
+    "maxPorReslutNum": 4,
+    "content": [
+      {
+        "geneId": 1,
+        "geneName": "ABCG2",
+        "projectId": 33,
+        "projectName": "伊马替尼-ABCG2",
+        "genePorId": 1,
+        "genePorName": "ABCG2（C421A）",
+        "haploidType": null,
+        "geneRsId": "rs2231142",
+        "source": "pharmGKB",
+        "geneporFrequency": {
+            "a":"GG:73%(n=73)",
+            "b":"GA:24%(n=24)",
+            "c":"AA:3%(n=3)"
+        }
+      },
+      {
+        "geneId": 14,
+        "geneName": "CYP2C19",
+        "projectId": 31,
+        "projectName": "奥美拉唑-CYP2C19",
+        "genePorId": 1,
+        "genePorName": "CYP2C19*17（C806T）",
+        "haploidType": "CYP2C19*17",
+        "geneRsId": "rs12248560",
+        "source": "pharmGKB",
+        "geneporFrequency": {
+            "a":"GG:53%(n=53)",
+            "b":"GA:44%(n=44)",
+            "c":"AA:3%(n=3)"
+        }
+      },
+      {
+        "geneId": 14,
+        "geneName": "CYP2C19",
+        "projectId": 35,
+        "projectName": "氯吡格雷-CYP2C19",
+        "genePorId": 1,
+        "genePorName": "CYP2C19*2（G681A）",
+        "haploidType": "CYP2C19*2",
+        "geneRsId": "rs4244285",
+        "source": "pharmGKB",
+        "geneporFrequency": {
+            "a":"CC:23%(n=23)",
+            "b":"CT:64%(n=64)",
+            "c":"TT:8%(n=8)",
+            "d":"AT:5%(n=5)"
+        }
+      }
+    ]
+}

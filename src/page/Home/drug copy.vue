@@ -25,80 +25,27 @@
                 药物(drug)
               </p>
               <p style="text-indent:2em;font-size:1.1rem;">
-                药物是用以预防、治疗及诊断疾病的物质。在理论上，药物是指凡能影响机体器官生理功能及细胞代谢活动的化学物质都属于药物的范畴，也包括避孕药。
-              </p>
-            </el-col>
+                暂无介绍~
+              </p></el-col
+            >
           </el-row>
           <el-row style="margin-top:30px;">
             <!-- 左侧菜单栏 -->
             <el-col :span="6">
               <ul class="leftmenu">
-                <!-- <li v-for="(item, key) in keyword" :key="key">
-                  <el-checkbox id="check10" class="checkboxs" v-model="checked"
-                    ><span class="left_title" v-text="item.name">呼吸系统</span>
-                    &nbsp;&nbsp;(<span v-text="item.num">12</span>)</el-checkbox
-                  >
-                </li> -->
                 <li class="left_type">类别</li>
-                <li>
-                  <el-checkbox id="check1" class="checkboxs"
-                    ><span class="left_title">抗感染药</span>
-                    &nbsp;&nbsp;(<span>12</span>)</el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check2" class="checkboxs"
-                    ><span class="left_title">抗癌剂</span>
-                    &nbsp;&nbsp;(<span>12</span>)</el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check3" class="checkboxs"
-                    ><span class="left_title">心血管和血液药剂</span>
-                    &nbsp;&nbsp;<span>(12)</span></el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check4" class="checkboxs"
-                    ><span class="left_title">内分泌和代谢疾病药物</span>
-                    &nbsp;&nbsp;<span>(12)</span></el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check5" class="checkboxs"
-                    ><span class="left_title">消化道剂</span>
-                    &nbsp;&nbsp;(<span>12</span>)</el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check6" class="checkboxs"
-                    ><span class="left_title">肌肉骨骼药</span>
-                    &nbsp;&nbsp;<span>(12)</span></el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check7" class="checkboxs"
-                    ><span class="left_title">神经药剂</span>
-                    &nbsp;&nbsp;(<span>12</span>)</el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check8" class="checkboxs"
-                    ><span class="left_title"> 疼痛、抗炎和免疫调节剂</span>
-                    &nbsp;&nbsp;<span>(12)</span></el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check9" class="checkboxs"
-                    ><span class="left_title"> 生理机制</span>
-                    &nbsp;&nbsp;(<span>12</span>)</el-checkbox
-                  >
-                </li>
-                <li>
-                  <el-checkbox id="check10" class="checkboxs"
-                    ><span class="left_title">呼吸系统</span>
-                    &nbsp;&nbsp;(<span>12</span>)</el-checkbox
-                  >
+                <li v-for="(item, key) in keytitle" :key="key">
+                  <el-checkbox
+                    name="check10"
+                    class="checkboxs"
+                    @change="handleCheckedTypesChange(item.id)"
+                    ><span
+                      :id="item.id"
+                      class="left_title"
+                      v-text="item.name"
+                    ></span>
+                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span>)
+                  </el-checkbox>
                 </li>
               </ul>
             </el-col>
@@ -106,20 +53,19 @@
             <el-col :span="18">
               <!-- 过滤输入框和数据总数 -->
               <div style="font-size:18px;margin-bottom:40px;">
-                过滤&nbsp;:<el-input
+                <el-input
                   style="width:300px;text-indent: 2.3em;"
                   v-model="filter_input"
                   placeholder="请输入内容"
                 ></el-input>
-                <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
-                  <!-- <span style="color:#B0B7C2;" v-text="totalNum">142</span> -->
-                  <span style="color:#B0B7C2;">142</span>个途径
-                </p>
+                <!-- <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
+                  <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
+                </p> -->
               </div>
               <!-- 下方具体数据展示列表 -->
               <ul class="gene_list">
                 <li
-                  v-for="(item, key) in getGene"
+                  v-for="(item, key) in geneList"
                   :key="key"
                   style="cursor:pointer;"
                 >
@@ -177,20 +123,26 @@ import 'element-ui'
 import axios from 'axios'
 export default {
   // 生命周期函数
+
   data() {
     return {
       getGene: [], // 获取列表所有具体数据存放的数组，点击复选框，发ajax重新请求所对应的新数据
-      totalNum: '', // 复选框数据（括号里面的数字）的总数
-      keyword: [],
+      geneList: [],
+      totalNum: 0, // 复选框数据（括号里面的数字）的总数
+      keytitle: [],
       type: '',
-      filter_input: ''
+      filter_input: '',
+      map: new Map(),
+      ids: ''
     }
   },
   created() {
     this.getNotice()
+    this.getNoticeTitle()
   },
+  mounted() {},
   methods: {
-    // 基因数据列表获取
+    // 所有基因数据列表获取
     getNotice() {
       // var gonggao = '公告'
       // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
@@ -201,12 +153,62 @@ export default {
       }).then(res => {
         // 把获得好的数据 赋予 给getGene成员
         this.getGene = res.data
-        console.log(res)
-        // if (this.getGene.length > 0) {
-        //   this.columnLinkUrl = res.data[0].columnLinkUrl
-        // } else {
-        // }
+        this.geneList = this.getGene
+        this.totalNum = this.getGene.length
+        // console.log(res)
+        for (let i = 0; i < this.getGene.length; i++) {
+          this.map.set(
+            this.getGene[i].typeId,
+            this.map.get(this.getGene[i].typeId) == null
+              ? 1
+              : this.map.get(this.getGene[i].typeId) + 1
+          )
+        }
       })
+    },
+    // 基因数据左侧标题获取
+    getNoticeTitle() {
+      var url = 'static/data/getGenetitle2.json'
+      axios({
+        method: 'get',
+        url: url
+      }).then(res => {
+        // 把获得好的数据 赋予 给getGene成员
+        this.keytitle = res.data
+        // console.log(res)
+      })
+    },
+    // 点击基因数据标题获取对应列表数据
+    handleCheckedTypesChange(id) {
+      this.geneList = []
+      if (this.ids.indexOf(id + ',') === -1) {
+        this.ids += id + ','
+      } else {
+        this.ids = this.ids.replace(id + ',', '')
+      }
+      console.log(this.ids)
+      if (this.ids === '') {
+        this.geneList = this.getGene
+        return
+      }
+      for (let i = 0; i < this.getGene.length; i++) {
+        let typeId = this.getGene[i].typeId + ','
+        if (this.ids.indexOf(typeId) !== -1) {
+          this.geneList.push(this.getGene[i])
+        }
+      }
+      // var url = 'static/data/getGene.json'
+      // axios({ methods: 'get', url: url }).then(res => {
+      //   // console.log(res.data)
+      //   for (let i = 0; i < this.getGene.length; i++) {
+      //     this.map.set(
+      //       this.getGene[i].typeId,
+      //       this.map.get(this.getGene[i].typeId) == null
+      //         ? 1
+      //         : this.map.get(this.getGene[i].typeId) + 1
+      //     )
+      //   }
+      // })
     }
   },
   components: {

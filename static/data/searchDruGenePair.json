@@ -1,0 +1,24 @@
+[
+ {
+  "drugName": "阿立哌唑-CYP2D6",
+  "englishName":"aripiprazole-CYP2D6",
+  "atcCode":"N05AX12.1565",
+  "clinicalGuidelines":"3500",
+  "CGforeignnum":"3000",
+  "CGchina":"500",
+  "drugTitle":"5000",
+  "DTforeignnum":"4000",
+  "DTchina":"1000",
+  "clinicalTest":"1000",
+  "CTforeignnum":"700",
+  "CTchina":"300",
+  "clinicalAnnotation":"7500",
+  "CAnum":"7500",
+  "pathways":"500",
+  "PWforeignnum":"300",
+  "PWchina":"200",
+  "patent":"500",
+  "PTforeignnum":"0",
+  "PTchina":"500"
+  }
+]

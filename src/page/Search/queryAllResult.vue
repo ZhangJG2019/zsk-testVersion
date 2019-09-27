@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 <template>
   <div class="taskhall">
     <y-header @sousuo="getNotice">
@@ -88,7 +87,7 @@
                         class="right_title"
                         v-text="item.name"
                         style="font-size: 1.2rem;color:red;"
-                        @click="getContent(item.id, item.name, item.typeName)"
+                        @click="getContent(item.id, item.name, item.type)"
                       >
                       </span>
                       <br />
@@ -148,36 +147,66 @@ export default {
   mounted() {},
   methods: {
     // 点击标题跳转到对应
-    getContent(id, name, typeName) {
-      console.log(id)
-      console.log(name)
-      console.log(typeName)
-      var url = 'apis/taskApi/queryAllResult?id=' + id + '&name=' + name
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        console.log(11111)
-        if (typeName === '药物基因对') {
-          this.$router.push({
-            path: '/searchDruGenePair'
-          })
-        } else if (typeName === '基因') {
-          this.$router.push({
-            path: '/searchContent'
-          })
-        } else if (typeName === '药物') {
-          this.$router.push({
-            path: '/searchDrug'
-          })
-        }
-      })
+    getContent(id, name, type) {
+      // console.log(id)
+      // console.log(name)
+      // console.log(type)
+      // 触发 绑定的 事件，并向外传递参数
+      if (type === 'project') {
+        let routeData = this.$router.resolve({
+          path: '/searchDruGenePair',
+          query: {
+            word: type,
+            key: id
+          }
+        })
+        window.open(routeData.href, '_blank')
+        // this.$router.push({
+        //   path: '/searchDruGenePair',
+        //   query: {
+        //     word: type,
+        //     key: id
+        //   }
+        // })
+      } else if (type === 'gene') {
+        let routeData = this.$router.resolve({
+          path: '/searchContent',
+          query: {
+            word: type,
+            key: id
+          }
+        })
+        window.open(routeData.href, '_blank')
+        // this.$router.push({
+        //   path: '/searchContent',
+        //   query: {
+        //     word: type,
+        //     key: id
+        //   }
+        // })
+      } else if (type === 'drug') {
+        let routeData = this.$router.resolve({
+          path: '/searchDrug',
+          query: {
+            word: type,
+            key: id
+          }
+        })
+        window.open(routeData.href, '_blank')
+        // this.$router.push({
+        //   path: '/searchDrug',
+        //   query: {
+        //     word: type,
+        //     key: id
+        //   }
+        // })
+      }
     },
     // 接收子组件header传过来的搜索关键字，发送ajax
     getNotice() {
       this.map.clear()
       let searchKey = $('input[icon="search"]').val()
-      if (typeof searchKey === 'undefined' || searchKey == null) {
+      if (typeof searchKey === 'undefined' || searchKey === null) {
         searchKey = ''
       }
       var url = 'apis/taskApi/queryAllResult?name=' + searchKey
@@ -189,7 +218,7 @@ export default {
         if (res.data.length !== []) {
           this.getGene = JSON.parse(res.data)
           this.geneList = this.getGene
-          console.log(this.geneList)
+          // console.log(this.geneList)
           this.totalNum = this.geneList.length
           // console.log(res)
           for (let i = 0; i < this.geneList.length; i++) {
@@ -231,7 +260,7 @@ export default {
       } else {
         this.ids = this.ids.replace(code + ',', '')
       }
-      console.log(this.ids) // project,gene,drug,===用户点的某一个筛选条件
+      // console.log(this.ids) // project,gene,drug,===用户点的某一个筛选条件
       if (this.ids === '') {
         this.geneList = this.getGene
         return
@@ -261,10 +290,6 @@ export default {
 .right_title .search_title li:hover {
   background-color: #ddd;
 }
-.gene_list li:hover {
-  // background-color: #f9f9fa;
-  background-color: red;
-}
 .gene_list {
   width: 50rem;
 }
@@ -273,7 +298,7 @@ export default {
   height: 100%;
 }
 .gene_list li:hover {
-  background-color: green;
+  background-color: #f9f9fa;
   width: 100%;
   height: 100%;
 }
