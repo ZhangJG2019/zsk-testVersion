@@ -11,14 +11,9 @@ import VueResource from 'vue-resource'
 import './assets/icon/font-yewuhuafen/iconfont.css'
 import './assets/icon/font_jiyinguanlian/iconfont.css'
 import $ from 'jquery'
-// import axios from 'axios'
-// 富文本编辑器
-// 富文本编辑器
+// import Blob from './excel/Blob'
+// import Export2Excel from './excel/Export2Excel'
 
-// Vue.prototype.axios = axios
-// import {
-//   userInfo
-// } from './api'
 import {
   Tabs,
   TabPane,
@@ -137,5 +132,7 @@ new Vue({
   store,
   router,
   $,
+  // Blob,
+  // Export2Excel,
   render: h => h(App)
 })

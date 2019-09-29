@@ -35,8 +35,8 @@ module.exports = {
       '/assets': resolve('src/assets'),
       '/api': resolve('src/api'),
       '/utils': resolve('src/utils'),
-      'jquery': 'jquery'
-
+      'jquery': 'jquery',
+      'excel': path.resolve(__dirname, '../src/excel'), //新增加一行
     }
   },
   module: {

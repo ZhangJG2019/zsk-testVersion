@@ -8,33 +8,29 @@
       <div class="tablecontent">
         <div class="content_title">
           <el-row>
-            <el-col :span="24" style="margin-bottom:20px;">
+            <el-col style="margin-bottom:20px;">
               <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/' }" style="font-size:15px;"
-                  >首页</el-breadcrumb-item
-                >
-                <el-breadcrumb-item style="font-size:15px;"
-                  >基因</el-breadcrumb-item
-                >
+                <el-breadcrumb-item :to="{ path: '/' }" style="font-size:15px;">
+                  首页
+                </el-breadcrumb-item>
+                <el-breadcrumb-item style="font-size:15px;">
+                  基因
+                </el-breadcrumb-item>
               </el-breadcrumb>
             </el-col>
-            <el-col :span="24"
-              ><p
+            <el-col :span="24">
+              <p
                 style="font-size: 2.5625rem;font-family:microsoft yahei;margin-bottom:1.25rem;font-weight:100;"
               >
                 基因(gene)
               </p>
-              <!-- <p style="text-indent:2em;font-size:1.1rem;">
-                基因（遗传因子）是产生一条多肽链或功能RNA所需的全部核苷酸序列。基因支持着生命的基本构造和性能。储存着生命的种族、血型、孕育、生长、凋亡等过程的全部信息。环境和遗传的互相依赖，演绎着生命的繁衍、细胞分裂和蛋白质合成等重要生理过程。生物体的生、长、衰、病、老、死等一切生命现象都与基因有关。它也是决定生命健康的内在因素。因此，基因具有双重属性：物质性（存在方式）和信息性（根本属性）。
-              </p>
-              <br /> -->
               <p style="text-indent:2em;font-size:1.1rem;">
                 暂无介绍~
-              </p></el-col
-            >
+              </p>
+            </el-col>
           </el-row>
           <el-row style="margin-top:30px;">
-            <!-- 右侧内容区 -->
+            <!-- 上传表格内容展示区 -->
             <el-col :span="24">
               <!-- 过滤输入框 -->
               <div style="font-size:18px;margin: 0 auto;width:600px;">
@@ -61,74 +57,34 @@
                 </el-input>
               </div>
               <!-- 下方具体数据展示表格 -->
-              <el-table :data="geneData" style="width: 100%;margin-top:40px;">
-                <el-table-column
-                  prop="geneName"
-                  label="基因"
-                  width="100"
-                  align="center"
-                >
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-change="handleChange"
+                :show-file-list="false"
+                :on-remove="handleRemove"
+                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                :auto-upload="false"
+              >
+                <el-button size="small" type="primary">批量上传</el-button>
+                <div slot="tip" class="el-upload__tip">
+                  注：只 能 上 传 xlsx / xls 文 件
+                </div>
+              </el-upload>
+            </el-col>
+            <el-col :span="24">
+              <el-table :data="tableData" style="width: 100%">
+                <el-table-column prop="zhanghao" label="登录账号" width="180">
                 </el-table-column>
-                <el-table-column
-                  prop="geneId"
-                  label="基因id"
-                  align="center"
-                  v-if="false"
-                >
-                  <!-- v-if="false" -->
+                <el-table-column prop="name" label="名称" width="180">
                 </el-table-column>
-                <el-table-column
-                  prop="projectName"
-                  label="项目中文名称"
-                  width="180"
-                  align="center"
-                >
+                <el-table-column prop="bumen" label="部门" width="180">
                 </el-table-column>
-                <el-table-column label="基因频率(中国南方人群)" align="center">
-                  <!-- <el-table-column
-                    v-for="(item, key) in geneporFrequencyData"
-                    :key="key"
-                    :id="forId(key)"
-                    width="140"
-                    align="center"
-                    v-text="aaaa"
-                  >
-                  </el-table-column> -->
-                  <el-table-column
-                    :prop="item.porp"
-                    :label="item.label"
-                    width="180"
-                    v-for="item in data"
-                    :key="item.key"
-                  ></el-table-column>
+                <el-table-column prop="erjibumen" label="二级部门" width="180">
                 </el-table-column>
-                <el-table-column
-                  prop="haploidType"
-                  label="单倍型"
-                  width="150"
-                  align="center"
-                >
+                <el-table-column prop="zhuangtai" label="状态" width="180">
                 </el-table-column>
-                <el-table-column
-                  prop="genePorName"
-                  label="变异位点"
-                  width="150"
-                  align="center"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="geneRsId"
-                  label="位点RSID"
-                  width="150"
-                  align="center"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="source"
-                  label="来源"
-                  width="150"
-                  align="center"
-                >
+                <el-table-column prop="id" label="ID" width="180">
                 </el-table-column>
               </el-table>
             </el-col>
@@ -145,24 +101,12 @@ import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
 import 'element-ui'
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   // 生命周期函数
   data() {
     return {
-      data: [{ porp: '0' }, { porp: '1' }, { porp: '2' }, { porp: '3' }],
-      id: '',
-      aaaa: '',
-      geneName: '',
-      projectName: '',
-      haploidType: '',
-      genePorName: '',
-      geneRsId: '',
-      source: '',
-
-      geneporFrequencyData: [], // 设置基因频率下空白表格数量
-      geneData: [], // 存储表格具体数据
-      geneData2: [],
+      tableData: [],
       userinput: '', // 搜索关键字
       select: '',
       getGene: [], // 获取列表所有具体数据存放的数组，点击复选框，发ajax重新请求所对应的新数据
@@ -174,43 +118,11 @@ export default {
       ids: ''
     }
   },
-  created() {
-    // this.getNotice()
-    this.getNoticeTitle()
-    this.GeneLlinecount()
-  },
+  created() {},
   methods: {
     // 给基因频率动态生成列添加id
     forId(index) {
       return 'forid_' + index
-    },
-    // 动态获取基因频率数据
-    GeneLlinecount() {
-      var url = 'static/data/GeneTableMsg.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的空白表格数量【后端返回的基因频率对象的数量】赋予 给geneporFrequency成员
-        this.geneData = res.data.content // 后端返回的表格行数
-        let arr = res.data.content
-        for (let i = 0; i < arr.length; i++) {
-          this.geneporFrequencyData = arr[i].geneporFrequency // 创建基因频率下最大的列数
-          // console.log(this.geneporFrequencyData)
-          let msg = this.geneporFrequencyData
-          // console.log(msg)
-          for (let j = 0; j < msg.length; j++) {
-            this.aaaa = msg[j]
-            this.id = msg[j]
-            let arr = msg
-            var obj = {}
-            for (var key in arr) {
-              obj[key] = arr[key]
-            }
-          }
-          // console.log(obj)
-        }
-      })
     },
     // 搜索
     handleIconClick(ev) {
@@ -219,58 +131,88 @@ export default {
     handleSelect(item) {
       this.userinput = item.value
     },
-    // 所有基因数据列表获取
-    getNotice() {
-      var url = 'static/data/getGene.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.getGene = res.data
-        this.geneList = this.getGene
-        this.totalNum = this.getGene.length
-        // console.log(res)
-        for (let i = 0; i < this.getGene.length; i++) {
-          this.map.set(
-            this.getGene[i].typeId,
-            this.map.get(this.getGene[i].typeId) == null
-              ? 1
-              : this.map.get(this.getGene[i].typeId) + 1
-          )
+    // excel表上传
+    handleChange(file, fileList) {
+      this.fileTemp = file.raw
+      // 判断上传文件格式
+      if (this.fileTemp) {
+        if (
+          this.fileTemp.type ==
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          this.fileTemp.type == 'application/vnd.ms-excel'
+        ) {
+          this.importfxx(this.fileTemp)
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '附件格式错误，请删除后重新上传！'
+          })
         }
-      })
-    },
-    // 基因数据左侧标题获取
-    getNoticeTitle() {
-      var url = 'static/data/getGenetitle2.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.keytitle = res.data
-        // console.log(res)
-      })
-    },
-    // 点击基因数据标题获取对应列表数据
-    handleCheckedTypesChange(id) {
-      this.geneList = []
-      if (this.ids.indexOf(id + ',') === -1) {
-        this.ids += id + ','
       } else {
-        this.ids = this.ids.replace(id + ',', '')
+        this.$message({
+          type: 'warning',
+          message: '请上传附件！'
+        })
       }
-      console.log(this.ids)
-      if (this.ids === '') {
-        this.geneList = this.getGene
-        return
-      }
-      for (let i = 0; i < this.getGene.length; i++) {
-        let typeId = this.getGene[i].typeId + ','
-        if (this.ids.indexOf(typeId) !== -1) {
-          this.geneList.push(this.getGene[i])
+    },
+    // 移除excel表
+    handleRemove(file, fileList) {
+      this.fileTemp = null
+    },
+    importfxx(obj) {
+      let _this = this
+      // 通过DOM取文件数据
+      this.file = obj
+      var rABS = false // 是否将文件读取为二进制字符串
+      var f = this.file
+      var reader = new FileReader()
+      FileReader.prototype.readAsBinaryString = function(f) {
+        var binary = ''
+        var rABS = false // 是否将文件读取为二进制字符串
+        var pt = this
+        var wb // 读取完成的数据
+        var outdata
+        var reader = new FileReader()
+        reader.onload = function(e) {
+          var bytes = new Uint8Array(reader.result)
+          // console.log(reader.result)
+          var length = bytes.byteLength
+          for (var i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i])
+          }
+          var XLSX = require('xlsx')
+          if (rABS) {
+            wb = XLSX.read(btoa(fixdata(binary)), {
+              // 手动转化
+              type: 'base64'
+            })
+          } else {
+            wb = XLSX.read(binary, {
+              type: 'binary'
+            })
+          }
+          this.tableData = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]) // outdata就是读取excel内容之后输出的东西
+
+          console.log(this.tableData) // outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]) //outdata就是读取excel内容之后输出的东西
+          // console.log(outdata)
+          // this.da = [...outdata]
+          // let arr = []
+          // this.da.map(v => {
+          //   let obj = {}
+          //   obj.ip = v['ip'] //ip是表的标题
+          //   arr.push(obj)
+          // })
+          // console.log(this.da)
+          // return arr
+          // 把读取的excel表格中的内容放进tableData2中(这里要改成自己的表的名字)
+          // _this.tableData = _this.tableData.concat(arr)
         }
+        reader.readAsArrayBuffer(f)
+      }
+      if (rABS) {
+        reader.readAsArrayBuffer(f)
+      } else {
+        reader.readAsBinaryString(f)
       }
     }
   },
