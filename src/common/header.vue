@@ -1,5 +1,5 @@
 <template>
-  <div class="header-box login">
+  <div class="header-box">
     <div>
       <header class="w">
         <div class="w-box">
@@ -13,6 +13,7 @@
           <div class="right-box">
             <div class="nav-list">
               <el-input
+                style="width:700px;"
                 placeholder="请输入查询信息"
                 icon="search"
                 v-model="userinput"
@@ -20,35 +21,39 @@
                 :maxlength="100"
                 :fetch-suggestions="querySearchAsync"
                 @select="handleSelect"
+                suffix-icon="el-icon-search"
                 @keydown.enter.native="handleIconClick"
                 @change="handleIconClick"
               >
-                <i slot="suffix" class="el-input__icon el-icon-search"></i>
               </el-input>
             </div>
             <!-- <div class="nav-aside" ref="aside" :class="{ fixed: st }"> -->
             <div class="nav-aside" ref="aside" :class="{ fixed: false }">
               <div class="user pr">
                 <!-- <router-link to="#/taskhall">个人中心</router-link> -->
-                <a @click="loginCas" class="login">个人中心</a>
+                <!-- <a
+                  href="http://192.168.1.169:9100/cas?service=http://192.168.1.192:8080/jump"
+                  >个人中心</a
+                > -->
+                <a
+                  href="http://47.105.75.254:9100/cas?service=http://47.105.75.254:8080/jump"
+                  >个人中心</a
+                >
                 <!--用户信息显示-->
-                <!-- <div class="nav-user-wrapper pa" v-if="login"> -->
-                <div class="nav-user-wrapper pa" v-if="userInfo">
+                <div class="nav-user-wrapper pa" v-if="login">
                   <div class="nav-user-list">
                     <ul>
                       <!--头像-->
                       <li class="nav-user-avatar">
-                        <!-- <p class="name">{{ userInfo.info.username }}</p> -->
                         <!-- <p class="name" v-text="userInfo.info.username"></p> -->
-                        <p class="name" v-text="userInfo"></p>
+                        <p class="name">{{ userInfo.info.username }}</p>
+                        <!-- <p class="name" v-text="this.userName"></p> -->
                       </li>
-
-                      <!-- <li>
+                      <li>
                         <router-link to="/user/information"
                           >账号资料</router-link
                         >
-                      </li> -->
-
+                      </li>
                       <li>
                         <a href="javascript:;" @click="_loginOut">退出</a>
                       </li>
@@ -67,28 +72,31 @@
             <div class="w">
               <ul class="nav-list2">
                 <li>
-                  <router-link to="/"
-                    ><a
-                      @click="changGoods(-1)"
-                      :class="{ active: choosePage === -1 }"
-                      >首页</a
-                    ></router-link
-                  >
+                  <router-link to="/"><strong>公告通知</strong></router-link>
                 </li>
                 <li>
-                  <a @click="See(columnLinkUrl_topnew)"
-                    ><strong>最新事件</strong></a
-                  >
+                  <router-link to="/"><strong>最新事件</strong></router-link>
                 </li>
                 <li>
-                  <a @click="See(columnLinkUrl_newcontent)"
-                    ><strong>最新研究内容</strong></a
-                  >
+                  <router-link to="/"><strong>最新研究</strong></router-link>
                 </li>
                 <li>
-                  <a @click="See(columnLinkUrl_notice)"
-                    ><strong>公告</strong></a
-                  >
+                  <router-link to="/"><strong>任务大厅</strong></router-link>
+                </li>
+                <li>
+                  <router-link to="/"><strong>公告通知</strong></router-link>
+                </li>
+                <li>
+                  <router-link to="/"><strong>知识库用户 </strong></router-link>
+                </li>
+                <li>
+                  <router-link to="/"><strong>下载中心</strong></router-link>
+                </li>
+                <li>
+                  <router-link to="/"><strong>帮助中心 </strong></router-link>
+                </li>
+                <li>
+                  <router-link to="/"><strong>关于我们 </strong></router-link>
                 </li>
               </ul>
             </div>
@@ -101,12 +109,16 @@
 <script>
 import YButton from '/components/YButton'
 import { mapMutations, mapState } from 'vuex'
-import { loginOut, getQuickSearch } from '/api/index'
+// import { getQuickSearch } from '/api/goods'
+// import { loginOut } from '/api/index'
+import { getQuickSearch } from '/api/index'
+
 import { getStore, removeStore } from '/utils/storage'
 import 'element-ui/lib/theme-chalk/index.css'
 export default {
   data() {
     return {
+      userName: '',
       user: {},
       // 查询数据库的商品
       st: false,
@@ -115,27 +127,17 @@ export default {
       positionL: 0,
       positionT: 0,
       timerCartShow: null, // 定时隐藏购物车
-      userinput: null, // 用户输入的参数
+      userinput: '',
       choosePage: -1,
       searchResults: [],
       timeout: null,
-      token: '',
-      columnLinkUrl_topnew: '../../static/static_page/newlist.html', // 最新事件
-      columnLinkUrl_newcontent: '../../static/static_page/newResearchList.html', // 最新研究内容
-      columnLinkUrl_notice: '../../static/static_page/notice.html' // 公告
+      token: ''
     }
   },
   computed: {
-    ...mapState(['cartList', 'login', 'receiveInCart', 'showCart', 'userInfo']),
-    count() {
-      return this.$store.state.login
-    }
+    ...mapState(['cartList', 'login', 'receiveInCart', 'showCart', 'userInfo'])
   },
   methods: {
-    loginCas() {
-      window.location.href =
-        'http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump'
-    },
     See(e) {
       window.location = e
     },
@@ -148,29 +150,24 @@ export default {
       'RECORD_USERINFO',
       'EDIT_CART'
     ]),
-
     // 查询信息
     handleIconClick(ev) {
       if (this.$route.path === '/queryAllResult') {
-        let routeData = this.$router.resolve({
+        this.$router.push({
           path: '/queryAllResult',
           query: {
             key: this.userinput
           }
         })
-        window.open(routeData.href, '_blank')
-        // func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
-        // this.$emit('sousuo', this.userinput)
+        this.$emit('sousuo', this.userinput)
       } else {
-        let routeData = this.$router.resolve({
+        this.$router.push({
           path: '/queryAllResult',
           query: {
             key: this.userinput
           }
         })
-        window.open(routeData.href, '_blank')
-        // func: 是父组件指定的传数据绑定的函数，this.msg:子组件给父组件传递的数据
-        // this.$emit('sousuo', this.userinput)
+        this.$emit('sousuo', this.userinput)
       }
     },
     showError(m) {
@@ -253,6 +250,7 @@ export default {
     handleSelect(item) {
       this.userinput = item.value
     },
+
     // 控制顶部
     navFixed() {
       if (
@@ -276,25 +274,26 @@ export default {
     },
     // 退出登陆
     _loginOut() {
-      loginOut(this.activeId)
-        .then(res => {
-          removeStore('userInfo')
-          removeStore('token')
-          removeStore('rusername')
-          removeStore('rpassword')
-          localStorage.clear()
-          // window.location.href = '/'
-          // window.location.href = '#/login'
-          this.$router.push({
-            //
-            path:
-              '/http://192.168.1.169:9100/cas?service=http://192.168.1.156:8080/jump'
-            // '/http://47.105.75.254:9100/cas/logout'
-          })
-        })
-        .catch(res => {
-          alert('请使用正确退出方式')
-        })
+      // loginOut(this.activeId)
+      //   .then(res => {
+
+      //   })
+      //   .catch(res => {
+      //     alert('请使用正确退出方式')
+      //   })
+      removeStore('userInfo')
+      removeStore('token')
+      removeStore('rusername')
+      removeStore('rpassword')
+      localStorage.clear()
+      // window.location.href = 'http://192.168.1.192:8080/logout'
+      window.location.href = 'http://47.105.75.254:9100/cas/logout'
+      function test1() {
+        // window.location.href = 'http://192.168.1.192'
+        window.location.href = 'http://47.105.75.254/#/home'
+      }
+      setTimeout(test1(), 2000)
+      clearTimeout(test1)
     },
     // 通过路由改变导航文字样式
     getPage() {
@@ -309,11 +308,8 @@ export default {
       }
     }
   },
-  components: {
-    YButton
-  },
   mounted() {
-    let a = getStore('userInfo')
+    let a = getStore('userInfo.info.username')
     this.userName = JSON.parse(a)
     this.token = getStore('token')
     this.navFixed()
@@ -323,6 +319,9 @@ export default {
     if (typeof this.$route.query.key !== undefined) {
       this.userinput = this.$route.query.key
     }
+  },
+  components: {
+    YButton
   }
 }
 </script>

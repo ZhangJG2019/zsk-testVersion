@@ -47,6 +47,7 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/apis': '' // 通过pathRewrite重写地址，将前缀/front转为/
+          // '^/apis': '/' // 通过pathRewrite重写地址，将前缀/front转为/
         }
       }
       // ,

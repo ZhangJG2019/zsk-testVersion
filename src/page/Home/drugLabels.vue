@@ -35,80 +35,8 @@
           </el-row>
           <el-row style="margin-top:30px;">
             <!-- 左侧菜单栏 -->
-            <el-col :span="6">
-              <ul class="leftmenu">
-                <li class="left_type">类别</li>
-                <li v-for="(item, key) in keytitle" :key="key">
-                  <el-checkbox
-                    name="check10"
-                    class="checkboxs"
-                    @change="handleCheckedTypesChange(item.id)"
-                    ><span
-                      :id="item.id"
-                      class="left_title"
-                      v-text="item.name"
-                    ></span>
-                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span>)
-                  </el-checkbox>
-                </li>
-              </ul>
-            </el-col>
-            <!-- 右侧内容区 -->
-            <el-col :span="18">
-              <!-- 过滤输入框和数据总数 -->
-              <div style="font-size:18px;margin-bottom:40px;">
-                <el-input
-                  style="width:300px;text-indent: 2.3em;"
-                  v-model="filter_input"
-                  placeholder="请输入内容"
-                ></el-input>
-                <!-- <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
-                  <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
-                </p> -->
-              </div>
-              <!-- 下方具体数据展示列表 -->
-              <ul class="gene_list">
-                <li
-                  v-for="(item, key) in geneList"
-                  :key="key"
-                  style="cursor:pointer;"
-                >
-                  <div class="right_left" style="float:left; ">
-                    <span
-                      class="iconfont icon-jiyinsuanfa"
-                      style="font-size:50px;"
-                    ></span>
-                  </div>
-                  <div
-                    class="right_right"
-                    style="float:left;margin-left:1.75rem;width:90%;border-bottom:1px solid #eee;padding:20px 0;cursor:pointer;"
-                  >
-                    <div
-                      class="left_content"
-                      style="float:left; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;width:600px;"
-                    >
-                      <span style="color:#8b94a6;font-size:14px;">途径</span>
-                      <br />
-                      <span class="right_title" v-text="item.name"> </span>
-                      <br />
-                      <span
-                        class="right_title"
-                        style="font-style:italic"
-                        v-text="item.type"
-                      >
-                      </span>
-                      <br />
-                      <span class="right_title" v-text="item.introduce"> </span>
-                    </div>
-                    <img
-                      flaot="right"
-                      class="right_img"
-                      src="../../../static/images/PA165986279-100px.png"
-                      alt=""
-                    />
-                  </div>
-                </li>
-              </ul>
+            <el-col :span="24">
+              <my-table :col="col" :data="data" class="center"> </my-table>
             </el-col>
           </el-row>
         </div>
@@ -124,102 +52,95 @@ import YHeader from '/common/header'
 import YFooter from '/common/footer'
 // import $ from 'jquery'
 import 'element-ui'
-import axios from 'axios'
+// import axios from 'axios'
+import MyTable from '../../components/MyTable'
 export default {
   // 生命周期函数
 
   data() {
     return {
-      getGene: [], // 获取列表所有具体数据存放的数组，点击复选框，发ajax重新请求所对应的新数据
-      geneList: [],
-      totalNum: 0, // 复选框数据（括号里面的数字）的总数
-      keytitle: [],
-      type: '',
-      filter_input: '',
-      map: new Map(),
-      ids: ''
-    }
-  },
-  created() {
-    this.getNotice()
-    this.getNoticeTitle()
-  },
-  mounted() {},
-  methods: {
-    // 所有基因数据列表获取
-    getNotice() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-      var url = 'static/data/getGene.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.getGene = res.data
-        this.geneList = this.getGene
-        this.totalNum = this.getGene.length
-        // console.log(res)
-        for (let i = 0; i < this.getGene.length; i++) {
-          this.map.set(
-            this.getGene[i].typeId,
-            this.map.get(this.getGene[i].typeId) == null
-              ? 1
-              : this.map.get(this.getGene[i].typeId) + 1
-          )
+      data: [
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1518 弄',
+          zip: 200333
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1518 弄',
+          zip: 200333
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1518 弄',
+          zip: 200333
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1518 弄',
+          zip: 200333
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          address: '上海市普陀区金沙江路 1518 弄',
+          zip: 200333
         }
-      })
-    },
-    // 基因数据左侧标题获取
-    getNoticeTitle() {
-      var url = 'static/data/getGenetitle2.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.keytitle = res.data
-        // console.log(res)
-      })
-    },
-    // 点击基因数据标题获取对应列表数据
-    handleCheckedTypesChange(id) {
-      this.geneList = []
-      if (this.ids.indexOf(id + ',') === -1) {
-        this.ids += id + ','
-      } else {
-        this.ids = this.ids.replace(id + ',', '')
-      }
-      console.log(this.ids)
-      if (this.ids === '') {
-        this.geneList = this.getGene
-        return
-      }
-      for (let i = 0; i < this.getGene.length; i++) {
-        let typeId = this.getGene[i].typeId + ','
-        if (this.ids.indexOf(typeId) !== -1) {
-          this.geneList.push(this.getGene[i])
+      ],
+      col: [
+        {
+          prop: 'date',
+          label: '日期'
+        },
+        {
+          label: '配送信息',
+          children: [
+            {
+              prop: 'name',
+              label: '姓名'
+            },
+            {
+              prop: 'address',
+              label: '地址',
+              width: 310
+            },
+            {
+              prop: 'province',
+              label: '省份'
+            },
+            {
+              prop: 'city',
+              label: '市区'
+            },
+            {
+              prop: 'zip',
+              label: '邮编'
+            }
+          ]
         }
-      }
-      // var url = 'static/data/getGene.json'
-      // axios({ methods: 'get', url: url }).then(res => {
-      //   // console.log(res.data)
-      //   for (let i = 0; i < this.getGene.length; i++) {
-      //     this.map.set(
-      //       this.getGene[i].typeId,
-      //       this.map.get(this.getGene[i].typeId) == null
-      //         ? 1
-      //         : this.map.get(this.getGene[i].typeId) + 1
-      //     )
-      //   }
-      // })
+      ]
     }
   },
   components: {
     YShelf,
     YButton,
     YHeader,
-    YFooter
+    YFooter,
+    MyTable
   }
 }
 </script>
@@ -268,5 +189,11 @@ export default {
   font-size: 17px;
   cursor: pointer;
   margin-left: 10px;
+}
+</style>
+<style lang="scss">
+.el-table .is-group th > .cell,
+.el-table .cell {
+  text-align: center !important;
 }
 </style>

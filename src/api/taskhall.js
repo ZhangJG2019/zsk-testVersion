@@ -1,7 +1,7 @@
 import http from './public'
 // 任务大厅数据列表展示
 export const taskHall = (params) => {
-  return http.fetchPost('/apis/taskApi/visitorTask', params)
+  return http.fetchGet('/apis/taskApi/visitorTask', params)
 }
 // 任务大厅顶部查询option展示
 export const searchOptions = (params) => {

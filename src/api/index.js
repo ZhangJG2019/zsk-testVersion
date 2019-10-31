@@ -73,3 +73,7 @@ export const getSearch = (params) => {
 export const getQuickSearch = (params) => {
   return http.fetchGet('/front/quickSearch', params)
 }
+// 药物列表页
+// export const gainDrug = (params) => {
+//   return http.fetchGet('/front/quickSearch', params)
+// }

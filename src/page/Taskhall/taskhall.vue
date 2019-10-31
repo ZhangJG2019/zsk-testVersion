@@ -27,12 +27,6 @@
                   ></el-button>
               </el-row>
               </ul>
-              <!-- <ul class="task_power">
-                <span class="fl">任务权限 :</span>
-                <li class="fl actived">全部</li>
-                <li class="fl">完全开放</li>
-                <li class="fl">勋章开放</li>
-              </ul> -->
              <el-select
                 v-model="wpList_secarch"
                 multiple
@@ -191,7 +185,8 @@
     <y-footer></y-footer>
     <!-- 弹窗 1-->
     <el-dialog
-      width="30%"
+      style="el-dialog"
+      width="86%"
       title="位点基本信息22222"
       :visible.sync="innerVisible_one"
       :append-to-body="true"
@@ -211,7 +206,7 @@
         :key="key_one"
         style="margin-bottom:10px;"
       >
-        <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'" ></span>
+        <span style="float:left;width:100px;display:none;" v-text="item.name" v-if="item.name==='id'"></span>
         <span style="float:left;width:100px;" v-text="item.name" v-if="item.name!=='id'"></span>
         <!-- 此处的input框中v-model的值通过res.data返回回来的数据进行填充 -->
         <el-date-picker
@@ -227,10 +222,9 @@
           style="width:83%;display:none;"
           v-model="test_model[taskNameMap.get(item.id)]"
           v-if="item.id === 'id'"
-          
           :id="item.id"
         ></el-input>
-         <el-input
+        <el-input
           class="readonly"
           style="width:83%"
           v-model="test_model[taskNameMap.get(item.id)]"
@@ -312,6 +306,7 @@
         title="药物通用名"
         :visible.sync="dialogFormVisible2"
         class="two"
+
       >
         <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
           <el-tab-pane label="任务信息" name="first">
@@ -579,7 +574,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -795,7 +790,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -1048,7 +1043,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -1292,7 +1287,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -1544,7 +1539,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -1803,7 +1798,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -1893,7 +1888,7 @@
     </el-dialog>
 
     <el-dialog
-      width="30%"
+      width="90%"
       title="内层 Dialog 图片预览"
       :visible.sync="innerVisible_img"
       :append-to-body="true"
@@ -1916,7 +1911,7 @@
       </div>
     </el-dialog>
     <el-dialog :visible.sync="dialogVisible_imgshow">
-      <img width="100%" :src="dialogImageUrl" alt="" />
+      <img width="90%" :src="dialogImageUrl" alt="" />
     </el-dialog>
     <!-- 内层弹窗 结束-->
     <!-- 弹窗 19 -->
@@ -2069,7 +2064,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -2158,7 +2153,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      width="30%"
+      width="90%"
       title="内层 Dialog 图片预览"
       :visible.sync="innerVisible_img"
       :append-to-body="true"
@@ -2181,7 +2176,7 @@
       </div>
     </el-dialog>
     <el-dialog :visible.sync="dialogVisible_imgshow">
-      <img width="100%" :src="dialogImageUrl" alt="" />
+      <img width="90%" :src="dialogImageUrl" alt="" />
     </el-dialog>
     <!-- 图片上传 2-->
     <!-- 内层弹窗 结束-->
@@ -2321,7 +2316,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -3062,7 +3057,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -3288,7 +3283,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -3637,7 +3632,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -3726,7 +3721,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      width="30%"
+      width="90%"
       title="内层 Dialog 图片预览"
       :visible.sync="innerVisible_img"
       :append-to-body="true"
@@ -4337,7 +4332,7 @@
     </div>
     <!-- 内层弹窗 开始-->
     <el-dialog
-      width="30%"
+      width="90%"
       title="位点基本信息"
       :visible.sync="innerVisible"
       :append-to-body="true"
@@ -4434,7 +4429,7 @@ import YShelf from '/components/shelf'
 import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
-import { taskHall, getGene, getSearch, Save, searchOptions, receiveTask, giveUpTask } from '/api/taskhall.js'
+import { getGene, getSearch, Save, searchOptions, receiveTask, giveUpTask } from '/api/taskhall.js'
 import { getStore } from '/utils/storage.js'
 import { quillEditor } from 'vue-quill-editor' // 调用编辑器
 import 'quill/dist/quill.core.css'
@@ -4454,9 +4449,9 @@ export default {
   },
   data() {
     return {
-      articleLinkUrl_help:'',
-      Gene_EN:[],   // 基因型（英文）
-      bianyiGene:[], // 变异位点下拉列表
+      articleLinkUrl_help: '',
+      Gene_EN: [],   // 基因型（英文）
+      bianyiGene: [], // 变异位点下拉列表
       // 富文本编辑器
       editorOption: {
         action: '/img/uploadImg ', // 必填参数 图片上传地址
@@ -4488,7 +4483,7 @@ export default {
         }
       ],
       wpList_options: [], // 存放点击button后，改条件下所有的options
-      wpList_secarch: [],  // 用户选中的options 
+      wpList_secarch: [],  // 用户选中的options
       // 顶部筛选
       two_dialog: [], // 第二层弹窗结构
       // two_msg: [], // 第二层弹窗数据
@@ -4504,15 +4499,9 @@ export default {
       input1: '',
       input2: '',
       input_three: '',
-      tableData: [
-       
-      ],
-      tableData_three: [
-        
-      ],
-      tableData_four: [
-       
-      ],
+      tableData: [],
+      tableData_three: [],
+      tableData_four: [],
       tableData_five: [
         { id: null,
           pathways: '',
@@ -4521,30 +4510,14 @@ export default {
           diseases: ''
         }
       ],
-      tableData_six: [
-       
-      ],
-      tableData_seven: [
-        
-      ],
-      tableData_eight: [
-        
-      ],
-      tableData_nine: [
-       
-      ],
-      tableData_ten: [
-       
-      ],
-      tableData_eleven: [
-        
-      ],
-      tableData_twelve: [
-      
-      ],
-      tableData_thirteen: [
-        
-      ],
+      tableData_six: [],
+      tableData_seven: [],
+      tableData_eight: [],
+      tableData_nine: [],
+      tableData_ten: [],
+      tableData_eleven: [],
+      tableData_twelve: [],
+      tableData_thirteen: [],
       tableData_fourteen: [
         { id: null,
           pmid: '',
@@ -4578,24 +4551,12 @@ export default {
           accessoryId: ''
         }
       ],
-      tableData_eighteen: [
-       
-      ],
-      tableData_nineteen: [
-        
-      ],
-      tableData_twenty: [ // 1
-       
-      ],
-      tableData_twentyOne: [
-        
-      ],
-      tableData_twentyTwo: [
-        
-      ],
-      tableData_twentyThree: [
-       
-      ],
+      tableData_eighteen: [],
+      tableData_nineteen: [],
+      tableData_twenty: [],
+      tableData_twentyOne: [],
+      tableData_twentyTwo: [],
+      tableData_twentyThree: [],
       dialogTableVisible: false,
       dialogFormVisible1: false,
       dialogFormVisible2: false,
@@ -4671,7 +4632,7 @@ export default {
       ],
       subCategoryId: '', // 任务大厅每一条数据对应弹窗id
       id: '', // 任务大厅弹窗内容id
-      taskRowIndex:'',//弹窗里的多条数据在数组里对应的下标
+      taskRowIndex: '', // 弹窗里的多条数据在数组里对应的下标
       taskTitleUrl: '',
       btntxt: '编辑任务',
       disabled: false,
@@ -4715,6 +4676,8 @@ export default {
   methods: {
     // 弹窗中确定通过按钮
     save(num) {
+      console.log(1111)
+      console.log(num)
       let sub = this.subCategoryId
       let task = {
         id: this.id + '',
@@ -4743,7 +4706,8 @@ export default {
           sub === 48 ||
           sub === 49 ||
           sub === 50 ||
-          sub === 51) {
+          sub === 51) 
+      {
         let taskMessage = {}
         for (let key of this.taskNameMap.keys()) {
           let a = this.test_model[this.taskNameMap.get(key)]
@@ -4997,7 +4961,7 @@ export default {
         }
       this.innerVisible = false
     },
-    bianji1(rowId, rowIndex) { //一层弹窗中【编辑】 fg来自于该条数据内的flag
+    bianji1(rowId, rowIndex) { // 一层弹窗中【编辑】 fg来自于该条数据内的flag
       // 编辑数据的下标
       this.taskRowIndex = rowIndex
       // 内层弹窗
@@ -5190,7 +5154,7 @@ export default {
         }
       }
     },
-    bianji(subCategoryId, id, fg) { //任务大厅页面中编辑任务
+    bianji(subCategoryId, id, fg) { // 任务大厅页面中编辑任务
       this.test_models = []
       this.test_model = []
       this.flag = fg
@@ -5947,38 +5911,78 @@ export default {
     },
     // 获取任务大厅数据列表
     getTaskList() {
-      if(this.userInfo == null || this.userInfo == ''){
+      if (this.userInfo === null || this.userInfo === '') {
         this.userInfo = getStore('userInfo')
         // console.log(this.userInfo.roleVo)
         this.userInfo = JSON.parse(this.userInfo)
         // console.log(this.userInfo.roleVo)
         // this.userInfo.roleVo.forEach(value => this.roles.add(value))
+        // for(let item of this.userInfo.roleVo){
+        //   this.roles.add(item)
+        // }
+        // console.log(this.roles)
         for(let item of this.userInfo.roleVo){
           this.roles.add(item)
         }
-        // console.log(this.roles)
       }
       this.taskhall = []
       if (this.flag1) {
         this.flag1 = false
-        let data = new FormData()
-        data.append('page', this.currentPage)
-        data.append('rows', this.pageSize)
-        data.append(
-          'order',
-          'convert(t.`create_time` USING gbk) COLLATE gbk_chinese_ci'
-        )
-        data.append('orderType', 'asc')
-        if(this.searchString == '') {
-          data.append('search', 'false')
+        // let data = new FormData()
+        // data.append('page', this.currentPage)
+        // data.append('rows', this.pageSize)
+        // data.append(
+        //   'order',
+        //   'convert(t.`create_time` USING gbk) COLLATE gbk_chinese_ci'
+        // )
+        // data.append('orderType', 'asc')
+        var currentPage = this.currentPage
+        var pageSize = this.pageSize
+        var orderType = 'asc'
+        var order = 'convert(t.`create_time` USING gbk) COLLATE gbk_chinese_ci'
+        order = escape(order)
+        var url = ''
+        if (this.searchString === '') {
+          var search = 'false'
+          url =
+        '/apis/taskApi/visitorTask?page=' +
+        currentPage +
+        '&rows=' +
+        pageSize +
+        '&orderType=' +
+        orderType +
+        '&order=' +
+        order +
+           '&search=' + search
         } else {
-          data.append('search', 'true')
-          data.append('searchField', this.searchField)
-          data.append('searchString', this.searchString)
-          data.append('searchOper', this.searchOper)
+          search = 'true'
+          var searchField = this.searchField
+          var searchString = this.searchString
+          var searchOper = this.searchOper
+          url =
+          '/apis/taskApi/visitorTask?page=' +
+          currentPage +
+          '&rows=' +
+          pageSize +
+          '&orderType=' +
+          orderType +
+          '&order=' +
+          order.toString +
+          '&search=' +
+          search +
+          '&searchField=' +
+          searchField +
+          '&searchString=' +
+          searchString +
+          '&searchOper=' +
+          searchOper
         }
-        taskHall(data)
-          .then(res => {
+        axios.defaults.withCredentials = true
+        axios({
+          method: 'get',
+          url: url,
+          withCredentials: true
+        }).then(res => {
             // console.log(res)
             this.taskhall = res.list
             this.name = res.list[0].name
@@ -6005,7 +6009,6 @@ export default {
       this.getTaskList() // 重新获取数据列表
     },
     // 任务列表数据分页 2
-    // zsktest() {},
     // 上传文献
     submitUpload() {
       let list = document.getElementsByClassName(
@@ -6051,9 +6054,6 @@ export default {
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible_imgshow = true
-    },
-    handleDownload(file) {
-      // console.log(file)
     },
     // 上传图片2
     yulan() {
@@ -6511,8 +6511,8 @@ export default {
         method: 'get',
         url: url
       }).then(res => {
-        console.log(res)
-        console.log(res.data[0].columnTitle)
+        // console.log(res)
+        // console.log(res.data[0].columnTitle)
         // 把获得好的帮助指南 赋予topNews 给成员
         this.topNews = res.data
         if (this.topNews.length > 0) {
@@ -7163,9 +7163,7 @@ ul.box {
   font-size: 20px;
   color: hsla(3, 82%, 69%, 0.77);
 }
-
 .three .el-dialog--small,
-
 .five .el-dialog--small,
 .six .el-dialog--small,
 .seven .el-dialog--small,
@@ -7193,7 +7191,6 @@ ul.box {
   background-color: #eee;
   padding: 10px;
 }
-
 .el-tag .el-select__tags-text {
   float: left !important;
 }
@@ -7221,7 +7218,6 @@ ul.box {
   box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.2);
 }
-
 .el-select__tags::-webkit-scrollbar-track {
   /*滚动条里面轨道*/
   -webkit-box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);

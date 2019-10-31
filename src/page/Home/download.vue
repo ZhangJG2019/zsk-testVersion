@@ -35,8 +35,6 @@
               <!-- 左侧具体内容区 1-->
               <div class="slide_center news">
                 <ul>
-                  <!-- 任务搜索框 1-->
-                  <!-- 任务搜索框 2-->
                   <!-- 任务大厅具体列表数据展示 1-->
                   <li
                     style="line-height:60px;"
@@ -74,20 +72,6 @@
                           v-text="detailGroups"
                         >
                         </span>
-                        <!-- <br />
-                        <span
-                          class="right_title"
-                          style="color:#8b94a6;font-size:14px;height:20px;"
-                          v-text="item.name"
-                        >
-                        </span> -->
-                        <!-- <br />
-                        <span
-                          class="right_title"
-                          style="color:#8b94a6;font-size:14px;height:20px;"
-                          v-text="item.name"
-                        >
-                        </span> -->
                       </div>
                       <img
                         flaot="right"
@@ -146,9 +130,6 @@ export default {
       detailGroups: '', // 所属分类
       input: '',
       taskhall: [], // 暂存请求到的所有下载列表数据
-      type: '',
-      downloadName: '', // 下载内容名称
-      flag1: 'true', // 分页中，点击下一页
       total: 1, // 最大条数,初始化默认为1
       currentPage: 1, // 当前页
       pageSize: 8, // 每页8条
@@ -182,14 +163,10 @@ export default {
     },
     // 下载页具体数据展示
     getMsgList() {
-      // let data = new FormData()
-      // data.append('page', this.currentPage)
-      // data.append('rows', this.pageSize)
       var topNew = this.currentPage
       var pageSize = this.pageSize
       var orderType = this.orderType
       var order = this.order
-      // var url = '../../../static/data/taskhall.json'
       var url =
         '/apis/taskApi/getfiels?page=' +
         topNew +
@@ -199,13 +176,13 @@ export default {
         orderType +
         '&order=' +
         order
-      // var url = '/document/getfiels?page=' + topNew + '&rows=' + pageSize
       axios.defaults.withCredentials = true
       axios({
         method: 'get',
         url: url,
         withCredentials: true
       }).then(res => {
+        // console.log(res)
         this.currentPage = res.data.pageNum // 当前页
         this.pageSize = res.data.pageSize // 当前页展示条数
         this.total = res.data.total // 返回数据总条数

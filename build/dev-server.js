@@ -66,8 +66,9 @@ app.use(hotMiddleware)
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
 
-// var uri = 'http://192.168.1.40:8099'
-var uri = 'http://localhost:' + port
+// var uri = 'http://localhost:' + port
+var uri = 'http://192.168.1.154:' + port
+// var uri = 'http://192.168.1.192:' + port
 // var uri = 'http://47.105.75.254:' + port
 
 var _resolve

@@ -13,7 +13,6 @@ import './assets/icon/font_jiyinguanlian/iconfont.css'
 import $ from 'jquery'
 // import Blob from './excel/Blob'
 // import Export2Excel from './excel/Export2Excel'
-
 import {
   Tabs,
   TabPane,
@@ -52,7 +51,8 @@ import {
   getStore
 } from '/utils/storage'
 import VueContentPlaceholders from 'vue-content-placeholders'
-
+import components from '@/components/index.js'
+Vue.use(components) // Table表格分页插件
 Vue.use(VueContentPlaceholders)
 Vue.use(Tabs)
 Vue.use(TabPane)
@@ -114,8 +114,6 @@ router.beforeEach(function (to, from, next) {
         path: '/taskall'
       })
     } else {
-      // debugger
-      // alert(111111111)
       // this.$message.error({
       //   message: '请登录后查看',
       //   type: 'error'

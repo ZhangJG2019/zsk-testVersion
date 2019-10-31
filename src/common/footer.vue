@@ -2,36 +2,49 @@
   <div class="footer">
     <div class="container">
       <div class="footer">
-        <p class="links">
-          <a target="_blank" href="http://www.3gbio.com.cn/html/about/intro/"
-            >关于公司</a
-          >
-          |
-          <a target="_blank" href="http://www.3gbio.com.cn/html/privacy/"
-            >隐私条款</a
-          >
-          |
-          <a target="_blank" href="http://www.3gbio.com.cn/html/Legal-Notices/"
-            >法律声明</a
-          >
-          |
-          <a target="_blank" href="http://www.3gbio.com.cn/html/mail/"
-            >企业邮箱</a
-          >
-          |
-          <a
-            target="_blank"
-            href="https://www.cnzz.com/stat/website.php?web_id=4698979"
-            >站长统计</a
-          >
-          |
-        </p>
-        <p class="copyright">
-          <a target="_blank" href="http://www.miibeian.gov.cn/"
-            >湘ICP备18007563号-1</a
-          >
-          长沙三济生物科技有限公司 copyright 2012 © 版权所有
-        </p>
+        <ul class="footUl">
+          <li>
+            <img src="../../static/images/littlelogo.png" alt="" />
+          </li>
+          <li>
+            <p class="links">
+              <a
+                target="_blank"
+                href="http://www.3gbio.com.cn/html/about/intro/"
+                ><strong>关于公司</strong></a
+              >
+              <a target="_blank" href="http://www.3gbio.com.cn/html/privacy/"
+                ><strong>隐私条款</strong></a
+              >
+              <a
+                target="_blank"
+                href="http://www.3gbio.com.cn/html/Legal-Notices/"
+                ><strong>法律声明</strong></a
+              >
+              <a target="_blank" href="http://www.3gbio.com.cn/html/mail/"
+                ><strong>企业邮箱</strong></a
+              >
+              <a
+                target="_blank"
+                href="https://www.cnzz.com/stat/website.php?web_id=4698979"
+                ><strong>站长统计</strong></a
+              >
+            </p>
+            <p class="copyright">
+              <a
+                target="_blank"
+                href="http://www.miibeian.gov.cn/"
+                style="color:#fff;"
+                >湘ICP备18007563号-1</a
+              ><strong style="color:#fff;"
+                >长沙三济生物科技有限公司 copyright 2012 © 版权所有</strong
+              >
+            </p>
+          </li>
+          <li>
+            <p><span>客户服务热线</span> <br /><span>400-669-0369</span></p>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -49,9 +62,39 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
+.links a {
+  padding-right: 20px;
+  color: #fff;
+}
+.footer .footUl,
 .footer {
-  padding: 15px 0px;
-  background: #fafafa;
+  width: 100%;
+}
+.footer .footUl li {
+  float: left;
+}
+.footer .footUl li:first-child {
+  width: 25%;
+  // background-color: red;
+  text-align: center;
+}
+.footer .footUl li:nth-child(2) {
+  width: 50%;
+  // background-color: yellow;
+}
+.footer .footUl li:last-child {
+  width: 25%;
+  // background-color: green;
+}
+.footer .footUl li:last-child p {
+  float: right;
+  color: #fff;
+  padding-right: 42px;
+}
+.footer {
+  margin-top: 10px;
+  padding: 31px 0px;
+  background: #666;
   display: flex;
   flex-direction: column;
   align-items: center;

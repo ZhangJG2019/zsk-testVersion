@@ -73,7 +73,7 @@
                 >
               </el-form-item>
 
-              <el-form-item prop="type">
+              <!-- <el-form-item prop="type">
                 <el-checkbox-group
                   v-model="ruleForm.type"
                   style="margin-left:-40px!important"
@@ -85,7 +85,7 @@
                     >
                   </el-checkbox>
                 </el-checkbox-group>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')"
                   >提交</el-button
@@ -100,7 +100,9 @@
                 style="text-align: center;line-height: 48px;margin-bottom: 0;font-size: 12px;color: #999;"
               >
                 <span>如果您已拥有 三济生物 账号，则可在此</span>
-                <a href="javascript:;" style="margin: 0 5px" @click="toLogin"
+                <a
+                  href="http://47.105.75.254:9100/cas?service=http://47.105.75.254:8080/jump"
+                  style="margin: 0 5px"
                   >登陆</a
                 >
               </li>
@@ -134,16 +136,16 @@ export default {
       dialogFormVisible: false,
       form: {
         username: '',
-        password: '',
-        type: []
+        password: ''
+        // type: []
       },
       // 注册页面字段
       ruleForm: {
         mobile: '15101024057',
         username: '',
         password: '',
-        verifyCode: '',
-        type: []
+        verifyCode: ''
+        // type: []
       },
       // 校验规则
       loginFormRules: {
@@ -164,15 +166,15 @@ export default {
         ],
         verifyCode: [
           { required: true, message: '请输入手机验证码', trigger: 'blur' }
-        ],
-        type: [
-          {
-            type: 'array',
-            required: true,
-            message: '请勾选“阅读并接受三济用户协议”',
-            trigger: 'change'
-          }
         ]
+        // type: [
+        //   {
+        //     type: 'array',
+        //     required: true,
+        //     message: '请勾选“阅读并接受三济用户协议”',
+        //     trigger: 'change'
+        //   }
+        // ]
       },
       formLabelWidth: '1px'
     }
@@ -262,7 +264,7 @@ export default {
               })
             })
         } else {
-          console.log(333)
+          // console.log(333)
           return false
         }
       })
@@ -278,7 +280,6 @@ export default {
       })
     }
   },
-  mounted() {},
   components: {
     YFooter,
     YButton

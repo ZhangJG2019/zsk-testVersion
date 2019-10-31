@@ -35,81 +35,27 @@
           </el-row>
           <el-row style="margin-top:30px;">
             <!-- 左侧菜单栏 -->
-            <el-col :span="6">
-              <ul class="leftmenu">
-                <li class="left_type">类别</li>
-                <li v-for="(item, key) in keytitle" :key="key">
-                  <el-checkbox
-                    name="check10"
-                    class="checkboxs"
-                    @change="handleCheckedTypesChange(item.id)"
-                    ><span
-                      :id="item.id"
-                      class="left_title"
-                      v-text="item.name"
-                    ></span>
-                    &nbsp;&nbsp;(<span v-text="map.get(item.id)"></span>)
-                  </el-checkbox>
-                </li>
-              </ul>
+            <el-col>
+              <div
+                v-infinite-scroll="loadMore"
+                infinite-scroll-disabled="busy"
+                infinite-scroll-distance="30"
+              >
+                <!-- 任务大厅具体列表数据展示 1-->
+                <div
+                  style="line-height:60px;"
+                  class="center_content"
+                  v-for="(item, key) in data"
+                  :key="key"
+                >
+                  <span
+                    style="color:#8b94a6;font-size:25px;"
+                    v-text="item.name"
+                  ></span>
+                </div>
+              </div>
             </el-col>
             <!-- 右侧内容区 -->
-            <el-col :span="18">
-              <!-- 过滤输入框和数据总数 -->
-              <div style="font-size:18px;margin-bottom:40px;">
-                <el-input
-                  style="width:300px;text-indent: 2.3em;"
-                  v-model="filter_input"
-                  placeholder="请输入内容"
-                ></el-input>
-                <!-- <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
-                  <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
-                </p> -->
-              </div>
-              <!-- 下方具体数据展示列表 -->
-              <ul class="gene_list">
-                <li
-                  v-for="(item, key) in geneList"
-                  :key="key"
-                  style="cursor:pointer;"
-                >
-                  <div class="right_left" style="float:left; ">
-                    <span
-                      class="iconfont icon-jiyinsuanfa"
-                      style="font-size:50px;"
-                    ></span>
-                  </div>
-                  <div
-                    class="right_right"
-                    style="float:left;margin-left:1.75rem;width:90%;border-bottom:1px solid #eee;padding:20px 0;cursor:pointer;"
-                  >
-                    <div
-                      class="left_content"
-                      style="float:left; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;width:600px;"
-                    >
-                      <span style="color:#8b94a6;font-size:14px;">途径</span>
-                      <br />
-                      <span class="right_title" v-text="item.name"> </span>
-                      <br />
-                      <span
-                        class="right_title"
-                        style="font-style:italic"
-                        v-text="item.type"
-                      >
-                      </span>
-                      <br />
-                      <span class="right_title" v-text="item.introduce"> </span>
-                    </div>
-                    <img
-                      flaot="right"
-                      class="right_img"
-                      src="../../../static/images/PA165986279-100px.png"
-                      alt=""
-                    />
-                  </div>
-                </li>
-              </ul>
-            </el-col>
           </el-row>
         </div>
       </div>
@@ -124,95 +70,81 @@ import YHeader from '/common/header'
 import YFooter from '/common/footer'
 // import $ from 'jquery'
 import 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 export default {
   // 生命周期函数
-
   data() {
     return {
-      getGene: [], // 获取列表所有具体数据存放的数组，点击复选框，发ajax重新请求所对应的新数据
-      geneList: [],
-      totalNum: 0, // 复选框数据（括号里面的数字）的总数
-      keytitle: [],
-      type: '',
-      filter_input: '',
-      map: new Map(),
-      ids: ''
+      name: '',
+      count: 0,
+      data: [],
+      data2: [],
+      busy: false,
+      total: 1, // 最大条数,初始化默认为1
+      currentPage: 1, // 当前页
+      pageSize: 8, // 每页8条
+      order: 'uploaddate', // 数据请求参数
+      orderType: 'desc' // 数据请求参数
     }
   },
   created() {
-    this.getNotice()
-    this.getNoticeTitle()
+    this.getMsgList()
   },
-  mounted() {},
   methods: {
-    // 所有基因数据列表获取
-    getNotice() {
-      // var gonggao = '公告'
-      // var url = '/apis/cms/api/getColumnNewList?title=' + gonggao
-      var url = 'static/data/getGene.json'
+    getMsgList(flag) {
+      var topNew = this.currentPage
+      var pageSize = this.pageSize
+      var orderType = this.orderType
+      var order = this.order
+      // var url = '../../../static/data/taskhall.json'
+      var url =
+        '/apis/taskApi/getfiels?page=' +
+        topNew +
+        '&rows=' +
+        pageSize +
+        '&orderType=' +
+        orderType +
+        '&order=' +
+        order
+      axios.defaults.withCredentials = true
       axios({
         method: 'get',
-        url: url
+        url: url,
+        withCredentials: true
       }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.getGene = res.data
-        this.geneList = this.getGene
-        this.totalNum = this.getGene.length
-        // console.log(res)
-        for (let i = 0; i < this.getGene.length; i++) {
-          this.map.set(
-            this.getGene[i].typeId,
-            this.map.get(this.getGene[i].typeId) == null
-              ? 1
-              : this.map.get(this.getGene[i].typeId) + 1
-          )
+        // console.log(res.data.list)
+        this.currentPage = res.data.pageNum // 当前页
+        this.pageSize = res.data.pageSize // 当前页展示条数
+        this.total = res.data.total // 返回数据总条数
+        this.data = res.data.list
+        if (flag) {
+          // 多次加载数据
+          // this.data = this.data.concat(res.data.list)
+          if (res.data.list.length === 0) {
+            this.busy = true
+          } else {
+            this.busy = false
+          }
+        } else {
+          // 第一次加载数据
+          this.data = res.data.list
+          console.log(1111)
+          console.log(this.data)
+          // 当第一次加载数据完之后，把这个滚动到底部的函数触发打开
+          this.busy = false
         }
       })
     },
-    // 基因数据左侧标题获取
-    getNoticeTitle() {
-      var url = 'static/data/getGenetitle2.json'
-      axios({
-        method: 'get',
-        url: url
-      }).then(res => {
-        // 把获得好的数据 赋予 给getGene成员
-        this.keytitle = res.data
-        // console.log(res)
-      })
-    },
-    // 点击基因数据标题获取对应列表数据
-    handleCheckedTypesChange(id) {
-      this.geneList = []
-      if (this.ids.indexOf(id + ',') === -1) {
-        this.ids += id + ','
-      } else {
-        this.ids = this.ids.replace(id + ',', '')
-      }
-      console.log(this.ids)
-      if (this.ids === '') {
-        this.geneList = this.getGene
-        return
-      }
-      for (let i = 0; i < this.getGene.length; i++) {
-        let typeId = this.getGene[i].typeId + ','
-        if (this.ids.indexOf(typeId) !== -1) {
-          this.geneList.push(this.getGene[i])
-        }
-      }
-      // var url = 'static/data/getGene.json'
-      // axios({ methods: 'get', url: url }).then(res => {
-      //   // console.log(res.data)
-      //   for (let i = 0; i < this.getGene.length; i++) {
-      //     this.map.set(
-      //       this.getGene[i].typeId,
-      //       this.map.get(this.getGene[i].typeId) == null
-      //         ? 1
-      //         : this.map.get(this.getGene[i].typeId) + 1
-      //     )
-      //   }
-      // })
+    loadMore: function() {
+      this.busy = true
+      console.log(this.currentPage)
+      this.currentPage++
+      // console.log(this.data)
+      // console.log(this.getMsgList())
+      this.data = this.data.push(this.getMsgList())
+      console.log(this.currentPage)
+      this.busy = false
     }
   },
   components: {

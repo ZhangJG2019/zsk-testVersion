@@ -32,64 +32,47 @@
           <el-row style="margin-top:30px;">
             <!-- 上传表格内容展示区 -->
             <el-col :span="24">
-              <!-- 过滤输入框 -->
-              <div style="font-size:18px;margin: 0 auto;width:600px;">
-                <el-input
-                  style="width:600px;"
-                  placeholder="请输入内容"
-                  class="input-with-select"
-                  v-model="userinput"
-                  :minlength="1"
-                  :maxlength="100"
-                  @select="handleSelect"
-                  :on-icon-click="handleIconClick"
-                  @keydown.enter.native="handleIconClick"
-                >
-                  <el-select
-                    style="width:130px;"
-                    v-model="select"
-                    slot="prepend"
-                    placeholder="请选择"
-                  >
-                    <el-option label="全部" value="1"></el-option>
-                    <el-option label="具体的基因" value="2"></el-option>
-                  </el-select>
-                </el-input>
-              </div>
               <!-- 下方具体数据展示表格 -->
-              <el-upload
-                class="upload-demo"
-                action=""
-                :on-change="handleChange"
-                :show-file-list="false"
-                :on-remove="handleRemove"
-                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                :auto-upload="false"
+              <input type="file" @change="importExcel($event.target)" />
+              <div
+                style="overflow: auto;"
+                v-if="tableTbody && tableTbody.length > 0"
               >
-                <el-button size="small" type="primary">批量上传</el-button>
-                <div slot="tip" class="el-upload__tip">
-                  注：只 能 上 传 xlsx / xls 文 件
-                </div>
-              </el-upload>
+                <table
+                  class="table table-bordered"
+                  style="min-width: 100%;border-collapse:collapse;margin-top:1.25rem;"
+                >
+                  <thead>
+                    <tr class="tableBorder">
+                      <th
+                        v-for="(item, index) in tableHeader"
+                        :key="index"
+                        class="th_height"
+                        v-text="item"
+                      >
+                        <!-- {{ item }} -->
+                      </th>
+                    </tr>
+                  </thead>
 
-              <el-table
-                :data="tableData"
-                style="width:100%!important;"
-                align="center"
-              >
-                <el-table-column prop="zhanghao" label="登录账号" width="180">
-                </el-table-column>
-                <el-table-column prop="name" label="名称" width="180">
-                </el-table-column>
-                <el-table-column prop="bumen" label="部门" width="180">
-                </el-table-column>
-                <el-table-column prop="erjibumen" label="二级部门" width="180">
-                </el-table-column>
-                <el-table-column prop="zhuangtai" label="状态" width="180">
-                </el-table-column>
-                <el-table-column prop="id" label="ID" width="180">
-                </el-table-column>
-              </el-table>
+                  <tbody class="tbody" id="click">
+                    <tr
+                      v-for="(row, index) in tableTbody"
+                      :key="index"
+                      class="tableBorder hover"
+                      :id="forId(index + 1)"
+                    >
+                      <td
+                        class="th_height hover click"
+                        v-for="(col, key) in tableHeader"
+                        :key="key"
+                        v-text="row[col]"
+                        align="center"
+                      ></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </el-col>
           </el-row>
         </div>
@@ -104,11 +87,17 @@ import YButton from '/components/YButton'
 import YHeader from '/common/header'
 import YFooter from '/common/footer'
 import 'element-ui'
+import 'jquery'
+
 // import axios from 'axios'
 export default {
   // 生命周期函数
   data() {
     return {
+      wb: '',
+      tableHeader: [],
+      tableTbody: [],
+
       tableData: [],
       userinput: '', // 搜索关键字
       select: '',
@@ -118,108 +107,79 @@ export default {
       keytitle: [],
       type: '',
       map: new Map(),
-      ids: ''
+      ids: '',
+      id: ''
     }
   },
   methods: {
     // 给基因频率动态生成列添加id
     forId(index) {
-      return 'forid_' + index
+      return 'rowid_' + index
     },
-    // 搜索
-    handleIconClick(ev) {
-      console.log(222)
-    },
-    handleSelect(item) {
-      this.userinput = item.value
-    },
-    // 上传excel表格
-    handleChange(file, fileList) {
-      this.fileTemp = file.raw
-      // 判断上传文件格式
-      if (this.fileTemp) {
-        if (
-          this.fileTemp.type ===
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-          this.fileTemp.type === 'application/vnd.ms-excel'
-        ) {
-          this.importfxx(this.fileTemp)
-        } else {
-          this.$message({
-            type: 'warning',
-            message: '附件格式错误，请删除后重新上传！'
-          })
-        }
-      } else {
+    // 导入表格
+    importExcel(obj) {
+      if (!obj.files) {
+        return
+      }
+      // eslint-disable-next-line one-var
+      let file = obj.files[0],
+        types = file.name.split('.')[1], // types是用户上传文件的后缀
+        fileType = ['xlsx', 'xlc', 'xlm', 'xls', 'xlt', 'xlw', 'csv'].some(
+          item => item === types // types是用户上传文件后缀，item是数组中的每一项
+        )
+      if (!fileType) {
+        // 判断fileType是true还是false
         this.$message({
-          type: 'warning',
-          message: '请上传附件！'
+          message: '格式错误！请重新选择',
+          type: 'error'
         })
+        return
       }
-    },
-    // 移除excel表
-    handleRemove(file, fileList) {
-      this.fileTemp = null
-    },
-    importfxx(obj) {
-      let _this = this
-      // 通过DOM取文件数据
-      this.file = obj
-      var rABS = false // 是否将文件读取为二进制字符串
-      var f = this.file
-      var reader = new FileReader()
-      FileReader.prototype.readAsBinaryString = function(f) {
-        var binary = ''
-        var rABS = false // 是否将文件读取为二进制字符串
-        var pt = this
-        var wb // 读取完成的数据
-        var outdata
-        var reader = new FileReader()
-        reader.onload = function(e) {
-          var bytes = new Uint8Array(reader.result)
-          // console.log(reader.result)
-          var length = bytes.byteLength
-          for (var i = 0; i < length; i++) {
-            binary += String.fromCharCode(bytes[i])
-          }
-          var XLSX = require('xlsx')
-          if (rABS) {
-            wb = XLSX.read(btoa(fixdata(binary)), {
-              // 手动转化
-              type: 'base64'
-            })
-          } else {
-            wb = XLSX.read(binary, {
-              type: 'binary'
-            })
-          }
-          outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]) // outdata就是读取excel内容之后输出的东西
-          this.da = [...outdata]
-          // console.log(this.da)
-          let arr = []
-          this.da.map(v => {
-            let obj = {}
-            obj.zhanghao = v['zhanghao'] // ip是表的标题
-            obj.name = v['name'] // ip是表的标题
-            obj.bumen = v['bumen'] // ip是表的标题
-            obj.erjibumen = v['erjibumen'] // ip是表的标题
-            obj.zhuangtai = v['zhuangtai'] // ip是表的标题
-            obj.id = v['id'] // ip是表的标题
-            arr.push(obj)
-          })
-          // console.log(arr)
-          // return arr
-          // 把读取的excel表格中的内容放进tableData中(这里要改成自己的表的名字)
-          _this.tableData = _this.tableData.concat(arr)
+      this.file2Xce(file).then(tabJson => {
+        // 调用file2Xce方法，并通过DOM操作将input里面的内容存放到file里面，获取成功后返回的数据放到tabJson里面
+        if (tabJson && tabJson.length > 0) {
+          this.tableHeader = Object.keys(tabJson[0])
+          // this.tableHeader===Object.keys(tabJson[0])===["zhanghao", "name", "bumen", "erjibumen", "zhuangtai", "id"]获取tabJson数组中第一个对象的内容（列名）
+          // Object.keys(tabJson)===["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"] 获取tabJson数组中每个对象的key
+          this.tableTbody = tabJson // tabJson是excel表中数据条数，用数组包含对象形式展示
+          // console.log(tabJson)
         }
-        reader.readAsArrayBuffer(f)
-      }
-      if (rABS) {
-        reader.readAsArrayBuffer(f)
-      } else {
-        reader.readAsBinaryString(f)
-      }
+      })
+    },
+    file2Xce(file) {
+      return new Promise(function(resolve, reject) {
+        let reader = new FileReader() // 实例化一个FileReader对象
+        reader.onload = function(e) {
+          // e表示该事件的一些信息
+          // onload是在所有文件读取完成后执行
+          let data = e.target.result
+          // eslint-disable-next-line no-undef
+          this.wb = XLSX.read(data, {
+            type: 'binary'
+          })
+          resolve(
+            // eslint-disable-next-line no-undef
+            XLSX.utils.sheet_to_json(this.wb.Sheets[this.wb.SheetNames[0]])
+            // 将获取到excel文件中第一页（左下角）的内容解析出来，赋值给reader
+          )
+          // console.log(this.wb)
+          // console.log(this.wb.SheetNames[1])
+          // console.log(this.wb.Sheets[this.wb.SheetNames[1]])
+        }
+        reader.readAsBinaryString(file)
+        // reader.readAsArrayBuffer(file)
+      })
     }
+  },
+  mounted() {
+    $('#click tr').click(function() {
+      document.getElementById('tr').value = this.id // 每行设置不同的id值，该行是获取当前行的唯一值
+      $(this.id)
+        .addClass('tr_on')
+        .siblings('tr')
+        // eslint-disable-next-line no-irregular-whitespace
+        .removeClass('tr_on') // 这行是进行背景色的切换，backcolor是提前定义好的外部css样式，这里进行添加与删除同类的，即实现了选中改行，其他行颜色去掉。 backcolor 中的属性  要加上 !important ，提高其优先级
+    })
   },
   components: {
     YShelf,
@@ -230,6 +190,22 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
+.tableBorder {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  height: 50px;
+}
+.tbody tr.hover:hover {
+  background-color: #eee;
+}
+.tr_on {
+  // background-color: rgb(224, 222, 222) !important;
+  background-color: red !important;
+}
+.th_height {
+  // padding: 12px 0;
+  height: 40px;
+}
 .el-select .el-input {
   width: 130px;
 }

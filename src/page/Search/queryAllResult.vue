@@ -7,7 +7,6 @@
       <div class="tablecontent">
         <div class="content_title">
           <el-row>
-            <!-- <el-row style="margin-top:30px;"> -->
             <el-col :span="24" style="margin-bottom:20px;">
               <el-breadcrumb separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{ path: '/' }" style="font-size:15px;"
@@ -48,19 +47,7 @@
               </ul>
             </el-col>
             <!-- 右侧内容区 -->
-
             <el-col :span="18">
-              <!-- 过滤输入框和数据总数 -->
-              <!-- <div style="font-size:18px;margin-bottom:40px;">
-                过滤&nbsp;:<el-input
-                  style="width:300px;text-indent: 2.3em;"
-                  v-model="filter_input"
-                  placeholder="请输入内容"
-                ></el-input>
-                <p style="float:right;margin-right:5.625rem;color:#B8D1E8;">
-                  <span style="color:#B0B7C2;" v-text="totalNum"></span>个途径
-                </p>
-              </div> -->
               <!-- 下方具体数据展示列表 -->
               <ul class="gene_list">
                 <li
@@ -68,7 +55,7 @@
                   :key="key"
                   style="cursor:pointer;"
                 >
-                  <div class="right_left" style="float:left; padding-top:32px;">
+                  <div style="float:left; padding-top:32px;">
                     <span
                       class="iconfont icon-jiyinsuanfa"
                       style="font-size:50px;"
@@ -79,10 +66,8 @@
                     style="float:left;margin-left:1.75rem;width:90%;border-bottom:1px solid #eee;padding:20px 0;cursor:pointer;"
                   >
                     <div
-                      class="left_content"
                       style="float:left; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;width:600px;"
                     >
-                      <!-- <span style="color:#8b94a6;font-size:14px;">途径</span> -->
                       <span
                         class="right_title"
                         v-text="item.name"
@@ -113,7 +98,6 @@
         </div>
       </div>
     </el-card>
-    <!-- <y-footer></y-footer> -->
   </div>
 </template>
 <script>
@@ -148,48 +132,28 @@ export default {
   methods: {
     // 点击标题跳转到对应
     getContent(id, name, type) {
-      // console.log(id)
-      // console.log(name)
-      // console.log(type)
       // 触发 绑定的 事件，并向外传递参数
       if (type === 'project') {
         let routeData = this.$router.resolve({
           path: '/searchDruGenePair',
           query: {
-            word: type,
-            key: id
+            key: name
           }
         })
         window.open(routeData.href, '_blank')
-        // this.$router.push({
-        //   path: '/searchDruGenePair',
-        //   query: {
-        //     word: type,
-        //     key: id
-        //   }
-        // })
       } else if (type === 'gene') {
         let routeData = this.$router.resolve({
           path: '/searchContent',
           query: {
-            word: type,
-            key: id
+            key: name
           }
         })
         window.open(routeData.href, '_blank')
-        // this.$router.push({
-        //   path: '/searchContent',
-        //   query: {
-        //     word: type,
-        //     key: id
-        //   }
-        // })
       } else if (type === 'drug') {
         let routeData = this.$router.resolve({
           path: '/searchDrug',
           query: {
-            word: type,
-            key: id
+            key: name
           }
         })
         window.open(routeData.href, '_blank')
@@ -205,7 +169,8 @@ export default {
     // 接收子组件header传过来的搜索关键字，发送ajax
     getNotice() {
       this.map.clear()
-      let searchKey = $('input[icon="search"]').val()
+      let searchKey = $('input[icon="search"]').val() // 获取顶部搜索框用户输入的值
+      console.log(searchKey)
       if (typeof searchKey === 'undefined' || searchKey === null) {
         searchKey = ''
       }
@@ -215,12 +180,10 @@ export default {
         url: url
       }).then(res => {
         // 把获得好的数据 赋予 给getGene成员
-        if (res.data.length !== []) {
+        if (res.data !== []) {
           this.getGene = JSON.parse(res.data)
           this.geneList = this.getGene
-          // console.log(this.geneList)
           this.totalNum = this.geneList.length
-          // console.log(res)
           for (let i = 0; i < this.geneList.length; i++) {
             this.map.set(
               this.geneList[i].type,
@@ -228,8 +191,8 @@ export default {
                 ? 1
                 : this.map.get(this.geneList[i].type) + 1
             )
+            console.log(this.geneList[i].type) // 8
           }
-          // console.log(this.map.get('project')) // 8
         } else {
           this.$message({
             message: '未搜索到相关信息',
@@ -290,6 +253,12 @@ export default {
 .right_title .search_title li:hover {
   background-color: #ddd;
 }
+.right_title {
+  padding-left: 1.4rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 300;
+}
 .gene_list {
   width: 50rem;
 }
@@ -316,12 +285,7 @@ export default {
 .clearfix {
   margin-bottom: 20px;
 }
-.right_title {
-  padding-left: 1.4rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  font-weight: 300;
-}
+
 .left_type {
   font-size: 20px;
 }

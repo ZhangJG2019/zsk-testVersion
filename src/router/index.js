@@ -35,15 +35,15 @@ export default new Router({
     name: 'index',
     redirect: '/home',
     children: [{
-        path: 'home',
-        component: Home
-      },
-      {
         path: '/refreshgoods',
         name: 'refreshgoods',
         component: RefreshGoods
-      }
-      ]
+      }]
+  },
+  {
+    path: '/home',
+    name: 'home',
+    component: Home
   },
   {
     path: '/download',
@@ -152,8 +152,8 @@ export default new Router({
     component: user,
     redirect: '/user/information',
     children: [{
-        path: 'information',
-        name: '用户资料',
+        path: '/information',
+        name: 'userInfo',
         component: information
       }]
   },
@@ -162,11 +162,6 @@ export default new Router({
     name: 'taskhall',
     component: taskhall
   },
-    // {
-    //   path: '/getajax',
-    //   name: 'getajax',
-    //   component: getajax
-    // },
   {
     path: '*',
     redirect: '/home'
